@@ -1,0 +1,130 @@
+@model FitnessCenter.Models.Appointment
+@{
+    ViewData["Title"] = "Yeni Randevu Al";
+}
+
+<div class="container my-5">
+    <h1>Yeni Randevu Al</h1>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8">
+            <form asp-action="Create" id="appointmentForm">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="mb-3">
+                    <label class="form-label">Spor Salonu</label>
+                    <select id="fitnessCenterId" class="form-select" required>
+                        <option value="">Spor salonu seçiniz</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="TrainerId" class="form-label"></label>
+                    <select asp-for="TrainerId" id="trainerId" class="form-select" required>
+                        <option value="">Önce spor salonu seçiniz</option>
+                    </select>
+                    <span asp-validation-for="TrainerId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ServiceId" class="form-label"></label>
+                    <select asp-for="ServiceId" id="serviceId" class="form-select" required>
+                        <option value="">Önce antrenör seçiniz</option>
+                    </select>
+                    <span asp-validation-for="ServiceId" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="AppointmentDate" class="form-label"></label>
+                        <input asp-for="AppointmentDate" id="appointmentDate" class="form-control" type="date" min="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                        <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="AppointmentTime" class="form-label"></label>
+                        <select asp-for="AppointmentTime" id="appointmentTime" class="form-select" required>
+                            <option value="">Önce tarih seçiniz</option>
+                        </select>
+                        <span asp-validation-for="AppointmentTime" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Notes" class="form-label"></label>
+                    <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Notes" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Randevu Oluştur</button>
+                    <a asp-action="Index" class="btn btn-secondary">İptal</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            // Load fitness centers
+            $.get('/Appointments/GetFitnessCenters', function(data) {
+                var select = $('#fitnessCenterId');
+                select.empty();
+                select.append('<option value="">Spor salonu seçiniz</option>');
+                $.each(data, function(i, center) {
+                    select.append($('<option></option>').val(center.id).text(center.name));
+                });
+            });
+
+            // When fitness center changes, load trainers
+            $('#fitnessCenterId').change(function() {
+                var fitnessCenterId = $(this).val();
+                if (fitnessCenterId) {
+                    $.get('/Appointments/GetTrainersByFitnessCenter', { fitnessCenterId: fitnessCenterId }, function(data) {
+                        var select = $('#trainerId');
+                        select.empty();
+                        select.append('<option value="">Antrenör seçiniz</option>');
+                        $.each(data, function(i, trainer) {
+                            select.append($('<option></option>').val(trainer.id).text(trainer.name));
+                        });
+                    });
+                }
+            });
+
+            // When trainer changes, load services
+            $('#trainerId').change(function() {
+                var trainerId = $(this).val();
+                if (trainerId) {
+                    $.get('/Appointments/GetServicesByTrainer', { trainerId: trainerId }, function(data) {
+                        var select = $('#serviceId');
+                        select.empty();
+                        select.append('<option value="">Hizmet seçiniz</option>');
+                        $.each(data, function(i, service) {
+                            select.append($('<option></option>').val(service.id).text(service.name + ' - ' + service.price + ' TL'));
+                        });
+                    });
+                }
+            });
+
+            // When date changes, load available time slots
+            $('#appointmentDate').change(function() {
+                var date = $(this).val();
+                var trainerId = $('#trainerId').val();
+                if (date && trainerId) {
+                    $.get('/Appointments/GetAvailableTimeSlots', { trainerId: trainerId, date: date }, function(data) {
+                        var select = $('#appointmentTime');
+                        select.empty();
+                        select.append('<option value="">Saat seçiniz</option>');
+                        $.each(data, function(i, slot) {
+                            select.append($('<option></option>').val(slot.value).text(slot.time));
+                        });
+                    });
+                }
+            });
+        });
+    </script>
+}
+

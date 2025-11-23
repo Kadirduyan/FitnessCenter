@@ -1,0 +1,74 @@
+@{
+    ViewData["Title"] = "Yönetim Paneli";
+    var stats = ViewBag.Stats as dynamic;
+}
+
+<div class="container my-5">
+    <h1 class="mb-4">Yönetim Paneli</h1>
+
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Spor Salonları</h5>
+                    <h2 class="mb-0">@stats?.FitnessCenters</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Antrenörler</h5>
+                    <h2 class="mb-0">@stats?.Trainers</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Hizmetler</h5>
+                    <h2 class="mb-0">@stats?.Services</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Randevular</h5>
+                    <h2 class="mb-0">@stats?.Appointments</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Hızlı İşlemler</h5>
+                    <div class="d-grid gap-2">
+                        <a asp-controller="FitnessCenters" asp-action="Index" class="btn btn-primary">Spor Salonları Yönetimi</a>
+                        <a asp-controller="Trainers" asp-action="Index" class="btn btn-success">Antrenör Yönetimi</a>
+                        <a asp-controller="Services" asp-action="Index" class="btn btn-info">Hizmet Yönetimi</a>
+                        <a asp-controller="Appointments" asp-action="Index" class="btn btn-warning">Randevu Yönetimi</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">İstatistikler</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><strong>Toplam Üye:</strong> @stats?.Members</li>
+                        <li class="mb-2"><strong>Toplam Spor Salonu:</strong> @stats?.FitnessCenters</li>
+                        <li class="mb-2"><strong>Toplam Antrenör:</strong> @stats?.Trainers</li>
+                        <li class="mb-2"><strong>Toplam Hizmet:</strong> @stats?.Services</li>
+                        <li class="mb-2"><strong>Toplam Randevu:</strong> @stats?.Appointments</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

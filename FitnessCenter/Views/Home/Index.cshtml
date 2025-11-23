@@ -1,0 +1,137 @@
+﻿@model dynamic
+@{
+    ViewData["Title"] = "Ana Sayfa";
+    var fitnessCenters = ViewBag.FitnessCenters as List<FitnessCenter.Models.FitnessCenterModel> ?? new List<FitnessCenter.Models.FitnessCenterModel>();
+}
+
+<div class="hero-section">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-4">Fitness'in Geleceği Burada</h1>
+        <p class="lead mb-4">Yapay zeka destekli kişiselleştirilmiş fitness deneyimi</p>
+        @if (!User.Identity?.IsAuthenticated == true)
+        {
+            <a asp-controller="Account" asp-action="Register" class="btn btn-light btn-lg px-5 rounded-pill">Ücretsiz Değerlendirme</a>
+        }
+        else
+        {
+            <a asp-controller="Appointments" asp-action="Create" class="btn btn-light btn-lg px-5 rounded-pill">Randevu Al</a>
+        }
+    </div>
+</div>
+
+<div class="section">
+    <div class="container">
+        <h2 class="section-title">Hizmetlerimiz</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="bi bi-activity" style="font-size: 3rem; color: #667eea;"></i>
+                        </div>
+                        <h5 class="card-title">Fitness</h5>
+                        <p class="card-text">Yapay zeka destekli fitness ekipmanları ile performansınızı takip edin. Rehberli güç, kardiyo ve mobilite antrenmanları.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="bi bi-heart-pulse" style="font-size: 3rem; color: #764ba2;"></i>
+                        </div>
+                        <h5 class="card-title">Biohacking</h5>
+                        <p class="card-text">Sağlık ve uzun ömür konusundaki yeni buluşlarla mobiliteyi ve biyolojik yaşınızı iyileştirin.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="bi bi-calendar-event" style="font-size: 3rem; color: #00d4ff;"></i>
+                        </div>
+                        <h5 class="card-title">Sınıflar ve Etkinlikler</h5>
+                        <p class="card-text">Haftalık ücretsiz sınıflar ve özel etkinlikler. Topluluk içinde hedeflerinize ulaşın.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (fitnessCenters.Any())
+{
+    <div class="section bg-light">
+        <div class="container">
+            <h2 class="section-title">Spor Salonlarımız</h2>
+            <div class="row">
+                @foreach (var center in fitnessCenters)
+                {
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">@center.Name</h5>
+                                @if (!string.IsNullOrEmpty(center.Description))
+                                {
+                                    <p class="card-text">@center.Description</p>
+                                }
+                                <div class="mb-2">
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock"></i> @center.OpenTime.ToString(@"hh\:mm") - @center.CloseTime.ToString(@"hh\:mm")
+                                    </small>
+                                </div>
+                                @if (!string.IsNullOrEmpty(center.Address))
+                                {
+                                    <p class="card-text"><small class="text-muted"><i class="bi bi-geo-alt"></i> @center.Address</small></p>
+                                }
+                                <div class="mt-3">
+                                    <span class="badge bg-primary">@center.Services.Count Hizmet</span>
+                                    <span class="badge bg-success">@center.Trainers.Count Antrenör</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+<div class="section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2 class="fw-bold mb-4">Kişiselleştirilmiş Fitness Deneyimi</h2>
+                <p class="lead mb-4">Fitness değerlendirme verileriniz, tercihleriniz ve hedef seçimleriniz işlenerek egzersiz bilimine dayalı özel bir antrenman planı oluşturulur.</p>
+                <ul class="list-unstyled">
+                    <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Yapay zeka destekli ekipmanlar</li>
+                    <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Kişiselleştirilmiş antrenman planları</li>
+                    <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> İnsan antrenörlerle destek</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-custom">
+                    <div class="card-body p-5 text-center">
+                        <h3 class="mb-4">Üyelik</h3>
+                        <h2 class="text-gradient mb-4">Aylık Üyelik</h2>
+                        <ul class="list-unstyled text-start mb-4">
+                            <li class="mb-2"><i class="bi bi-check text-success me-2"></i> Devrimci Teknoloji</li>
+                            <li class="mb-2"><i class="bi bi-check text-success me-2"></i> Yapay Zeka Destekli Antrenman Planları</li>
+                            <li class="mb-2"><i class="bi bi-check text-success me-2"></i> Ücretsiz Sınıflar</li>
+                            <li class="mb-2"><i class="bi bi-check text-success me-2"></i> Etkinlikler</li>
+                        </ul>
+                        @if (!User.Identity?.IsAuthenticated == true)
+                        {
+                            <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg w-100">Şimdi Katıl</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+}

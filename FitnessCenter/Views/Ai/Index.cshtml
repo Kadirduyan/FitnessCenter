@@ -1,0 +1,146 @@
+@{
+    ViewData["Title"] = "Yapay Zeka Destekli Öneriler";
+}
+
+<div class="container my-5">
+    <h1 class="mb-4">Yapay Zeka Destekli Öneriler</h1>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Egzersiz Önerileri</h5>
+                    <form id="exerciseForm">
+                        <div class="mb-3">
+                            <label class="form-label">Boy (cm)</label>
+                            <input type="number" id="height" class="form-control" placeholder="Örn: 175" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Kilo (kg)</label>
+                            <input type="number" id="weight" class="form-control" placeholder="Örn: 70" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Vücut Tipi</label>
+                            <select id="bodyType" class="form-select">
+                                <option value="">Seçiniz</option>
+                                <option value="Ektomorf">Ektomorf (İnce)</option>
+                                <option value="Mezomorf">Mezomorf (Atletik)</option>
+                                <option value="Endomorf">Endomorf (Yapılı)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Hedef</label>
+                            <select id="goal" class="form-select">
+                                <option value="">Seçiniz</option>
+                                <option value="Kilo Verme">Kilo Verme</option>
+                                <option value="Kilo Alma">Kilo Alma</option>
+                                <option value="Kas Geliştirme">Kas Geliştirme</option>
+                                <option value="Güç Artırma">Güç Artırma</option>
+                                <option value="Genel Fitness">Genel Fitness</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Fitness Seviyesi</label>
+                            <select id="fitnessLevel" class="form-select">
+                                <option value="">Seçiniz</option>
+                                <option value="Başlangıç">Başlangıç</option>
+                                <option value="Orta">Orta</option>
+                                <option value="İleri">İleri</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Öneri Al</button>
+                    </form>
+                    <div id="exerciseResult" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Diyet Planı Önerileri</h5>
+                    <form id="dietForm">
+                        <div class="mb-3">
+                            <label class="form-label">Boy (cm)</label>
+                            <input type="number" id="dietHeight" class="form-control" placeholder="Örn: 175" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Kilo (kg)</label>
+                            <input type="number" id="dietWeight" class="form-control" placeholder="Örn: 70" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Hedef</label>
+                            <select id="dietGoal" class="form-select">
+                                <option value="">Seçiniz</option>
+                                <option value="Kilo Verme">Kilo Verme</option>
+                                <option value="Kilo Alma">Kilo Alma</option>
+                                <option value="Kas Geliştirme">Kas Geliştirme</option>
+                                <option value="Sağlıklı Beslenme">Sağlıklı Beslenme</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Diyet Kısıtlamaları</label>
+                            <input type="text" id="dietaryRestrictions" class="form-control" placeholder="Örn: Vejetaryen, Glutensiz" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Diyet Planı Al</button>
+                    </form>
+                    <div id="dietResult" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $('#exerciseForm').submit(function(e) {
+            e.preventDefault();
+            var data = {
+                height: parseInt($('#height').val()),
+                weight: parseInt($('#weight').val()),
+                bodyType: $('#bodyType').val(),
+                goal: $('#goal').val(),
+                fitnessLevel: $('#fitnessLevel').val()
+            };
+
+            $.ajax({
+                url: '/Ai/GetExerciseRecommendation',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function(response) {
+                    $('#exerciseResult').html('<div class="alert alert-success"><h6>Egzersiz Önerileri:</h6><pre style="white-space: pre-wrap;">' + response.recommendation + '</pre></div>');
+                },
+                error: function(xhr) {
+                    var error = xhr.responseJSON?.error || 'Bir hata oluştu';
+                    $('#exerciseResult').html('<div class="alert alert-danger">' + error + '</div>');
+                }
+            });
+        });
+
+        $('#dietForm').submit(function(e) {
+            e.preventDefault();
+            var data = {
+                height: parseInt($('#dietHeight').val()),
+                weight: parseInt($('#dietWeight').val()),
+                goal: $('#dietGoal').val(),
+                dietaryRestrictions: $('#dietaryRestrictions').val()
+            };
+
+            $.ajax({
+                url: '/Ai/GetDietPlan',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function(response) {
+                    $('#dietResult').html('<div class="alert alert-success"><h6>Diyet Planı:</h6><pre style="white-space: pre-wrap;">' + response.dietPlan + '</pre></div>');
+                },
+                error: function(xhr) {
+                    var error = xhr.responseJSON?.error || 'Bir hata oluştu';
+                    $('#dietResult').html('<div class="alert alert-danger">' + error + '</div>');
+                }
+            });
+        });
+    </script>
+}
+
