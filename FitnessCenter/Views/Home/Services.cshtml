@@ -1,0 +1,144 @@
+@model IEnumerable<FitnessCenter.Models.Service>
+@{
+    ViewData["Title"] = "Hizmetlerimiz";
+    var serviceTypes = ViewBag.ServiceTypes as List<FitnessCenter.Models.ServiceType> ?? new List<FitnessCenter.Models.ServiceType>();
+}
+
+<div class="section-fitness">
+    <div class="container">
+        <h1 class="section-title-large text-center mb-5">Hizmetlerimiz</h1>
+        <p class="text-center lead mb-5">Size özel hazırlanmış çeşitli fitness hizmetleri</p>
+
+        <!-- Hizmet Türlerine Göre Filtreleme -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="service-filters">
+                    <button class="btn btn-outline-dark filter-btn active" data-filter="all">Tümü</button>
+                    @foreach (var type in serviceTypes)
+                    {
+                        <button class="btn btn-outline-dark filter-btn" data-filter="@type">@type</button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Hizmetler Grid -->
+        <div class="row" id="servicesContainer">
+            @foreach (var service in Model)
+            {
+                <div class="col-md-4 mb-4 service-item" data-type="@service.ServiceType">
+                    <div class="card h-100 service-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span class="badge bg-info">@service.ServiceType</span>
+                                <span class="text-muted"><i class="bi bi-clock"></i> @service.DurationMinutes dk</span>
+                            </div>
+                            <h5 class="card-title">@service.Name</h5>
+                            @if (!string.IsNullOrEmpty(service.Description))
+                            {
+                                <p class="card-text text-muted">@(service.Description.Length > 100 ? service.Description.Substring(0, 100) + "..." : service.Description)</p>
+                            }
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="fs-4 fw-bold text-success">@service.Price.ToString("N2") ₺</span>
+                                    <small class="text-muted">@service.FitnessCenter?.Name</small>
+                                </div>
+                                @if (User.Identity?.IsAuthenticated == true)
+                                {
+                                    <a asp-controller="Appointments" asp-action="Create" class="btn btn-warning w-100">Randevu Al</a>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Account" asp-action="Register" class="btn btn-warning w-100">Üye Ol</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle"></i> Henüz hizmet tanımlanmamış.
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Hizmet türüne göre filtreleme
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Active class'ı güncelle
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                const filter = this.getAttribute('data-filter');
+                const items = document.querySelectorAll('.service-item');
+
+                items.forEach(item => {
+                    if (filter === 'all' || item.getAttribute('data-type') === filter) {
+                        item.style.display = 'block';
+                        setTimeout(() => {
+                            item.style.opacity = '1';
+                            item.style.transform = 'scale(1)';
+                        }, 10);
+                    } else {
+                        item.style.opacity = '0';
+                        item.style.transform = 'scale(0.9)';
+                        setTimeout(() => {
+                            item.style.display = 'none';
+                        }, 300);
+                    }
+                });
+            });
+        });
+
+        // İlk yüklemede animasyon
+        document.querySelectorAll('.service-item').forEach((item, index) => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(20px)';
+            item.style.transition = 'all 0.3s ease';
+            setTimeout(() => {
+                item.style.opacity = '1';
+                item.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    </script>
+    <style>
+        .service-filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .filter-btn {
+            border-radius: 20px;
+            padding: 8px 20px;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            background-color: var(--primary-dark);
+            color: white;
+            border-color: var(--primary-dark);
+        }
+
+        .service-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+    </style>
+}
+

@@ -57,7 +57,7 @@ namespace FitnessCenter.Controllers
         // POST: Services/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Description,DurationMinutes,Price,FitnessCenterId")] Service service)
+        public async Task<IActionResult> Create([Bind("Name,Description,ServiceType,DurationMinutes,Price,FitnessCenterId")] Service service)
         {
             if (ModelState.IsValid)
             {
@@ -90,7 +90,7 @@ namespace FitnessCenter.Controllers
         // POST: Services/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,DurationMinutes,Price,FitnessCenterId,CreatedAt")] Service service)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,ServiceType,DurationMinutes,Price,FitnessCenterId,CreatedAt")] Service service)
         {
             if (id != service.Id)
             {

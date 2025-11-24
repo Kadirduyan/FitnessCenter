@@ -1,0 +1,172 @@
+@model FitnessCenter.Models.FitnessCenterModel
+@{
+    ViewData["Title"] = "Spor Salonu Detayları";
+}
+
+<div class="container my-5">
+    <div class="card shadow-custom mb-4">
+        <div class="card-body p-5">
+            <div class="row">
+                <div class="col-md-8">
+                    <h1 class="mb-3">@Model.Name</h1>
+                    @if (!string.IsNullOrEmpty(Model.Description))
+                    {
+                        <p class="lead text-muted">@Model.Description</p>
+                    }
+                </div>
+                <div class="col-md-4 text-end">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Düzenle</a>
+                    <a asp-action="Index" class="btn btn-secondary">Geri Dön</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Çalışma Saatleri -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-clock"></i> Çalışma Saatleri</h5>
+                </div>
+                <div class="card-body">
+                    <div class="working-hours">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="fw-bold">Açılış Saati:</span>
+                            <span class="badge bg-success fs-6">@Model.OpenTime.ToString(@"hh\:mm")</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">Kapanış Saati:</span>
+                            <span class="badge bg-danger fs-6">@Model.CloseTime.ToString(@"hh\:mm")</span>
+                        </div>
+                        <hr>
+                        <div class="text-center">
+                            <p class="mb-0"><strong>Günlük Çalışma Süresi:</strong></p>
+                            <p class="text-primary fs-4 mb-0">
+                                @{
+                                    var duration = Model.CloseTime - Model.OpenTime;
+                                    var hours = (int)duration.TotalHours;
+                                    var minutes = duration.Minutes;
+                                }
+                                @hours saat @minutes dakika
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- İletişim Bilgileri -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-telephone"></i> İletişim Bilgileri</h5>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.Address))
+                    {
+                        <div class="mb-3">
+                            <i class="bi bi-geo-alt-fill text-primary"></i>
+                            <strong>Adres:</strong><br>
+                            <span class="text-muted">@Model.Address</span>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Phone))
+                    {
+                        <div class="mb-3">
+                            <i class="bi bi-telephone-fill text-success"></i>
+                            <strong>Telefon:</strong><br>
+                            <a href="tel:@Model.Phone" class="text-decoration-none">@Model.Phone</a>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Email))
+                    {
+                        <div class="mb-3">
+                            <i class="bi bi-envelope-fill text-warning"></i>
+                            <strong>E-posta:</strong><br>
+                            <a href="mailto:@Model.Email" class="text-decoration-none">@Model.Email</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hizmetler -->
+    <div class="card shadow-custom mt-4">
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0"><i class="bi bi-list-check"></i> Sunulan Hizmetler (@Model.Services.Count)</h4>
+        </div>
+        <div class="card-body">
+            @if (Model.Services != null && Model.Services.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Hizmet Adı</th>
+                                <th>Hizmet Türü</th>
+                                <th>Süre</th>
+                                <th>Ücret</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var service in Model.Services)
+                            {
+                                <tr>
+                                    <td><strong>@service.Name</strong></td>
+                                    <td><span class="badge bg-info">@service.ServiceType</span></td>
+                                    <td>@service.DurationMinutes dk</td>
+                                    <td><strong class="text-success">@service.Price.ToString("N2") ₺</strong></td>
+                                    <td>
+                                        <a asp-controller="Services" asp-action="Details" asp-route-id="@service.Id" class="btn btn-sm btn-info">Detay</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> Bu spor salonu için henüz hizmet tanımlanmamış.
+                    <a asp-controller="Services" asp-action="Create" class="alert-link">Yeni hizmet eklemek için tıklayın.</a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Antrenörler -->
+    @if (Model.Trainers != null && Model.Trainers.Any())
+    {
+        <div class="card shadow-custom mt-4">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="bi bi-people"></i> Antrenörler (@Model.Trainers.Count)</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    @foreach (var trainer in Model.Trainers)
+                    {
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title">@trainer.FullName</h6>
+                                    @if (!string.IsNullOrEmpty(trainer.Specializations))
+                                    {
+                                        <p class="card-text"><small class="text-muted">@trainer.Specializations</small></p>
+                                    }
+                                    <span class="badge @(trainer.IsActive ? "bg-success" : "bg-secondary")">
+                                        @(trainer.IsActive ? "Aktif" : "Pasif")
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+

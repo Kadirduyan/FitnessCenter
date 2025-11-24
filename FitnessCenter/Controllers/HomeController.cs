@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using FitnessCenter.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FitnessCenter.Models;
@@ -26,6 +27,23 @@ public class HomeController : Controller
 
         ViewBag.FitnessCenters = fitnessCenters;
         return View();
+    }
+
+    [AllowAnonymous]
+    public async Task<IActionResult> Services()
+    {
+        var services = await _context.Services
+            .Include(s => s.FitnessCenter)
+            .Include(s => s.Trainers)
+            .OrderBy(s => s.ServiceType)
+            .ThenBy(s => s.Name)
+            .ToListAsync();
+
+        ViewBag.ServiceTypes = Enum.GetValues(typeof(ServiceType))
+            .Cast<ServiceType>()
+            .ToList();
+
+        return View(services);
     }
 
     public IActionResult Privacy()

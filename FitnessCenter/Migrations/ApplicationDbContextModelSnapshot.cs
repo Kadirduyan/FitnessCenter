@@ -146,7 +146,7 @@ namespace FitnessCenter.Migrations
 
                     b.HasIndex("TrainerId");
 
-                    b.ToTable("Appointments", (string)null);
+                    b.ToTable("Appointments");
                 });
 
             modelBuilder.Entity("FitnessCenter.Models.FitnessCenterModel", b =>
@@ -184,7 +184,7 @@ namespace FitnessCenter.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FitnessCenters", (string)null);
+                    b.ToTable("FitnessCenters");
                 });
 
             modelBuilder.Entity("FitnessCenter.Models.Service", b =>
@@ -214,11 +214,14 @@ namespace FitnessCenter.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("ServiceType")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("FitnessCenterId");
 
-                    b.ToTable("Services", (string)null);
+                    b.ToTable("Services");
                 });
 
             modelBuilder.Entity("FitnessCenter.Models.Trainer", b =>
@@ -262,7 +265,7 @@ namespace FitnessCenter.Migrations
 
                     b.HasIndex("FitnessCenterId");
 
-                    b.ToTable("Trainers", (string)null);
+                    b.ToTable("Trainers");
                 });
 
             modelBuilder.Entity("FitnessCenter.Models.TrainerAvailability", b =>
@@ -289,7 +292,7 @@ namespace FitnessCenter.Migrations
 
                     b.HasIndex("TrainerId");
 
-                    b.ToTable("TrainerAvailabilities", (string)null);
+                    b.ToTable("TrainerAvailabilities");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -437,7 +440,7 @@ namespace FitnessCenter.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.ToTable("TrainerService", (string)null);
+                    b.ToTable("TrainerService");
                 });
 
             modelBuilder.Entity("FitnessCenter.Models.Appointment", b =>

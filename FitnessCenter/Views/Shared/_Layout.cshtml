@@ -3,34 +3,72 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Fitness Center</title>
+    <title>@ViewData["Title"] - FRED FITNESS</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/FitnessCenter.styles.css" asp-append-version="true" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 </head>
 <body>
-    <header class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-        <div class="container">
-            <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">
-                <span style="color: #00d4ff;">FITNESS</span> CENTER
+    <!-- Top Header Bar -->
+    <div class="top-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="social-link"><i class="bi bi-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="header-info">
+                        <span class="header-item"><i class="bi bi-clock"></i> Açık: Her gün 05:00 - 22:00</span>
+                        <span class="header-item"><i class="bi bi-telephone"></i> Bizi Arayın: (555) 123-4567</span>
+                        <span class="header-item"><i class="bi bi-envelope"></i> Mail: info@fitnesscenter.com</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark main-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                <span class="brand-name">FRED</span>
+                <span class="brand-subtitle">FITNESS</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            
+            <!-- Hamburger Menu Button -->
+            <button class="navbar-toggler hamburger-menu" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+                <span></span>
+                <span></span>
+                <span></span>
             </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
+                <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Ana Sayfa</a>
+                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Fitness</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Hizmetler</a>
+                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Services">Hizmetler</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Antrenörler</a>
+                        <a class="nav-link" href="#biohacking">Biohacking</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#press">Basın</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#membership">Üyelik</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#locations">Lokasyonlar</a>
                     </li>
                     @if (User.Identity?.IsAuthenticated == true)
                     {
@@ -48,11 +86,11 @@
                         }
                     }
                 </ul>
-                <ul class="navbar-nav">
+                <div class="navbar-actions ms-3">
                     @if (User.Identity?.IsAuthenticated == true)
                     {
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="dropdown">
+                            <a class="btn btn-outline-light btn-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                                 @User.Identity.Name
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
@@ -64,51 +102,60 @@
                                     </form>
                                 </li>
                             </ul>
-                        </li>
+                        </div>
                     }
                     else
                     {
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Account" asp-action="Login">Giriş Yap</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link btn btn-primary text-white px-3 rounded-pill ms-2" asp-controller="Account" asp-action="Register">Üye Ol</a>
-                        </li>
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-sm me-2">Giriş</a>
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-warning btn-sm">Ücretsiz Değerlendirme</a>
                     }
-                </ul>
+                </div>
             </div>
         </div>
-    </header>
+    </nav>
 
-    <main style="margin-top: 76px;">
+    <main style="padding-top: 0;">
         @RenderBody()
     </main>
 
-    <footer class="bg-dark text-light py-5 mt-5">
-        <div class="container">
+    <footer class="footer-dark">
+        <div class="container py-5">
             <div class="row">
-                <div class="col-md-4 mb-4">
-                    <h5 class="fw-bold mb-3">Fitness Center</h5>
-                    <p class="text-muted">Kişiselleştirilmiş fitness deneyimi için yapay zeka destekli spor salonu yönetim sistemi.</p>
+                <div class="col-md-3 mb-4">
+                    <h5 class="footer-brand">FRED FITNESS®</h5>
+                    <p class="footer-text">Türkiye'nin ilk tam ölçekli yapay zeka destekli spor salonu. Teknolojiyi kullanarak kişiselleştirilmiş fitness ve sağlığı uygun fiyatlı hale getiriyoruz.</p>
                 </div>
-                <div class="col-md-4 mb-4">
-                    <h5 class="fw-bold mb-3">Hızlı Bağlantılar</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-muted text-decoration-none">Hakkımızda</a></li>
-                        <li><a href="#" class="text-muted text-decoration-none">Hizmetler</a></li>
-                        <li><a href="#" class="text-muted text-decoration-none">Antrenörler</a></li>
-                        <li><a href="#" class="text-muted text-decoration-none">İletişim</a></li>
+                <div class="col-md-3 mb-4">
+                    <h6 class="footer-heading">FRED FITNESS®</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Fitness</a></li>
+                        <li><a href="#">Biohacking</a></li>
+                        <li><a href="#">Basın</a></li>
                     </ul>
                 </div>
-                <div class="col-md-4 mb-4">
-                    <h5 class="fw-bold mb-3">İletişim</h5>
-                    <p class="text-muted mb-1">Email: info@fitnesscenter.com</p>
-                    <p class="text-muted mb-1">Telefon: (555) 123-4567</p>
+                <div class="col-md-3 mb-4">
+                    <h6 class="footer-heading">Bilgi</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Ücretsiz Değerlendirme</a></li>
+                        <li><a href="#">Lokasyonlar</a></li>
+                        <li><a href="#">Üyelik</a></li>
+                        <li><a href="#">Faturalama ve İptal</a></li>
+                        <li><a href="#">Gizlilik Politikası</a></li>
+                        <li><a href="#">Kullanım Şartları</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6 class="footer-heading">İletişim</h6>
+                    <p class="footer-text">
+                        <strong>Adres:</strong> İstanbul, Türkiye<br>
+                        <strong>Telefon:</strong> (555) 123-4567<br>
+                        <strong>Email:</strong> info@fitnesscenter.com
+                    </p>
                 </div>
             </div>
-            <hr class="bg-secondary my-4">
-            <div class="text-center text-muted">
-                <p>&copy; 2025 Fitness Center. Tüm hakları saklıdır.</p>
+            <hr class="footer-divider">
+            <div class="text-center">
+                <p class="footer-copyright">&copy; 2025 FRED FITNESS. Tüm hakları saklıdır.</p>
             </div>
         </div>
     </footer>
