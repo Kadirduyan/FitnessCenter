@@ -1,130 +1,83 @@
-@model FitnessCenter.Models.Appointment
+@model FitnessCenter.Models.Trainer
 @{
-    ViewData["Title"] = "Yeni Randevu Al";
+    ViewData["Title"] = "Yeni Antrenör Ekle";
+    var services = ViewBag.Services as List<FitnessCenter.Models.Service>;
 }
 
 <div class="container my-5">
-    <h1>Yeni Randevu Al</h1>
+    <h1>Yeni Antrenör Ekle</h1>
     <hr />
-
     <div class="row">
         <div class="col-md-8">
-            <form asp-action="Create" id="appointmentForm">
+            <form asp-action="Create">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-                <div class="mb-3">
-                    <label class="form-label">Spor Salonu</label>
-                    <select id="fitnessCenterId" class="form-select" required>
-                        <option value="">Spor salonu seçiniz</option>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="TrainerId" class="form-label"></label>
-                    <select asp-for="TrainerId" id="trainerId" class="form-select" required>
-                        <option value="">Önce spor salonu seçiniz</option>
-                    </select>
-                    <span asp-validation-for="TrainerId" class="text-danger"></span>
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="ServiceId" class="form-label"></label>
-                    <select asp-for="ServiceId" id="serviceId" class="form-select" required>
-                        <option value="">Önce antrenör seçiniz</option>
-                    </select>
-                    <span asp-validation-for="ServiceId" class="text-danger"></span>
-                </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label asp-for="AppointmentDate" class="form-label"></label>
-                        <input asp-for="AppointmentDate" id="appointmentDate" class="form-control" type="date" min="@DateTime.Now.ToString("yyyy-MM-dd")" required />
-                        <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+                        <label asp-for="FirstName" class="form-label"></label>
+                        <input asp-for="FirstName" class="form-control" />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label asp-for="AppointmentTime" class="form-label"></label>
-                        <select asp-for="AppointmentTime" id="appointmentTime" class="form-select" required>
-                            <option value="">Önce tarih seçiniz</option>
-                        </select>
-                        <span asp-validation-for="AppointmentTime" class="text-danger"></span>
+                        <label asp-for="LastName" class="form-label"></label>
+                        <input asp-for="LastName" class="form-control" />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="Notes" class="form-label"></label>
-                    <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
-                    <span asp-validation-for="Notes" class="text-danger"></span>
+                    <label asp-for="FitnessCenterId" class="form-label"></label>
+                    <select asp-for="FitnessCenterId" class ="form-select" asp-items="ViewBag.FitnessCenterId"></select>
                 </div>
 
                 <div class="mb-3">
-                    <button type="submit" class="btn btn-primary">Randevu Oluştur</button>
+                    <label asp-for="Specializations" class="form-label"></label>
+                    <input asp-for="Specializations" class="form-control" placeholder="Örn: Kilo Verme, Kas Geliştirme, Yoga" />
+                    <span asp-validation-for="Specializations" class="text-danger"></span>
+                    <small class="text-muted">Uzmanlık alanlarını virgülle ayırarak yazınız.</small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Verebileceği Hizmetler</label>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                @if (services != null)
+                                {
+                                    foreach (var service in services)
+                                    {
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="selectedServices" value="@service.Id" id="service_@service.Id">
+                                                <label class="form-check-label" for="service_@service.Id">
+                                                    @service.Name (@service.ServiceType)
+                                                </label>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" asp-for="IsActive" /> @Html.DisplayNameFor(model => model.IsActive)
+                    </label>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
                     <a asp-action="Index" class="btn btn-secondary">İptal</a>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script>
-        $(document).ready(function() {
-            // Load fitness centers
-            $.get('/Appointments/GetFitnessCenters', function(data) {
-                var select = $('#fitnessCenterId');
-                select.empty();
-                select.append('<option value="">Spor salonu seçiniz</option>');
-                $.each(data, function(i, center) {
-                    select.append($('<option></option>').val(center.id).text(center.name));
-                });
-            });
-
-            // When fitness center changes, load trainers
-            $('#fitnessCenterId').change(function() {
-                var fitnessCenterId = $(this).val();
-                if (fitnessCenterId) {
-                    $.get('/Appointments/GetTrainersByFitnessCenter', { fitnessCenterId: fitnessCenterId }, function(data) {
-                        var select = $('#trainerId');
-                        select.empty();
-                        select.append('<option value="">Antrenör seçiniz</option>');
-                        $.each(data, function(i, trainer) {
-                            select.append($('<option></option>').val(trainer.id).text(trainer.name));
-                        });
-                    });
-                }
-            });
-
-            // When trainer changes, load services
-            $('#trainerId').change(function() {
-                var trainerId = $(this).val();
-                if (trainerId) {
-                    $.get('/Appointments/GetServicesByTrainer', { trainerId: trainerId }, function(data) {
-                        var select = $('#serviceId');
-                        select.empty();
-                        select.append('<option value="">Hizmet seçiniz</option>');
-                        $.each(data, function(i, service) {
-                            select.append($('<option></option>').val(service.id).text(service.name + ' - ' + service.price + ' TL'));
-                        });
-                    });
-                }
-            });
-
-            // When date changes, load available time slots
-            $('#appointmentDate').change(function() {
-                var date = $(this).val();
-                var trainerId = $('#trainerId').val();
-                if (date && trainerId) {
-                    $.get('/Appointments/GetAvailableTimeSlots', { trainerId: trainerId, date: date }, function(data) {
-                        var select = $('#appointmentTime');
-                        select.empty();
-                        select.append('<option value="">Saat seçiniz</option>');
-                        $.each(data, function(i, slot) {
-                            select.append($('<option></option>').val(slot.value).text(slot.time));
-                        });
-                    });
-                }
-            });
-        });
-    </script>
-}
-

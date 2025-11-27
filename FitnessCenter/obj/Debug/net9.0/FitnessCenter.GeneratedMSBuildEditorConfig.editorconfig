@@ -56,6 +56,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwb2ludG1lbnRzXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Kadir/Desktop/FitnessCenter/Views/FitnessCenters/AddAvailability.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRml0bmVzc0NlbnRlcnNcQWRkQXZhaWxhYmlsaXR5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Kadir/Desktop/FitnessCenter/Views/FitnessCenters/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRml0bmVzc0NlbnRlcnNcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
@@ -114,6 +118,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/Kadir/Desktop/FitnessCenter/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Kadir/Desktop/FitnessCenter/Views/Trainers/List.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVHJhaW5lcnNcTGlzdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Kadir/Desktop/FitnessCenter/Views/_ViewImports.cshtml]

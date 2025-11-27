@@ -1,0 +1,68 @@
+@model IEnumerable<FitnessCenter.Models.Trainer>
+@{
+    ViewData["Title"] = "Uzman Kadromuz";
+}
+
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold">Profesyonel Antrenörlerimiz</h1>
+        <p class="lead text-muted">Hedeflerinize ulaşmanız için alanında uzman eğitmenlerimiz yanınızda.</p>
+    </div>
+
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            // FOTOĞRAF MANTIĞI: İsimlere göre otomatik Kadın/Erkek resmi
+            string imgUrl = "https://randomuser.me/api/portraits/men/" + (item.Id + 10) + ".jpg"; 
+            
+            if (new[] { "Merve", "Sahra", "Eda", "Selin", "Gamze", "Ayşe", "Fatma", "Zeynep", "Elif" }.Contains(item.FirstName))
+            {
+                imgUrl = "https://randomuser.me/api/portraits/women/" + (item.Id + 5) + ".jpg";
+            }
+            else if (new[] { "Aras", "Rüzgar", "Zafer", "Can", "Burak", "Ahmet", "Mehmet" }.Contains(item.FirstName))
+            {
+                 imgUrl = "https://randomuser.me/api/portraits/men/" + (item.Id + 25) + ".jpg";
+            }
+
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow border-0 hover-effect">
+                    <div class="position-relative text-center pt-4 pb-2 bg-light">
+                        <img src="@imgUrl" class="rounded-circle shadow-sm" style="width: 140px; height: 140px; object-fit: cover; border: 4px solid white;" alt="@item.FirstName">
+                        <div class="mt-2">
+                             <span class="badge bg-primary">@item.Specializations</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body text-center">
+                        <h4 class="card-title fw-bold mb-1">@item.FirstName @item.LastName</h4>
+                        <p class="text-muted small mb-3">
+                            <i class="bi bi-geo-alt-fill text-danger"></i> @item.FitnessCenter?.Name
+                        </p>
+                        
+                        <p class="card-text text-muted">
+                            @(item.Description?.Length > 90 ? item.Description.Substring(0, 90) + "..." : item.Description)
+                        </p>
+                        
+                        <div class="mb-3">
+                            @foreach(var service in item.Services.Take(3))
+                            {
+                                <span class="badge bg-light text-dark border me-1">@service.Name</span>
+                            }
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer bg-white border-0 pb-4 px-4">
+                        <a asp-controller="Appointments" asp-action="Create" asp-route-trainerId="@item.Id" class="btn btn-warning w-100 fw-bold py-2">
+                            <i class="bi bi-calendar-check me-2"></i>Randevu Al
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .hover-effect { transition: transform 0.3s ease; }
+    .hover-effect:hover { transform: translateY(-5px); }
+</style>

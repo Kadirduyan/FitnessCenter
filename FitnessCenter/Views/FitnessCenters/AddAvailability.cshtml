@@ -1,0 +1,47 @@
+@model FitnessCenter.Models.TrainerAvailability
+@{
+    ViewData["Title"] = "Müsaitlik Ekle";
+}
+
+<div class="container my-5">
+    <h3>@ViewBag.TrainerName için Çalışma Saati Ekle</h3>
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="AddAvailability">
+                <input type="hidden" asp-for="TrainerId" />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="mb-3">
+                    <label asp-for="DayOfWeek" class="form-label"></label>
+                    <select asp-for="DayOfWeek" class="form-select">
+                        <option value="1">Pazartesi</option>
+                        <option value="2">Salı</option>
+                        <option value="3">Çarşamba</option>
+                        <option value="4">Perşembe</option>
+                        <option value="5">Cuma</option>
+                        <option value="6">Cumartesi</option>
+                        <option value="0">Pazar</option>
+                    </select>
+                    <span asp-validation-for="DayOfWeek" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label asp-for="StartTime" class="form-label"></label>
+                        <input asp-for="StartTime" class="form-control" type="time" />
+                        <span asp-validation-for="StartTime" class="text-danger"></span>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label asp-for="EndTime" class="form-label"></label>
+                        <input asp-for="EndTime" class="form-control" type="time" />
+                        <span asp-validation-for="EndTime" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success">Ekle</button>
+                <a asp-action="Details" asp-route-id="@Model.TrainerId" class="btn btn-secondary">Geri Dön</a>
+            </form>
+        </div>
+    </div>
+</div>

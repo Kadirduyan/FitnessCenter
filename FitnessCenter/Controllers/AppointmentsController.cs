@@ -77,8 +77,21 @@ namespace FitnessCenter.Controllers
         }
 
         // GET: Appointments/Create
-        public async Task<IActionResult> Create()
+        // GÜNCELLENDİ: trainerId parametresi eklendi
+        public async Task<IActionResult> Create(int? trainerId)
         {
+            // Vitrinden "Randevu Al" butonuna basılarak gelindiyse
+            if (trainerId.HasValue)
+            {
+                var trainer = await _context.Trainers.FindAsync(trainerId);
+                if (trainer != null)
+                {
+                    // View'a otomatik seçim verilerini gönderiyoruz
+                    ViewBag.SelectedTrainerId = trainerId;
+                    ViewBag.SelectedFitnessCenterId = trainer.FitnessCenterId;
+                }
+            }
+
             var fitnessCenters = await _context.FitnessCenters.ToListAsync();
             ViewData["FitnessCenterId"] = new SelectList(fitnessCenters, "Id", "Name");
 
@@ -301,6 +314,7 @@ namespace FitnessCenter.Controllers
 
             if (availability == null)
             {
+                // Varsayılan olarak boş döndür (veya demo için default saatler eklenebilir)
                 return Json(new List<object>());
             }
 
@@ -328,7 +342,7 @@ namespace FitnessCenter.Controllers
                         Value = startTime.ToString(@"hh\:mm")
                     });
                 }
-                startTime = startTime.Add(TimeSpan.FromMinutes(30));
+                startTime = startTime.Add(TimeSpan.FromMinutes(60)); // 1 saatlik aralıklar
             }
 
             return Json(timeSlots);
@@ -391,4 +405,3 @@ namespace FitnessCenter.Controllers
         }
     }
 }
-
