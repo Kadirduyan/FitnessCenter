@@ -7,7 +7,6 @@ namespace FitnessCenter.Models
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Üye gereklidir.")]
         [Display(Name = "Üye")]
         public string MemberId { get; set; } = string.Empty;
 
@@ -34,6 +33,27 @@ namespace FitnessCenter.Models
 
         [Display(Name = "Notlar")]
         public string? Notes { get; set; }
+
+        // Kart Bilgileri
+        [Required(ErrorMessage = "Kart sahibi adı gereklidir.")]
+        [Display(Name = "Kart Sahibi Adı")]
+        [StringLength(100, ErrorMessage = "Kart sahibi adı en fazla 100 karakter olabilir.")]
+        public string CardHolderName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Kart numarası gereklidir.")]
+        [Display(Name = "Kart Numarası")]
+        [RegularExpression(@"^\d{16}$", ErrorMessage = "Kart numarası 16 haneli olmalıdır.")]
+        public string CardNumber { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Son kullanma tarihi gereklidir.")]
+        [Display(Name = "Son Kullanma Tarihi (AA/YY)")]
+        [RegularExpression(@"^(0[1-9]|1[0-2])\/\d{2}$", ErrorMessage = "Geçerli bir tarih formatı girin (örn: 12/25).")]
+        public string CardExpiryDate { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "CVV kodu gereklidir.")]
+        [Display(Name = "CVV Kodu")]
+        [RegularExpression(@"^\d{3,4}$", ErrorMessage = "CVV kodu 3-4 haneli olmalıdır.")]
+        public string CardCVV { get; set; } = string.Empty;
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? UpdatedAt { get; set; }

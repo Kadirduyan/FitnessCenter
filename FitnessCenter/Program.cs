@@ -104,6 +104,312 @@ async Task SeedDataAsync(WebApplication app)
                 await userManager.AddToRoleAsync(adminUser, "Admin");
             }
         }
+
+        // Seed Fitness Center
+        if (!context.FitnessCenters.Any())
+        {
+            var fitnessCenter = new FitnessCenter.Models.FitnessCenterModel
+            {
+                Name = "FRED Fitness İstanbul",
+                Description = "Türkiye'nin ilk tam ölçekli yapay zeka destekli spor salonu. Teknolojiyi kullanarak kişiselleştirilmiş fitness ve sağlığı uygun fiyatlı hale getiriyoruz.",
+                Address = "İstanbul, Türkiye",
+                Phone = "(555) 123-4567",
+                Email = "info@fredfitness.com",
+                OpenTime = new TimeSpan(5, 0, 0), // 05:00
+                CloseTime = new TimeSpan(22, 0, 0), // 22:00
+                CreatedAt = DateTime.Now
+            };
+            context.FitnessCenters.Add(fitnessCenter);
+            await context.SaveChangesAsync();
+
+            // Seed Services
+            var servicesList = new List<FitnessCenter.Models.Service>
+            {
+                new FitnessCenter.Models.Service { Name = "Kişisel Antrenman", Description = "1-1 özel antrenman seansı", ServiceType = FitnessCenter.Models.ServiceType.PersonalTraining, DurationMinutes = 60, Price = 150, FitnessCenterId = fitnessCenter.Id, CreatedAt = DateTime.Now },
+                new FitnessCenter.Models.Service { Name = "Grup Fitness", Description = "Grup halinde yapılan fitness antrenmanı", ServiceType = FitnessCenter.Models.ServiceType.Fitness, DurationMinutes = 45, Price = 80, FitnessCenterId = fitnessCenter.Id, CreatedAt = DateTime.Now },
+                new FitnessCenter.Models.Service { Name = "Yoga", Description = "Rahatlatıcı yoga seansı", ServiceType = FitnessCenter.Models.ServiceType.Yoga, DurationMinutes = 60, Price = 100, FitnessCenterId = fitnessCenter.Id, CreatedAt = DateTime.Now },
+                new FitnessCenter.Models.Service { Name = "Pilates", Description = "Kore ve esneklik geliştiren pilates dersi", ServiceType = FitnessCenter.Models.ServiceType.Pilates, DurationMinutes = 50, Price = 90, FitnessCenterId = fitnessCenter.Id, CreatedAt = DateTime.Now },
+                new FitnessCenter.Models.Service { Name = "Kardiyo Antrenmanı", Description = "Kalp ve damar sağlığı için kardiyo egzersizleri", ServiceType = FitnessCenter.Models.ServiceType.Cardio, DurationMinutes = 45, Price = 70, FitnessCenterId = fitnessCenter.Id, CreatedAt = DateTime.Now },
+                new FitnessCenter.Models.Service { Name = "Güç Antrenmanı", Description = "Kas geliştirme ve güç artışı odaklı antrenman", ServiceType = FitnessCenter.Models.ServiceType.Strength, DurationMinutes = 60, Price = 120, FitnessCenterId = fitnessCenter.Id, CreatedAt = DateTime.Now },
+                new FitnessCenter.Models.Service { Name = "CrossFit", Description = "Yoğun ve çok yönlü kondisyon antrenmanı", ServiceType = FitnessCenter.Models.ServiceType.CrossFit, DurationMinutes = 60, Price = 130, FitnessCenterId = fitnessCenter.Id, CreatedAt = DateTime.Now },
+                new FitnessCenter.Models.Service { Name = "Zumba", Description = "Eğlenceli dans temelli fitness", ServiceType = FitnessCenter.Models.ServiceType.Zumba, DurationMinutes = 45, Price = 85, FitnessCenterId = fitnessCenter.Id, CreatedAt = DateTime.Now },
+                new FitnessCenter.Models.Service { Name = "Dövüş Sanatları", Description = "Kendine güven ve fitness için dövüş sanatları", ServiceType = FitnessCenter.Models.ServiceType.MartialArts, DurationMinutes = 60, Price = 110, FitnessCenterId = fitnessCenter.Id, CreatedAt = DateTime.Now },
+                new FitnessCenter.Models.Service { Name = "Spinning", Description = "Bisiklet üzerinde yüksek yoğunluklu kardiyo", ServiceType = FitnessCenter.Models.ServiceType.Spinning, DurationMinutes = 45, Price = 75, FitnessCenterId = fitnessCenter.Id, CreatedAt = DateTime.Now }
+            };
+            context.Services.AddRange(servicesList);
+            await context.SaveChangesAsync();
+
+            // Seed Trainers
+            var trainers = new List<FitnessCenter.Models.Trainer>
+            {
+                new FitnessCenter.Models.Trainer
+                {
+                    FirstName = "Ahmet",
+                    LastName = "Yılmaz",
+                    Email = "ahmet.yilmaz@fredfitness.com",
+                    Phone = "(555) 111-1111",
+                    Specializations = "Güç Antrenmanı, Kas Geliştirme, Kişisel Antrenman",
+                    Description = "10 yıllık deneyimli kişisel antrenör. IFBB sertifikalı. Kas geliştirme ve güç antrenmanı uzmanı.",
+                    FitnessCenterId = fitnessCenter.Id,
+                    IsActive = true,
+                    CreatedAt = DateTime.Now
+                },
+                new FitnessCenter.Models.Trainer
+                {
+                    FirstName = "Mehmet",
+                    LastName = "Kaya",
+                    Email = "mehmet.kaya@fredfitness.com",
+                    Phone = "(555) 222-2222",
+                    Specializations = "Kilo Verme, Kardiyo, Yağ Yakımı",
+                    Description = "Kilo verme ve kardiyo uzmanı. Beslenme danışmanlığı sertifikası var. Motivasyonel yaklaşımı ile bilinir.",
+                    FitnessCenterId = fitnessCenter.Id,
+                    IsActive = true,
+                    CreatedAt = DateTime.Now
+                },
+                new FitnessCenter.Models.Trainer
+                {
+                    FirstName = "Merve",
+                    LastName = "Öztürk",
+                    Email = "merve.ozturk@fredfitness.com",
+                    Phone = "(555) 333-3333",
+                    Specializations = "Yoga, Pilates, Esneklik",
+                    Description = "Yoga ve pilates eğitmeni. Rahatlatıcı ve huzurlu dersleriyle bilinir. Meditasyon uzmanı.",
+                    FitnessCenterId = fitnessCenter.Id,
+                    IsActive = true,
+                    CreatedAt = DateTime.Now
+                },
+                new FitnessCenter.Models.Trainer
+                {
+                    FirstName = "Burak",
+                    LastName = "Demir",
+                    Email = "burak.demir@fredfitness.com",
+                    Phone = "(555) 444-4444",
+                    Specializations = "CrossFit, Fonksiyonel Antrenman, Kondisyon",
+                    Description = "CrossFit Level 2 koç sertifikası. Yoğun ve etkili antrenman programları hazırlar.",
+                    FitnessCenterId = fitnessCenter.Id,
+                    IsActive = true,
+                    CreatedAt = DateTime.Now
+                },
+                new FitnessCenter.Models.Trainer
+                {
+                    FirstName = "Selin",
+                    LastName = "Aydın",
+                    Email = "selin.aydin@fredfitness.com",
+                    Phone = "(555) 555-5555",
+                    Specializations = "Zumba, Dans, Eğlence",
+                    Description = "Zumba eğitmeni. Eğlenceli ve enerjik dersleriyle motivasyon sağlar.",
+                    FitnessCenterId = fitnessCenter.Id,
+                    IsActive = true,
+                    CreatedAt = DateTime.Now
+                },
+                new FitnessCenter.Models.Trainer
+                {
+                    FirstName = "Can",
+                    LastName = "Şahin",
+                    Email = "can.sahin@fredfitness.com",
+                    Phone = "(555) 666-6666",
+                    Specializations = "Dövüş Sanatları, Kendine Güven, Fitness",
+                    Description = "Karate ve kick boks uzmanı. Disiplin ve kendine güven geliştirir.",
+                    FitnessCenterId = fitnessCenter.Id,
+                    IsActive = true,
+                    CreatedAt = DateTime.Now
+                },
+                new FitnessCenter.Models.Trainer
+                {
+                    FirstName = "Eda",
+                    LastName = "Yıldız",
+                    Email = "eda.yildiz@fredfitness.com",
+                    Phone = "(555) 777-7777",
+                    Specializations = "Pilates, Reformer, Kadın Fitness",
+                    Description = "Pilates reformer uzmanı. Kadınların özel ihtiyaçlarına odaklanır.",
+                    FitnessCenterId = fitnessCenter.Id,
+                    IsActive = true,
+                    CreatedAt = DateTime.Now
+                },
+                new FitnessCenter.Models.Trainer
+                {
+                    FirstName = "Zafer",
+                    LastName = "Koç",
+                    Email = "zafer.koc@fredfitness.com",
+                    Phone = "(555) 888-8888",
+                    Specializations = "Spinning, Kardiyo, Grup Dersleri",
+                    Description = "Spinning eğitmeni. Müzik ve ritim ile motive eden dersler verir.",
+                    FitnessCenterId = fitnessCenter.Id,
+                    IsActive = true,
+                    CreatedAt = DateTime.Now
+                },
+                new FitnessCenter.Models.Trainer
+                {
+                    FirstName = "Gamze",
+                    LastName = "Akın",
+                    Email = "gamze.akin@fredfitness.com",
+                    Phone = "(555) 999-9999",
+                    Specializations = "Yoga, Meditasyon, Rahatlama",
+                    Description = "Yoga Alliance 500 saat sertifikalı eğitmen. Ruh ve beden dengesi üzerine uzman.",
+                    FitnessCenterId = fitnessCenter.Id,
+                    IsActive = true,
+                    CreatedAt = DateTime.Now
+                },
+                new FitnessCenter.Models.Trainer
+                {
+                    FirstName = "Aras",
+                    LastName = "Tekin",
+                    Email = "aras.tekin@fredfitness.com",
+                    Phone = "(555) 000-0000",
+                    Specializations = "Kişisel Antrenman, Beslenme, Yaşam Koçluğu",
+                    Description = "Kişisel antrenör ve beslenme uzmanı. Bütünsel yaklaşım ile çalışır.",
+                    FitnessCenterId = fitnessCenter.Id,
+                    IsActive = true,
+                    CreatedAt = DateTime.Now
+                },
+                new FitnessCenter.Models.Trainer
+                {
+                    FirstName = "Rüzgar",
+                    LastName = "Özdemir",
+                    Email = "ruzgar.ozdemir@fredfitness.com",
+                    Phone = "(555) 111-2222",
+                    Specializations = "Güç Antrenmanı, Bodybuilding, Rekabet",
+                    Description = "Uluslararası bodybuilding yarışmalarında derece almış antrenör. Profesyonel düzeyde antrenman.",
+                    FitnessCenterId = fitnessCenter.Id,
+                    IsActive = true,
+                    CreatedAt = DateTime.Now
+                },
+                new FitnessCenter.Models.Trainer
+                {
+                    FirstName = "Sahra",
+                    LastName = "Çelik",
+                    Email = "sahra.celik@fredfitness.com",
+                    Phone = "(555) 333-4444",
+                    Specializations = "Kilo Yönetimi, Beslenme Danışmanlığı, Kadın Sağlığı",
+                    Description = "Diyetisyen ve fitness eğitmeni. Kadınların kilo yönetimi ve sağlık ihtiyaçlarına odaklanır.",
+                    FitnessCenterId = fitnessCenter.Id,
+                    IsActive = true,
+                    CreatedAt = DateTime.Now
+                }
+            };
+            context.Trainers.AddRange(trainers);
+            await context.SaveChangesAsync();
+
+            // Assign services to trainers
+            var personalTrainingService = servicesList.First(s => s.ServiceType == FitnessCenter.Models.ServiceType.PersonalTraining);
+            var fitnessService = servicesList.First(s => s.ServiceType == FitnessCenter.Models.ServiceType.Fitness);
+            var yogaService = servicesList.First(s => s.ServiceType == FitnessCenter.Models.ServiceType.Yoga);
+            var pilatesService = servicesList.First(s => s.ServiceType == FitnessCenter.Models.ServiceType.Pilates);
+            var cardioService = servicesList.First(s => s.ServiceType == FitnessCenter.Models.ServiceType.Cardio);
+            var strengthService = servicesList.First(s => s.ServiceType == FitnessCenter.Models.ServiceType.Strength);
+            var crossfitService = servicesList.First(s => s.ServiceType == FitnessCenter.Models.ServiceType.CrossFit);
+            var zumbaService = servicesList.First(s => s.ServiceType == FitnessCenter.Models.ServiceType.Zumba);
+            var martialArtsService = servicesList.First(s => s.ServiceType == FitnessCenter.Models.ServiceType.MartialArts);
+            var spinningService = servicesList.First(s => s.ServiceType == FitnessCenter.Models.ServiceType.Spinning);
+
+            // Ahmet Yılmaz - Güç antrenmanı uzmanı
+            var ahmet = trainers.First(t => t.FirstName == "Ahmet");
+            ahmet.Services.Add(personalTrainingService);
+            ahmet.Services.Add(strengthService);
+            ahmet.Services.Add(fitnessService);
+
+            // Mehmet Kaya - Kilo verme uzmanı
+            var mehmet = trainers.First(t => t.FirstName == "Mehmet");
+            mehmet.Services.Add(personalTrainingService);
+            mehmet.Services.Add(cardioService);
+            mehmet.Services.Add(fitnessService);
+
+            // Merve Öztürk - Yoga uzmanı
+            var merve = trainers.First(t => t.FirstName == "Merve");
+            merve.Services.Add(yogaService);
+            merve.Services.Add(pilatesService);
+
+            // Burak Demir - CrossFit uzmanı
+            var burak = trainers.First(t => t.FirstName == "Burak");
+            burak.Services.Add(crossfitService);
+            burak.Services.Add(fitnessService);
+            burak.Services.Add(personalTrainingService);
+
+            // Selin Aydın - Zumba uzmanı
+            var selin = trainers.First(t => t.FirstName == "Selin");
+            selin.Services.Add(zumbaService);
+            selin.Services.Add(cardioService);
+
+            // Can Şahin - Dövüş sanatları uzmanı
+            var can = trainers.First(t => t.FirstName == "Can");
+            can.Services.Add(martialArtsService);
+            can.Services.Add(fitnessService);
+
+            // Eda Yıldız - Pilates uzmanı
+            var eda = trainers.First(t => t.FirstName == "Eda");
+            eda.Services.Add(pilatesService);
+            eda.Services.Add(yogaService);
+
+            // Zafer Koç - Spinning uzmanı
+            var zafer = trainers.First(t => t.FirstName == "Zafer");
+            zafer.Services.Add(spinningService);
+            zafer.Services.Add(cardioService);
+
+            // Gamze Akın - Yoga uzmanı
+            var gamze = trainers.First(t => t.FirstName == "Gamze");
+            gamze.Services.Add(yogaService);
+            gamze.Services.Add(pilatesService);
+
+            // Aras Tekin - Kişisel antrenör
+            var aras = trainers.First(t => t.FirstName == "Aras");
+            aras.Services.Add(personalTrainingService);
+            aras.Services.Add(fitnessService);
+            aras.Services.Add(strengthService);
+
+            // Rüzgar Özdemir - Bodybuilding uzmanı
+            var ruzgar = trainers.First(t => t.FirstName == "Rüzgar");
+            ruzgar.Services.Add(strengthService);
+            ruzgar.Services.Add(personalTrainingService);
+            ruzgar.Services.Add(fitnessService);
+
+            // Sahra Çelik - Kilo yönetimi uzmanı
+            var sahra = trainers.First(t => t.FirstName == "Sahra");
+            sahra.Services.Add(personalTrainingService);
+            sahra.Services.Add(cardioService);
+            sahra.Services.Add(fitnessService);
+
+            await context.SaveChangesAsync();
+
+            // Seed Trainer Availabilities
+            var availabilities = new List<FitnessCenter.Models.TrainerAvailability>();
+
+            // Pazartesi- Cuma: 06:00-22:00, Cumartesi: 08:00-20:00, Pazar: 10:00-18:00
+            foreach (var trainer in trainers)
+            {
+                // Pazartesi - Cuma
+                for (int day = 1; day <= 5; day++)
+                {
+                    availabilities.Add(new FitnessCenter.Models.TrainerAvailability
+                    {
+                        TrainerId = trainer.Id,
+                        DayOfWeek = (DayOfWeek)day,
+                        StartTime = new TimeSpan(6, 0, 0),
+                        EndTime = new TimeSpan(22, 0, 0)
+                    });
+                }
+
+                // Cumartesi
+                availabilities.Add(new FitnessCenter.Models.TrainerAvailability
+                {
+                    TrainerId = trainer.Id,
+                    DayOfWeek = DayOfWeek.Saturday,
+                    StartTime = new TimeSpan(8, 0, 0),
+                    EndTime = new TimeSpan(20, 0, 0)
+                });
+
+                // Pazar
+                availabilities.Add(new FitnessCenter.Models.TrainerAvailability
+                {
+                    TrainerId = trainer.Id,
+                    DayOfWeek = DayOfWeek.Sunday,
+                    StartTime = new TimeSpan(10, 0, 0),
+                    EndTime = new TimeSpan(18, 0, 0)
+                });
+            }
+
+            context.TrainerAvailabilities.AddRange(availabilities);
+            await context.SaveChangesAsync();
+        }
     }
     catch (Exception ex)
     {

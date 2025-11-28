@@ -77,71 +77,232 @@ namespace FitnessCenter.Controllers
         }
 
         // GET: Appointments/Create
-        // GÜNCELLENDİ: trainerId parametresi eklendi
+        // GÜNCELLENDİ: trainerId parametresi ile antrenör takvimi gösterimi
         public async Task<IActionResult> Create(int? trainerId)
         {
-            // Vitrinden "Randevu Al" butonuna basılarak gelindiyse
-            if (trainerId.HasValue)
+            if (!trainerId.HasValue)
             {
-                var trainer = await _context.Trainers.FindAsync(trainerId);
-                if (trainer != null)
-                {
-                    // View'a otomatik seçim verilerini gönderiyoruz
-                    ViewBag.SelectedTrainerId = trainerId;
-                    ViewBag.SelectedFitnessCenterId = trainer.FitnessCenterId;
-                }
+                // Trainer seçilmemişse, genel randevu alma sayfasına yönlendir
+                return RedirectToAction("List", "Trainers");
             }
 
-            var fitnessCenters = await _context.FitnessCenters.ToListAsync();
-            ViewData["FitnessCenterId"] = new SelectList(fitnessCenters, "Id", "Name");
+            var trainer = await _context.Trainers
+                .Include(t => t.FitnessCenter)
+                .Include(t => t.Services)
+                .FirstOrDefaultAsync(t => t.Id == trainerId.Value);
 
-            return View();
+            if (trainer == null || !trainer.IsActive)
+            {
+                TempData["ErrorMessage"] = "Seçilen antrenör bulunamadı veya aktif değil.";
+                return RedirectToAction("List", "Trainers");
+            }
+
+            // View'a trainer bilgilerini gönder
+            ViewBag.Trainer = trainer;
+            ViewBag.SelectedTrainerId = trainerId;
+            ViewBag.Services = trainer.Services.Where(s => s.FitnessCenterId == trainer.FitnessCenterId).ToList();
+
+            var appointment = new Appointment
+            {
+                TrainerId = trainerId.Value,
+                AppointmentDate = DateTime.Today.AddDays(1) // Default olarak yarın
+            };
+
+            return View(appointment);
         }
 
         // POST: Appointments/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TrainerId,ServiceId,AppointmentDate,AppointmentTime,Notes")] Appointment appointment)
+        public async Task<IActionResult> Create([Bind("TrainerId,ServiceId,AppointmentDate,AppointmentTime,Notes,CardHolderName,CardNumber,CardExpiryDate,CardCVV")] Appointment appointment)
         {
-            if (ModelState.IsValid)
+            // Debug: Gelen verileri logla
+            Console.WriteLine($"=== RANDEVU ALMA BAŞLATILDI ===");
+            Console.WriteLine($"TrainerId: {appointment.TrainerId}");
+            Console.WriteLine($"ServiceId: {appointment.ServiceId}");
+            Console.WriteLine($"AppointmentDate: {appointment.AppointmentDate}");
+            Console.WriteLine($"AppointmentTime: {appointment.AppointmentTime}");
+            Console.WriteLine($"Notes: {appointment.Notes}");
+            Console.WriteLine($"User Authenticated: {User.Identity?.IsAuthenticated}");
+            Console.WriteLine($"User Name: {User.Identity?.Name}");
+
+            // Debug: Kullanıcı giriş kontrolü
+            if (!User.Identity!.IsAuthenticated)
             {
-                var user = await _userManager.GetUserAsync(User);
-                appointment.MemberId = user!.Id;
-                appointment.Status = AppointmentStatus.Pending;
-                appointment.CreatedAt = DateTime.Now;
-
-                // Check if trainer is available at this time
-                var isAvailable = await IsTrainerAvailable(appointment.TrainerId, appointment.AppointmentDate, appointment.AppointmentTime);
-                if (!isAvailable)
-                {
-                    ModelState.AddModelError("", "Seçilen saatte antrenör müsait değil veya başka bir randevu var.");
-                    await PopulateCreateViewData(appointment.TrainerId, appointment.ServiceId);
-                    return View(appointment);
-                }
-
-                // Check if there's a conflicting appointment
-                var conflictingAppointment = await _context.Appointments
-                    .Where(a => a.TrainerId == appointment.TrainerId
-                        && a.AppointmentDate.Date == appointment.AppointmentDate.Date
-                        && a.AppointmentTime == appointment.AppointmentTime
-                        && a.Status != AppointmentStatus.Cancelled
-                        && a.Status != AppointmentStatus.Rejected)
-                    .FirstOrDefaultAsync();
-
-                if (conflictingAppointment != null)
-                {
-                    ModelState.AddModelError("", "Bu saatte başka bir randevu bulunmaktadır.");
-                    await PopulateCreateViewData(appointment.TrainerId, appointment.ServiceId);
-                    return View(appointment);
-                }
-
-                _context.Add(appointment);
-                await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Randevunuz başarıyla oluşturuldu. Onay bekleniyor.";
-                return RedirectToAction(nameof(Index));
+                Console.WriteLine("HATA: Kullanıcı giriş yapmamış!");
+                ModelState.AddModelError("", "Randevu almak için giriş yapmanız gerekir.");
+                await PopulateCreateViewData(appointment.TrainerId, appointment.ServiceId);
+                return View(appointment);
             }
 
-            await PopulateCreateViewData(appointment.TrainerId, appointment.ServiceId);
+            // Debug: ModelState hatalarını kontrol et
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                Console.WriteLine($"ModelState Hataları: {string.Join(", ", errors)}");
+                ModelState.AddModelError("", "Form verileri geçersiz: " + string.Join(", ", errors));
+                await PopulateCreateViewData(appointment.TrainerId, appointment.ServiceId);
+                return View(appointment);
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                Console.WriteLine("HATA: Kullanıcı bulunamadı!");
+                ModelState.AddModelError("", "Kullanıcı bilgileri alınamadı. Lütfen tekrar giriş yapın.");
+                await PopulateCreateViewData(appointment.TrainerId, appointment.ServiceId);
+                return View(appointment);
+            }
+
+            Console.WriteLine($"Kullanıcı bulundu: {user.Id} - {user.FirstName} {user.LastName}");
+
+            // Form verilerini doğrula
+            if (appointment.TrainerId == 0)
+            {
+                Console.WriteLine("HATA: TrainerId 0!");
+                ModelState.AddModelError("", "Antrenör seçilmedi.");
+                await PopulateCreateViewData(appointment.TrainerId, appointment.ServiceId);
+                return View(appointment);
+            }
+
+            if (appointment.ServiceId == 0)
+            {
+                Console.WriteLine("HATA: ServiceId 0!");
+                ModelState.AddModelError("", "Hizmet seçilmedi.");
+                await PopulateCreateViewData(appointment.TrainerId, appointment.ServiceId);
+                return View(appointment);
+            }
+
+            if (appointment.AppointmentDate == default(DateTime))
+            {
+                Console.WriteLine("HATA: AppointmentDate boş!");
+                ModelState.AddModelError("", "Tarih seçilmedi.");
+                await PopulateCreateViewData(appointment.TrainerId, appointment.ServiceId);
+                return View(appointment);
+            }
+
+            if (appointment.AppointmentTime == default(TimeSpan))
+            {
+                Console.WriteLine("HATA: AppointmentTime boş!");
+                ModelState.AddModelError("", "Saat seçilmedi.");
+                await PopulateCreateViewData(appointment.TrainerId, appointment.ServiceId);
+                return View(appointment);
+            }
+
+            // Veritabanında trainer ve service var mı kontrol et
+            var trainer = await _context.Trainers.FindAsync(appointment.TrainerId);
+            if (trainer == null)
+            {
+                Console.WriteLine($"HATA: Trainer {appointment.TrainerId} bulunamadı!");
+                ModelState.AddModelError("", "Seçilen antrenör bulunamadı.");
+                await PopulateCreateViewData(appointment.TrainerId, appointment.ServiceId);
+                return View(appointment);
+            }
+
+            var service = await _context.Services.FindAsync(appointment.ServiceId);
+            if (service == null)
+            {
+                Console.WriteLine($"HATA: Service {appointment.ServiceId} bulunamadı!");
+                ModelState.AddModelError("", "Seçilen hizmet bulunamadı.");
+                await PopulateCreateViewData(appointment.TrainerId, appointment.ServiceId);
+                return View(appointment);
+            }
+
+            Console.WriteLine($"Trainer: {trainer.FullName}, Service: {service.Name}");
+
+            appointment.MemberId = user.Id;
+            appointment.Status = AppointmentStatus.Pending;
+            appointment.CreatedAt = DateTime.Now;
+
+            // Antrenör müsaitlik kontrolü
+            var isAvailable = await IsTrainerAvailable(appointment.TrainerId, appointment.AppointmentDate, appointment.AppointmentTime);
+            if (!isAvailable)
+            {
+                TempData["ErrorMessage"] = "Seçilen saatte antrenör müsait değil.";
+                await PopulateCreateViewData(appointment.TrainerId, appointment.ServiceId);
+                return View(appointment);
+            }
+
+            // Aynı gün aynı antrenör kontrolü
+            var existingAppointmentForDay = await _context.Appointments
+                .AnyAsync(a => a.MemberId == user.Id
+                    && a.TrainerId == appointment.TrainerId
+                    && a.AppointmentDate.Date == appointment.AppointmentDate.Date
+                    && a.Status != AppointmentStatus.Cancelled
+                    && a.Status != AppointmentStatus.Rejected);
+
+            if (existingAppointmentForDay)
+            {
+                TempData["ErrorMessage"] = "Bu antrenörden aynı gün içinde sadece bir randevu alabilirsiniz.";
+                await PopulateCreateViewData(appointment.TrainerId, appointment.ServiceId);
+                return View(appointment);
+            }
+
+            // Saat çakışma kontrolü
+            var conflictingAppointment = await _context.Appointments
+                .AnyAsync(a => a.TrainerId == appointment.TrainerId
+                    && a.AppointmentDate.Date == appointment.AppointmentDate.Date
+                    && a.AppointmentTime == appointment.AppointmentTime
+                    && a.Status != AppointmentStatus.Cancelled
+                    && a.Status != AppointmentStatus.Rejected);
+
+            if (conflictingAppointment)
+            {
+                TempData["ErrorMessage"] = "Bu saatte başka bir randevu bulunmaktadır.";
+                await PopulateCreateViewData(appointment.TrainerId, appointment.ServiceId);
+                return View(appointment);
+            }
+
+            try
+            {
+                _context.Add(appointment);
+                await _context.SaveChangesAsync();
+
+                // Kaydedildiğini doğrula
+                var savedAppointment = await _context.Appointments.FindAsync(appointment.Id);
+                if (savedAppointment == null)
+                {
+                    TempData["ErrorMessage"] = "Randevu kaydedilemedi. Lütfen tekrar deneyin.";
+                    await PopulateCreateViewData(appointment.TrainerId, appointment.ServiceId);
+                    return View(appointment);
+                }
+
+                return RedirectToAction("Confirm", new { id = appointment.Id });
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Randevu kaydedilirken bir hata oluştu: {ex.Message}";
+                await PopulateCreateViewData(appointment.TrainerId, appointment.ServiceId);
+                return View(appointment);
+            }
+        }
+
+        // GET: Appointments/Confirm/5
+        public async Task<IActionResult> Confirm(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var appointment = await _context.Appointments
+                .Include(a => a.Member)
+                .Include(a => a.Trainer)
+                .Include(a => a.Service)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (appointment == null)
+            {
+                return NotFound();
+            }
+
+            // Check authorization
+            var user = await _userManager.GetUserAsync(User);
+            if (!User.IsInRole("Admin") && appointment.MemberId != user!.Id)
+            {
+                return Forbid();
+            }
+
             return View(appointment);
         }
 
@@ -247,12 +408,35 @@ namespace FitnessCenter.Controllers
                     return Forbid();
                 }
 
+                // Admin değilse, randevu saati geçmemiş ve son 24 saat içinde alınmış olmalı
+                if (!User.IsInRole("Admin"))
+                {
+                    var now = DateTime.Now;
+                    var appointmentDateTime = appointment.AppointmentDate.Date + appointment.AppointmentTime;
+
+                    // Randevu saati geçmişse iptal edilemez
+                    if (appointmentDateTime <= now)
+                    {
+                        TempData["ErrorMessage"] = "Geçmiş tarihli randevular iptal edilemez.";
+                        return RedirectToAction(nameof(Index));
+                    }
+
+                    // Randevu alındıktan 24 saat geçmişse iptal edilemez
+                    var timeSinceCreated = now - appointment.CreatedAt;
+                    if (timeSinceCreated.TotalHours > 24)
+                    {
+                        TempData["ErrorMessage"] = "Randevu alındıktan 24 saat sonra iptal edilemez.";
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+
                 appointment.Status = AppointmentStatus.Cancelled;
                 appointment.UpdatedAt = DateTime.Now;
                 _context.Update(appointment);
             }
 
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Randevu başarıyla iptal edildi.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -373,29 +557,37 @@ namespace FitnessCenter.Controllers
 
         private async Task PopulateCreateViewData(int? trainerId = null, int? serviceId = null)
         {
-            var fitnessCenters = await _context.FitnessCenters.ToListAsync();
-            ViewData["FitnessCenterId"] = new SelectList(fitnessCenters, "Id", "Name");
-
             if (trainerId.HasValue)
             {
                 var trainer = await _context.Trainers
+                    .Include(t => t.FitnessCenter)
                     .Include(t => t.Services)
                     .FirstOrDefaultAsync(t => t.Id == trainerId.Value);
 
                 if (trainer != null)
                 {
-                    ViewData["TrainerId"] = new SelectList(
-                        new[] { trainer },
-                        "Id",
-                        "FullName",
-                        trainerId);
-
-                    ViewData["ServiceId"] = new SelectList(
-                        trainer.Services,
-                        "Id",
-                        "Name",
-                        serviceId);
+                    ViewBag.Trainer = trainer;
+                    ViewBag.SelectedTrainerId = trainerId;
+                    ViewBag.Services = trainer.Services.Where(s => s.FitnessCenterId == trainer.FitnessCenterId).ToList();
                 }
+            }
+        }
+
+        // Debug: Veritabanı bağlantısını test etmek için
+        [HttpGet]
+        public async Task<IActionResult> TestDb()
+        {
+            try
+            {
+                var count = await _context.Appointments.CountAsync();
+                var trainers = await _context.Trainers.CountAsync();
+                var services = await _context.Services.CountAsync();
+
+                return Content($"Veritabanı bağlantısı çalışıyor. Randevular: {count}, Antrenörler: {trainers}, Hizmetler: {services}");
+            }
+            catch (Exception ex)
+            {
+                return Content($"Veritabanı hatası: {ex.Message}");
             }
         }
 

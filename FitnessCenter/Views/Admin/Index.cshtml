@@ -36,6 +36,10 @@
                 <div class="card-body">
                     <h5 class="card-title">Randevular</h5>
                     <h2 class="mb-0">@stats?.Appointments</h2>
+                    @if (stats?.PendingAppointments > 0)
+                    {
+                        <small class="text-warning-emphasis">@stats?.PendingAppointments bekliyor</small>
+                    }
                 </div>
             </div>
         </div>
@@ -47,10 +51,16 @@
                 <div class="card-body">
                     <h5 class="card-title">Hızlı İşlemler</h5>
                     <div class="d-grid gap-2">
+                        <a asp-controller="Admin" asp-action="Appointments" class="btn btn-warning">
+                            Randevu Yönetimi
+                            @if (stats?.PendingAppointments > 0)
+                            {
+                                <span class="badge bg-danger ms-2">@stats?.PendingAppointments</span>
+                            }
+                        </a>
                         <a asp-controller="FitnessCenters" asp-action="Index" class="btn btn-primary">Spor Salonları Yönetimi</a>
                         <a asp-controller="Trainers" asp-action="Index" class="btn btn-success">Antrenör Yönetimi</a>
                         <a asp-controller="Services" asp-action="Index" class="btn btn-info">Hizmet Yönetimi</a>
-                        <a asp-controller="Appointments" asp-action="Index" class="btn btn-warning">Randevu Yönetimi</a>
                     </div>
                 </div>
             </div>

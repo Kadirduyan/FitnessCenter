@@ -1,0 +1,297 @@
+@model FitnessCenter.Models.Appointment
+@{
+    ViewData["Title"] = "Randevu Onayı";
+}
+
+<div class="container my-5">
+    <!-- Başarı Mesajı -->
+    <div class="text-center mb-5">
+        <div class="success-icon mb-4">
+            <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+        </div>
+        <h1 class="display-5 fw-bold text-success mb-3">Randevunuz Alınmıştır!</h1>
+        <p class="lead text-muted">Bizi tercih ettiğiniz için teşekkür ederiz. Randevunuzu aşağıda görebilirsiniz.</p>
+    </div>
+
+    <!-- Randevu Kağıdı -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="appointment-card shadow-lg border-0 rounded-3 overflow-hidden">
+                <!-- Üst Başlık -->
+                <div class="card-header bg-gradient-primary text-white text-center py-4">
+                    <h2 class="mb-1">RANDEVU KARTI</h2>
+                    <p class="mb-0 opacity-75">FRED Fitness - Profesyonel Antrenman</p>
+                </div>
+
+                <!-- Randevu Detayları -->
+                <div class="card-body p-4">
+                    <div class="row">
+                        <!-- Sol Kolon - Üye Bilgileri -->
+                        <div class="col-md-6">
+                            <div class="info-section mb-4">
+                                <h5 class="text-primary mb-3">
+                                    <i class="bi bi-person-circle me-2"></i>Üye Bilgileri
+                                </h5>
+                                <div class="info-item">
+                                    <strong>Ad Soyad:</strong> @Model.Member?.FirstName @Model.Member?.LastName
+                                </div>
+                                <div class="info-item">
+                                    <strong>E-posta:</strong> @Model.Member?.Email
+                                </div>
+                                @if (!string.IsNullOrEmpty(Model.Member?.PhoneNumber))
+                                {
+                                    <div class="info-item">
+                                        <strong>Telefon:</strong> @Model.Member?.PhoneNumber
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Sağ Kolon - Antrenör Bilgileri -->
+                        <div class="col-md-6">
+                            <div class="info-section mb-4">
+                                <h5 class="text-primary mb-3">
+                                    <i class="bi bi-person-badge me-2"></i>Antrenör Bilgileri
+                                </h5>
+                                <div class="info-item">
+                                    <strong>Antrenör:</strong> @Model.Trainer?.FullName
+                                </div>
+                                <div class="info-item">
+                                    <strong>Uzmanlık:</strong> @Model.Trainer?.Specializations
+                                </div>
+                                <div class="info-item">
+                                    <strong>Salon:</strong> @Model.Trainer?.FitnessCenter?.Name
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hizmet Bilgileri -->
+                    <div class="service-section mb-4">
+                        <h5 class="text-primary mb-3">
+                            <i class="bi bi-tools me-2"></i>Hizmet Bilgileri
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="info-item">
+                                    <strong>Hizmet:</strong> @Model.Service?.Name
+                                </div>
+                                @if (!string.IsNullOrEmpty(Model.Service?.Description))
+                                {
+                                    <div class="info-item">
+                                        <strong>Açıklama:</strong> @Model.Service?.Description
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-md-4">
+                                <div class="info-item">
+                                    <strong>Süre:</strong> @Model.Service?.DurationMinutes dakika
+                                </div>
+                                <div class="info-item">
+                                    <strong>Ücret:</strong> ₺@Model.Service?.Price.ToString("N0")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Randevu Zamanı -->
+                    <div class="time-section mb-4">
+                        <h5 class="text-primary mb-3">
+                            <i class="bi bi-calendar-check me-2"></i>Randevu Zamanı
+                        </h5>
+                        <div class="appointment-time-card bg-light p-4 rounded-3 text-center">
+                            <div class="date-display mb-3">
+                                <div class="day-of-week text-primary fw-bold mb-2">
+                                    @Model.AppointmentDate.ToString("dddd", new System.Globalization.CultureInfo("tr-TR"))
+                                </div>
+                                <div class="date-number display-4 fw-bold text-dark mb-2">
+                                    @Model.AppointmentDate.ToString("dd")
+                                </div>
+                                <div class="month-year text-muted">
+                                    @Model.AppointmentDate.ToString("MMMM yyyy", new System.Globalization.CultureInfo("tr-TR"))
+                                </div>
+                            </div>
+                            <div class="time-display">
+                                <i class="bi bi-clock-fill text-primary me-2"></i>
+                                <span class="h3 fw-bold">@Model.AppointmentTime.ToString(@"hh\:mm")</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Durum -->
+                    <div class="status-section mb-4">
+                        <h5 class="text-primary mb-3">
+                            <i class="bi bi-info-circle me-2"></i>Durum
+                        </h5>
+                        <div class="d-flex align-items-center">
+                            @switch (Model.Status)
+                            {
+                                case AppointmentStatus.Pending:
+                                    <span class="badge bg-warning fs-6 px-3 py-2 me-2">
+                                        <i class="bi bi-hourglass-split me-1"></i>Beklemede
+                                    </span>
+                                    <small class="text-muted">Randevunuz onay beklemektedir.</small>
+                                    break;
+                                case AppointmentStatus.Approved:
+                                    <span class="badge bg-success fs-6 px-3 py-2 me-2">
+                                        <i class="bi bi-check-circle-fill me-1"></i>Onaylandı
+                                    </span>
+                                    <small class="text-muted">Randevunuz onaylanmıştır.</small>
+                                    break;
+                                case AppointmentStatus.Rejected:
+                                    <span class="badge bg-danger fs-6 px-3 py-2 me-2">
+                                        <i class="bi bi-x-circle-fill me-1"></i>Reddedildi
+                                    </span>
+                                    <small class="text-muted">Randevunuz reddedilmiştir.</small>
+                                    break;
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Kart Bilgileri -->
+                    <div class="card-section mb-4">
+                        <h5 class="text-primary mb-3">
+                            <i class="bi bi-credit-card me-2"></i>Kart Bilgileri
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="info-item">
+                                    <strong>Kart Sahibi:</strong> @Model.CardHolderName
+                                </div>
+                                <div class="info-item">
+                                    <strong>Kart Numarası:</strong> **** **** **** @(Model.CardNumber?.Length >= 4 ? Model.CardNumber.Substring(Model.CardNumber.Length - 4) : "")
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info-item">
+                                    <strong>Son Kullanma:</strong> @Model.CardExpiryDate
+                                </div>
+                                <div class="info-item">
+                                    <strong>CVV:</strong> ***
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notlar -->
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <div class="notes-section mb-4">
+                            <h5 class="text-primary mb-3">
+                                <i class="bi bi-sticky me-2"></i>Notlar
+                            </h5>
+                            <div class="notes-content bg-light p-3 rounded-3">
+                                @Model.Notes
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Randevu ID -->
+                    <div class="appointment-id text-center mb-4">
+                        <small class="text-muted">Randevu Numarası: <strong>#@Model.Id.ToString("D6")</strong></small>
+                    </div>
+                </div>
+
+                <!-- Alt Bilgi -->
+                <div class="card-footer bg-light text-center py-3">
+                    <p class="mb-1 text-muted small">
+                        <i class="bi bi-geo-alt-fill me-1"></i>
+                        @Model.Trainer?.FitnessCenter?.Address
+                    </p>
+                    <p class="mb-1 text-muted small">
+                        <i class="bi bi-telephone-fill me-1"></i>
+                        @Model.Trainer?.FitnessCenter?.Phone
+                    </p>
+                    <p class="mb-0 text-muted small">
+                        <i class="bi bi-envelope-fill me-1"></i>
+                        @Model.Trainer?.FitnessCenter?.Email
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aksiyon Butonları -->
+    <div class="text-center mt-5">
+        <a asp-action="Index" class="btn btn-primary btn-lg me-3">
+            <i class="bi bi-list me-2"></i>Diğer Randevularım
+        </a>
+        <a asp-controller="Trainers" asp-action="List" class="btn btn-outline-primary btn-lg">
+            <i class="bi bi-arrow-left me-2"></i>Yeni Randevu Al
+        </a>
+    </div>
+</div>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .appointment-card {
+        border: 2px solid #e9ecef !important;
+        transition: all 0.3s ease;
+    }
+
+    .appointment-card:hover {
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+        transform: translateY(-2px);
+    }
+
+    .info-item {
+        margin-bottom: 8px;
+        padding: 4px 0;
+        border-bottom: 1px solid #f8f9fa;
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+    }
+
+    .info-section {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        height: 100%;
+    }
+
+    .service-section, .time-section, .status-section, .notes-section {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    .appointment-time-card {
+        border: 2px solid #dee2e6 !important;
+    }
+
+    .date-display .day-of-week {
+        font-size: 1.2rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .date-display .month-year {
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .success-icon {
+        animation: bounceIn 1s ease-out;
+    }
+
+    @@keyframes bounceIn {
+        0% { transform: scale(0.3); opacity: 0; }
+        50% { transform: scale(1.05); }
+        70% { transform: scale(0.9); }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    .card-header {
+        border-bottom: none !important;
+    }
+
+    .card-footer {
+        border-top: 1px solid #dee2e6 !important;
+    }
+</style>
