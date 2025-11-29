@@ -30,6 +30,7 @@ namespace FitnessCenter.Controllers
             };
 
             ViewBag.Stats = stats;
+            ViewBag.IsAdminPanel = true;
             return View();
         }
 
@@ -113,6 +114,88 @@ namespace FitnessCenter.Controllers
 
             TempData["SuccessMessage"] = "Randevu tamamlandı olarak işaretlendi.";
             return RedirectToAction("Appointments");
+        }
+
+        // GET: Admin/Trainers - Antrenör Yönetimi
+        public async Task<IActionResult> Trainers()
+        {
+            var trainers = await _context.Trainers
+                .Include(t => t.FitnessCenter)
+                .Include(t => t.Services)
+                .OrderBy(t => t.FirstName)
+                .ToListAsync();
+
+            return View(trainers);
+        }
+
+        // GET: Admin/CreateTrainer
+        public async Task<IActionResult> CreateTrainer()
+        {
+            ViewBag.FitnessCenters = new SelectList(await _context.FitnessCenters.ToListAsync(), "Id", "Name");
+            ViewBag.Services = await _context.Services.ToListAsync();
+            return View();
+        }
+
+        // POST: Admin/CreateTrainer
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateTrainer(Trainer trainer, int[] selectedServices)
+        {
+            if (ModelState.IsValid)
+            {
+                trainer.CreatedAt = DateTime.Now;
+                _context.Trainers.Add(trainer);
+                await _context.SaveChangesAsync();
+
+                // Seçilen hizmetleri antrenöre ekle
+                if (selectedServices != null && selectedServices.Length > 0)
+                {
+                    foreach (var serviceId in selectedServices)
+                    {
+                        var service = await _context.Services.FindAsync(serviceId);
+                        if (service != null)
+                        {
+                            trainer.Services.Add(service);
+                        }
+                    }
+                    await _context.SaveChangesAsync();
+                }
+
+                TempData["SuccessMessage"] = "Antrenör başarıyla eklendi.";
+                return RedirectToAction("Trainers");
+            }
+
+            ViewBag.FitnessCenters = new SelectList(await _context.FitnessCenters.ToListAsync(), "Id", "Name");
+            ViewBag.Services = await _context.Services.ToListAsync();
+            return View(trainer);
+        }
+
+        // POST: Admin/DeleteTrainer/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteTrainer(int id)
+        {
+            var trainer = await _context.Trainers
+                .Include(t => t.Appointments)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (trainer == null)
+            {
+                return NotFound();
+            }
+
+            // Aktif randevuları kontrol et
+            if (trainer.Appointments.Any(a => a.Status == AppointmentStatus.Approved || a.Status == AppointmentStatus.Pending))
+            {
+                TempData["ErrorMessage"] = "Bu antrenörün aktif randevuları olduğu için silinemez.";
+                return RedirectToAction("Trainers");
+            }
+
+            _context.Trainers.Remove(trainer);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Antrenör başarıyla silindi.";
+            return RedirectToAction("Trainers");
         }
     }
 }

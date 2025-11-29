@@ -52,15 +52,21 @@
                     <h5 class="card-title">Hızlı İşlemler</h5>
                     <div class="d-grid gap-2">
                         <a asp-controller="Admin" asp-action="Appointments" class="btn btn-warning">
-                            Randevu Yönetimi
+                            <i class="bi bi-calendar-check me-2"></i>Randevu Yönetimi
                             @if (stats?.PendingAppointments > 0)
                             {
                                 <span class="badge bg-danger ms-2">@stats?.PendingAppointments</span>
                             }
                         </a>
-                        <a asp-controller="FitnessCenters" asp-action="Index" class="btn btn-primary">Spor Salonları Yönetimi</a>
-                        <a asp-controller="Trainers" asp-action="Index" class="btn btn-success">Antrenör Yönetimi</a>
-                        <a asp-controller="Services" asp-action="Index" class="btn btn-info">Hizmet Yönetimi</a>
+                        <a asp-controller="Admin" asp-action="Trainers" class="btn btn-success">
+                            <i class="bi bi-person-badge me-2"></i>Antrenör Yönetimi
+                        </a>
+                        <a asp-controller="FitnessCenters" asp-action="Index" class="btn btn-primary">
+                            <i class="bi bi-building me-2"></i>Spor Salonları
+                        </a>
+                        <a asp-controller="Services" asp-action="Index" class="btn btn-info">
+                            <i class="bi bi-tools me-2"></i>Hizmet Yönetimi
+                        </a>
                     </div>
                 </div>
             </div>

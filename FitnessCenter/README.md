@@ -88,7 +88,7 @@ FitnessCenter/
 
 ## 🎨 Tasarım
 
-Proje, modern ve kullanıcı dostu bir arayüze sahiptir. Tasarım [Fred Fitness](https://fredfitness.com/) web sitesinden ilham alınarak oluşturulmuştur.
+Proje, modern ve kullanıcı dostu bir arayüze sahiptir. Tasarım [Kadir Fitness](https://kadirfitness.com/) web sitesinden ilham alınarak oluşturulmuştur.
 
 ### Özellikler:
 - Responsive tasarım (Mobil uyumlu)

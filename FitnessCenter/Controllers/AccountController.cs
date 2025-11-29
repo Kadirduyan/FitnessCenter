@@ -83,6 +83,12 @@ namespace FitnessCenter.Controllers
 
                 if (result.Succeeded)
                 {
+                    // Admin kullanıcısı giriş yaptıysa admin paneline yönlendir
+                    if (await _userManager.IsInRoleAsync(await _userManager.FindByEmailAsync(model.Email), "Admin"))
+                    {
+                        return RedirectToAction("Index", "Admin");
+                    }
+
                     if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                     {
                         return Redirect(returnUrl);

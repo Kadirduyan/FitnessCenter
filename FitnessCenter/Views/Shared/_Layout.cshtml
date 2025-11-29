@@ -36,7 +36,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark main-navbar">
         <div class="container-fluid">
             <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                <span class="brand-name">FRED</span>
+                <span class="brand-name">KADIR</span>
                 <span class="brand-subtitle">FITNESS</span>
             </a>
             
@@ -59,15 +59,12 @@
                     <li class="nav-item">
                         <a class="nav-link" asp-area="" asp-controller="Trainers" asp-action="List">Antrenörler</a>
                     </li>
-                    
+
                     <li class="nav-item">
-                        <a class="nav-link" href="#press">Basın</a>
+                        <a class="nav-link" asp-area="" asp-controller="Membership" asp-action="Index">Üyelik</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#membership">Üyelik</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#locations">Lokasyonlar</a>
+                        <a class="nav-link" asp-controller="Locations" asp-action="Index">Lokasyon</a>
                     </li>
                     @if (User.Identity?.IsAuthenticated == true)
                     {
@@ -80,12 +77,29 @@
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Yönetim</a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">Panel</a></li>
-                                    <li><a class="dropdown-item" asp-controller="FitnessCenters" asp-action="Index">Salonlar</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Trainers" asp-action="Index">Antrenörler (Admin)</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Services" asp-action="Index">Hizmetler</a></li>
+                                <a class="nav-link dropdown-toggle text-warning fw-bold" href="#" role="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-shield-check me-1"></i>⚡ ADMIN PANELİ
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-lg">
+                                    <li><h6 class="dropdown-header bg-light">
+                                        <i class="bi bi-gear-fill me-2"></i>Yönetim Araçları
+                                    </h6></li>
+                                    <li><a class="dropdown-item fw-bold" asp-controller="Admin" asp-action="Index">
+                                        <i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><h6 class="dropdown-header">
+                                        <i class="bi bi-calendar-check me-2"></i>Randevu Yönetimi
+                                    </h6></li>
+                                    <li><a class="dropdown-item" asp-controller="Admin" asp-action="Appointments">
+                                        <i class="bi bi-calendar-event me-2"></i>Tüm Randevular</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><h6 class="dropdown-header">
+                                        <i class="bi bi-person-badge me-2"></i>Antrenör Yönetimi
+                                    </h6></li>
+                                    <li><a class="dropdown-item" asp-controller="Admin" asp-action="Trainers">
+                                        <i class="bi bi-list-ul me-2"></i>Antrenör Listesi</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Admin" asp-action="CreateTrainer">
+                                        <i class="bi bi-plus-circle me-2"></i>Yeni Antrenör Ekle</a></li>
                                 </ul>
                             </li>
                         }
@@ -127,22 +141,22 @@
         <div class="container py-5">
             <div class="row">
                 <div class="col-md-3 mb-4">
-                    <h5 class="footer-brand">FRED FITNESS®</h5>
+                    <h5 class="footer-brand">KADIR FITNESS®</h5>
                     <p class="footer-text">Türkiye'nin ilk tam ölçekli yapay zeka destekli spor salonu. Teknolojiyi kullanarak kişiselleştirilmiş fitness ve sağlığı uygun fiyatlı hale getiriyoruz.</p>
                 </div>
                 <div class="col-md-3 mb-4">
-                    <h6 class="footer-heading">FRED FITNESS®</h6>
+                    <h6 class="footer-heading">KADIR FITNESS®</h6>
                     <ul class="footer-links">
                         <li><a href="#">Fitness</a></li>
                         <li><a asp-controller="Trainers" asp-action="List">Antrenörler</a></li>
-                        <li><a href="#">Basın</a></li>
+                        <li><a asp-controller="Membership" asp-action="Index">Üyelik</a></li>
                     </ul>
                 </div>
                 <div class="col-md-3 mb-4">
                     <h6 class="footer-heading">Bilgi</h6>
                     <ul class="footer-links">
                         <li><a href="#">Ücretsiz Değerlendirme</a></li>
-                        <li><a href="#">Lokasyonlar</a></li>
+                        <li><a asp-controller="Locations" asp-action="Index">Lokasyon</a></li>
                         <li><a href="#">Üyelik</a></li>
                         <li><a href="#">Faturalama ve İptal</a></li>
                         <li><a href="#">Gizlilik Politikası</a></li>
@@ -160,7 +174,7 @@
             </div>
             <hr class="footer-divider">
             <div class="text-center">
-                <p class="footer-copyright">&copy; 2025 FRED FITNESS. Tüm hakları saklıdır.</p>
+                <p class="footer-copyright">&copy; 2025 KADIR FITNESS. Tüm hakları saklıdır.</p>
             </div>
         </div>
     </footer>

@@ -37,6 +37,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient();
+builder.Services.AddHttpClient<FitnessCenter.Services.GeminiService>();
 
 var app = builder.Build();
 
@@ -110,11 +111,11 @@ async Task SeedDataAsync(WebApplication app)
         {
             var fitnessCenter = new FitnessCenter.Models.FitnessCenterModel
             {
-                Name = "FRED Fitness İstanbul",
+                Name = "KADIR Fitness İstanbul",
                 Description = "Türkiye'nin ilk tam ölçekli yapay zeka destekli spor salonu. Teknolojiyi kullanarak kişiselleştirilmiş fitness ve sağlığı uygun fiyatlı hale getiriyoruz.",
                 Address = "İstanbul, Türkiye",
                 Phone = "(555) 123-4567",
-                Email = "info@fredfitness.com",
+                Email = "info@kadirfitness.com",
                 OpenTime = new TimeSpan(5, 0, 0), // 05:00
                 CloseTime = new TimeSpan(22, 0, 0), // 22:00
                 CreatedAt = DateTime.Now
@@ -146,7 +147,7 @@ async Task SeedDataAsync(WebApplication app)
                 {
                     FirstName = "Ahmet",
                     LastName = "Yılmaz",
-                    Email = "ahmet.yilmaz@fredfitness.com",
+                    Email = "ahmet.yilmaz@kadirfitness.com",
                     Phone = "(555) 111-1111",
                     Specializations = "Güç Antrenmanı, Kas Geliştirme, Kişisel Antrenman",
                     Description = "10 yıllık deneyimli kişisel antrenör. IFBB sertifikalı. Kas geliştirme ve güç antrenmanı uzmanı.",
@@ -158,7 +159,7 @@ async Task SeedDataAsync(WebApplication app)
                 {
                     FirstName = "Mehmet",
                     LastName = "Kaya",
-                    Email = "mehmet.kaya@fredfitness.com",
+                    Email = "mehmet.kaya@kadirfitness.com",
                     Phone = "(555) 222-2222",
                     Specializations = "Kilo Verme, Kardiyo, Yağ Yakımı",
                     Description = "Kilo verme ve kardiyo uzmanı. Beslenme danışmanlığı sertifikası var. Motivasyonel yaklaşımı ile bilinir.",
@@ -170,7 +171,7 @@ async Task SeedDataAsync(WebApplication app)
                 {
                     FirstName = "Merve",
                     LastName = "Öztürk",
-                    Email = "merve.ozturk@fredfitness.com",
+                    Email = "merve.ozturk@kadirfitness.com",
                     Phone = "(555) 333-3333",
                     Specializations = "Yoga, Pilates, Esneklik",
                     Description = "Yoga ve pilates eğitmeni. Rahatlatıcı ve huzurlu dersleriyle bilinir. Meditasyon uzmanı.",
@@ -182,7 +183,7 @@ async Task SeedDataAsync(WebApplication app)
                 {
                     FirstName = "Burak",
                     LastName = "Demir",
-                    Email = "burak.demir@fredfitness.com",
+                    Email = "burak.demir@kadirfitness.com",
                     Phone = "(555) 444-4444",
                     Specializations = "CrossFit, Fonksiyonel Antrenman, Kondisyon",
                     Description = "CrossFit Level 2 koç sertifikası. Yoğun ve etkili antrenman programları hazırlar.",
@@ -194,7 +195,7 @@ async Task SeedDataAsync(WebApplication app)
                 {
                     FirstName = "Selin",
                     LastName = "Aydın",
-                    Email = "selin.aydin@fredfitness.com",
+                    Email = "selin.aydin@kadirfitness.com",
                     Phone = "(555) 555-5555",
                     Specializations = "Zumba, Dans, Eğlence",
                     Description = "Zumba eğitmeni. Eğlenceli ve enerjik dersleriyle motivasyon sağlar.",
@@ -206,7 +207,7 @@ async Task SeedDataAsync(WebApplication app)
                 {
                     FirstName = "Can",
                     LastName = "Şahin",
-                    Email = "can.sahin@fredfitness.com",
+                    Email = "can.sahin@kadirfitness.com",
                     Phone = "(555) 666-6666",
                     Specializations = "Dövüş Sanatları, Kendine Güven, Fitness",
                     Description = "Karate ve kick boks uzmanı. Disiplin ve kendine güven geliştirir.",
@@ -218,7 +219,7 @@ async Task SeedDataAsync(WebApplication app)
                 {
                     FirstName = "Eda",
                     LastName = "Yıldız",
-                    Email = "eda.yildiz@fredfitness.com",
+                    Email = "eda.yildiz@kadirfitness.com",
                     Phone = "(555) 777-7777",
                     Specializations = "Pilates, Reformer, Kadın Fitness",
                     Description = "Pilates reformer uzmanı. Kadınların özel ihtiyaçlarına odaklanır.",
@@ -230,7 +231,7 @@ async Task SeedDataAsync(WebApplication app)
                 {
                     FirstName = "Zafer",
                     LastName = "Koç",
-                    Email = "zafer.koc@fredfitness.com",
+                    Email = "zafer.koc@kadirfitness.com",
                     Phone = "(555) 888-8888",
                     Specializations = "Spinning, Kardiyo, Grup Dersleri",
                     Description = "Spinning eğitmeni. Müzik ve ritim ile motive eden dersler verir.",
@@ -242,7 +243,7 @@ async Task SeedDataAsync(WebApplication app)
                 {
                     FirstName = "Gamze",
                     LastName = "Akın",
-                    Email = "gamze.akin@fredfitness.com",
+                    Email = "gamze.akin@kadirfitness.com",
                     Phone = "(555) 999-9999",
                     Specializations = "Yoga, Meditasyon, Rahatlama",
                     Description = "Yoga Alliance 500 saat sertifikalı eğitmen. Ruh ve beden dengesi üzerine uzman.",
@@ -254,7 +255,7 @@ async Task SeedDataAsync(WebApplication app)
                 {
                     FirstName = "Aras",
                     LastName = "Tekin",
-                    Email = "aras.tekin@fredfitness.com",
+                    Email = "aras.tekin@kadirfitness.com",
                     Phone = "(555) 000-0000",
                     Specializations = "Kişisel Antrenman, Beslenme, Yaşam Koçluğu",
                     Description = "Kişisel antrenör ve beslenme uzmanı. Bütünsel yaklaşım ile çalışır.",
@@ -266,7 +267,7 @@ async Task SeedDataAsync(WebApplication app)
                 {
                     FirstName = "Rüzgar",
                     LastName = "Özdemir",
-                    Email = "ruzgar.ozdemir@fredfitness.com",
+                    Email = "ruzgar.ozdemir@kadirfitness.com",
                     Phone = "(555) 111-2222",
                     Specializations = "Güç Antrenmanı, Bodybuilding, Rekabet",
                     Description = "Uluslararası bodybuilding yarışmalarında derece almış antrenör. Profesyonel düzeyde antrenman.",
@@ -278,7 +279,7 @@ async Task SeedDataAsync(WebApplication app)
                 {
                     FirstName = "Sahra",
                     LastName = "Çelik",
-                    Email = "sahra.celik@fredfitness.com",
+                    Email = "sahra.celik@kadirfitness.com",
                     Phone = "(555) 333-4444",
                     Specializations = "Kilo Yönetimi, Beslenme Danışmanlığı, Kadın Sağlığı",
                     Description = "Diyetisyen ve fitness eğitmeni. Kadınların kilo yönetimi ve sağlık ihtiyaçlarına odaklanır.",

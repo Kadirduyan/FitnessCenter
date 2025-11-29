@@ -1,5 +1,6 @@
 using FitnessCenter.Data;
 using FitnessCenter.Models;
+using FitnessCenter.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,17 +16,20 @@ namespace FitnessCenter.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
         private readonly HttpClient _httpClient;
+        private readonly GeminiService _geminiService;
 
         public AiController(
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
             IConfiguration configuration,
-            IHttpClientFactory httpClientFactory)
+            IHttpClientFactory httpClientFactory,
+            GeminiService geminiService)
         {
             _context = context;
             _userManager = userManager;
             _configuration = configuration;
             _httpClient = httpClientFactory.CreateClient();
+            _geminiService = geminiService;
         }
 
         public IActionResult Index()
@@ -34,7 +38,7 @@ namespace FitnessCenter.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetExerciseRecommendation([FromBody] ExerciseRecommendationRequest request)
+        public async Task<IActionResult> GetExerciseRecommendation([FromBody] ExerciseRecommendationRequest request, string aiProvider = "gemini")
         {
             try
             {
@@ -54,19 +58,38 @@ namespace FitnessCenter.Controllers
                 // Build prompt based on user input
                 var prompt = BuildExercisePrompt(request, user);
 
-                // Call OpenAI API
-                var response = await CallOpenAI(apiKey, prompt);
+                string response;
+                if (aiProvider == "gemini")
+                {
+                    // Gemini API kullan
+                    response = await _geminiService.GenerateTextResponse(prompt);
+                }
+                else
+                {
+                    // OpenAI API kullan
+                    var openAiKey = _configuration["OpenAI:ApiKey"];
+                    if (string.IsNullOrEmpty(openAiKey))
+                    {
+                        return BadRequest(new { error = "OpenAI API anahtarı yapılandırılmamış." });
+                    }
+                    response = await CallOpenAI(openAiKey, prompt);
+                }
 
                 return Ok(new { recommendation = response });
             }
             catch (Exception ex)
             {
+                // OpenAI API hatası için kullanıcı dostu mesaj
+                if (ex.Message.Contains("401") || ex.Message.Contains("Unauthorized"))
+                {
+                    return BadRequest(new { error = "OpenAI API anahtarı geçersiz veya eksik. Lütfen geçerli bir API anahtarı kullanın. OpenAI hesabınızdan yeni bir anahtar oluşturabilirsiniz." });
+                }
                 return StatusCode(500, new { error = $"Bir hata oluştu: {ex.Message}" });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetDietPlan([FromBody] DietPlanRequest request)
+        public async Task<IActionResult> GetDietPlan([FromBody] DietPlanRequest request, string aiProvider = "gemini")
         {
             try
             {
@@ -83,14 +106,232 @@ namespace FitnessCenter.Controllers
                 }
 
                 var prompt = BuildDietPrompt(request, user);
-                var response = await CallOpenAI(apiKey, prompt);
+
+                string response;
+                if (aiProvider == "gemini")
+                {
+                    // Gemini API kullan
+                    response = await _geminiService.GenerateTextResponse(prompt);
+                }
+                else
+                {
+                    // OpenAI API kullan
+                    var openAiKey = _configuration["OpenAI:ApiKey"];
+                    if (string.IsNullOrEmpty(openAiKey))
+                    {
+                        return BadRequest(new { error = "OpenAI API anahtarı yapılandırılmamış." });
+                    }
+                    response = await CallOpenAI(openAiKey, prompt);
+                }
 
                 return Ok(new { dietPlan = response });
             }
             catch (Exception ex)
             {
+                // OpenAI API hatası için kullanıcı dostu mesaj
+                if (ex.Message.Contains("401") || ex.Message.Contains("Unauthorized"))
+                {
+                    return BadRequest(new { error = "OpenAI API anahtarı geçersiz veya eksik. Lütfen geçerli bir API anahtarı kullanın. OpenAI hesabınızdan yeni bir anahtar oluşturabilirsiniz." });
+                }
                 return StatusCode(500, new { error = $"Bir hata oluştu: {ex.Message}" });
             }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AnalyzePhoto(IFormFile photo, string analysisType = "body_analysis", string aiProvider = "gemini")
+        {
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    return Unauthorized();
+                }
+
+                if (photo == null || photo.Length == 0)
+                {
+                    return BadRequest(new { error = "Lütfen bir fotoğraf yükleyin." });
+                }
+
+                // Fotoğrafı base64'e çevir
+                string base64Image;
+                using (var memoryStream = new MemoryStream())
+                {
+                    await photo.CopyToAsync(memoryStream);
+                    var imageBytes = memoryStream.ToArray();
+                    base64Image = Convert.ToBase64String(imageBytes);
+                }
+
+                var apiKey = _configuration["OpenAI:ApiKey"];
+                if (string.IsNullOrEmpty(apiKey))
+                {
+                    return BadRequest(new { error = "OpenAI API anahtarı yapılandırılmamış." });
+                }
+
+                var prompt = BuildPhotoAnalysisPrompt(analysisType);
+
+                string response;
+                if (aiProvider == "gemini")
+                {
+                    // Gemini API ile fotoğraf analizi
+                    response = await _geminiService.AnalyzeImage(base64Image, prompt);
+                }
+                else
+                {
+                    // OpenAI API ile fotoğraf analizi
+                    var openAiKey = _configuration["OpenAI:ApiKey"];
+                    if (string.IsNullOrEmpty(openAiKey))
+                    {
+                        return BadRequest(new { error = "OpenAI API anahtarı yapılandırılmamış." });
+                    }
+                    response = await CallOpenAIWithImage(openAiKey, prompt, base64Image);
+                }
+
+                return Ok(new { analysis = response });
+            }
+            catch (Exception ex)
+            {
+                // OpenAI API hatası için kullanıcı dostu mesaj
+                if (ex.Message.Contains("401") || ex.Message.Contains("Unauthorized"))
+                {
+                    return BadRequest(new { error = "OpenAI API anahtarı geçersiz veya eksik. Lütfen geçerli bir API anahtarı kullanın. OpenAI hesabınızdan yeni bir anahtar oluşturabilirsiniz." });
+                }
+                return StatusCode(500, new { error = $"Fotoğraf analizi sırasında hata oluştu: {ex.Message}" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GenerateBodyTransformation([FromBody] BodyTransformationRequest request)
+        {
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    return Unauthorized();
+                }
+
+                var apiKey = _configuration["OpenAI:ApiKey"];
+                if (string.IsNullOrEmpty(apiKey))
+                {
+                    return BadRequest(new { error = "OpenAI API anahtarı yapılandırılmamış." });
+                }
+
+                var prompt = BuildTransformationPrompt(request);
+                var response = await CallDalle(apiKey, prompt);
+
+                return Ok(new { imageUrl = response });
+            }
+            catch (Exception ex)
+            {
+                // OpenAI API hatası için kullanıcı dostu mesaj
+                if (ex.Message.Contains("401") || ex.Message.Contains("Unauthorized"))
+                {
+                    return BadRequest(new { error = "OpenAI API anahtarı geçersiz veya eksik. Lütfen geçerli bir API anahtarı kullanın. OpenAI hesabınızdan yeni bir anahtar oluşturabilirsiniz." });
+                }
+                return StatusCode(500, new { error = $"Görsel oluşturma sırasında hata oluştu: {ex.Message}" });
+            }
+        }
+
+        private string BuildPhotoAnalysisPrompt(string analysisType)
+        {
+            switch (analysisType)
+            {
+                case "body_analysis":
+                    return "Bu kişinin vücut tipini, fitness seviyesini ve potansiyel gelişim alanlarını analiz et. Vücut kompozisyonu, duruş ve genel kondisyon hakkında detaylı geri bildirim ver. Türkçe yanıt ver.";
+                case "posture_analysis":
+                    return "Bu kişinin duruşunu analiz et. Sırt, omuzlar, kalça hizalama ve postür problemleri hakkında öneriler ver. Türkçe yanıt ver.";
+                case "progress_tracking":
+                    return "Bu kişinin fiziksel ilerlemesini değerlendir. Kas gelişimi, yağ oranı değişimi ve genel gelişim hakkında yorum yap. Türkçe yanıt ver.";
+                default:
+                    return "Bu fotoğrafı fitness açısından analiz et ve öneriler ver. Türkçe yanıt ver.";
+            }
+        }
+
+        private string BuildTransformationPrompt(BodyTransformationRequest request)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"Bir kişinin {request.CurrentWeight}kg'dan {request.TargetWeight}kg'a dönüşümünü göster.");
+            sb.AppendLine($"Vücut tipi: {request.BodyType}, Hedef: {request.Goal}");
+            sb.AppendLine($"Süre: {request.Timeframe} ay, Fitness seviyesi: {request.FitnessLevel}");
+            sb.AppendLine("Gerçekçi bir 'öncesi-sonrası' görseli oluştur. Fitness ve sağlıklı dönüşüm göster. Foto-realistik stil kullan.");
+
+            return sb.ToString();
+        }
+
+        private async Task<string> CallOpenAIWithImage(string apiKey, string prompt, string base64Image)
+        {
+            var requestBody = new
+            {
+                model = "gpt-4-vision-preview",
+                messages = new[]
+                {
+                    new
+                    {
+                        role = "user",
+                        content = new object[]
+                        {
+                            new { type = "text", text = prompt },
+                            new
+                            {
+                                type = "image_url",
+                                image_url = new
+                                {
+                                    url = $"data:image/jpeg;base64,{base64Image}"
+                                }
+                            }
+                        }
+                    }
+                },
+                max_tokens = 1000,
+                temperature = 0.7
+            };
+
+            var json = JsonSerializer.Serialize(requestBody);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+
+            var response = await _httpClient.PostAsync("https://api.openai.com/v1/chat/completions", content);
+            response.EnsureSuccessStatusCode();
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var responseJson = JsonDocument.Parse(responseContent);
+
+            return responseJson.RootElement
+                .GetProperty("choices")[0]
+                .GetProperty("message")
+                .GetProperty("content")
+                .GetString() ?? "Analiz tamamlandı.";
+        }
+
+        private async Task<string> CallDalle(string apiKey, string prompt)
+        {
+            var requestBody = new
+            {
+                model = "dall-e-3",
+                prompt = prompt,
+                n = 1,
+                size = "1024x1024"
+            };
+
+            var json = JsonSerializer.Serialize(requestBody);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+
+            var response = await _httpClient.PostAsync("https://api.openai.com/v1/images/generations", content);
+            response.EnsureSuccessStatusCode();
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var responseJson = JsonDocument.Parse(responseContent);
+
+            return responseJson.RootElement
+                .GetProperty("data")[0]
+                .GetProperty("url")
+                .GetString() ?? "";
         }
 
         private string BuildExercisePrompt(ExerciseRecommendationRequest request, ApplicationUser user)
@@ -211,6 +452,16 @@ namespace FitnessCenter.Controllers
         public string? Goal { get; set; }
         public int? Age { get; set; }
         public string? DietaryRestrictions { get; set; }
+    }
+
+    public class BodyTransformationRequest
+    {
+        public int CurrentWeight { get; set; }
+        public int TargetWeight { get; set; }
+        public string? BodyType { get; set; }
+        public string? Goal { get; set; }
+        public int Timeframe { get; set; } // ay cinsinden
+        public string? FitnessLevel { get; set; }
     }
 }
 
