@@ -1,0 +1,71 @@
+@model FitnessCenter.Models.Service
+@{
+    ViewData["Title"] = "Hizmet Detayları";
+}
+
+<div class="container my-5">
+    <div class="card shadow-custom">
+        <div class="card-body p-5">
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div>
+                    <h1 class="mb-2">@Model.Name</h1>
+                    <span class="badge bg-info fs-6">@Model.ServiceType</span>
+                </div>
+                <div>
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Düzenle</a>
+                    <a asp-action="Index" class="btn btn-secondary">Geri Dön</a>
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <h5 class="text-muted mb-3">Hizmet Bilgileri</h5>
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="40%">Hizmet Adı:</th>
+                            <td>@Model.Name</td>
+                        </tr>
+                        <tr>
+                            <th>Hizmet Türü:</th>
+                            <td><span class="badge bg-info">@Model.ServiceType</span></td>
+                        </tr>
+                        <tr>
+                            <th>Süre:</th>
+                            <td><strong>@Model.DurationMinutes dakika</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Ücret:</th>
+                            <td><strong class="text-success fs-5">@Model.Price.ToString("N2") ₺</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Spor Salonu:</th>
+                            <td>@Model.FitnessCenter?.Name</td>
+                        </tr>
+                        <tr>
+                            <th>Oluşturulma:</th>
+                            <td>@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h5 class="text-muted mb-3">Açıklama</h5>
+                    <p class="text-muted">@(string.IsNullOrEmpty(Model.Description) ? "Açıklama eklenmemiş." : Model.Description)</p>
+
+                    @if (Model.Trainers != null && Model.Trainers.Any())
+                    {
+                        <h5 class="text-muted mb-3 mt-4">Bu Hizmeti Sunan Antrenörler</h5>
+                        <ul class="list-group">
+                            @foreach (var trainer in Model.Trainers)
+                            {
+                                <li class="list-group-item">@trainer.FullName</li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

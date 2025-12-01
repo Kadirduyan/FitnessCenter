@@ -1,0 +1,201 @@
+﻿@model dynamic
+@{
+    ViewData["Title"] = "Ana Sayfa";
+    var fitnessCenters = ViewBag.FitnessCenters as List<FitnessCenter.Models.FitnessCenterModel> ?? new List<FitnessCenter.Models.FitnessCenterModel>();
+}
+
+<!-- Hero Slider Section -->
+<div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
+    </div>
+    <div class="carousel-inner">
+        <!-- Slide 1 -->
+        <div class="carousel-item active">
+            <div class="hero-slide" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80');">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1 class="hero-title">FITNESS GELİŞTİ</h1>
+                        <div class="hero-logo">KADIR FITNESS CENTER</div>
+                        <p class="hero-description">Türkiye'nin ilk tam ölçekli yapay zeka destekli spor salonu</p>
+                        @if (!User.Identity?.IsAuthenticated == true)
+                        {
+                            <a asp-controller="Account" asp-action="Register" class="btn btn-warning btn-lg mt-4">Kayıt Ol</a>
+                        }
+                        else
+                        {
+                            <a asp-controller="Appointments" asp-action="Create" class="btn btn-warning btn-lg mt-4">Randevu Al</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Slide 2 -->
+        <div class="carousel-item">
+            <div class="hero-slide" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=1920&q=80');">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1 class="hero-title">YAPAY ZEKA DESTEKLİ</h1>
+                        <div class="hero-logo">FITNESS</div>
+                        <h2 class="hero-subtitle">KİŞİSELLEŞTİRİLMİŞ DENEYİM</h2>
+                        <p class="hero-description">Ekipmanlarınız size uyum sağlar. Tahmin yok, sadece ilerleme.</p>
+                        <a href="#fitness" class="btn btn-warning btn-lg mt-4">Daha Fazla Bilgi</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Slide 3 -->
+        <div class="carousel-item">
+            <div class="hero-slide" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=1920&q=80');">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1 class="hero-title">SAĞLIK VE UZUN ÖMÜR İÇİN</h1>
+                        <div class="hero-logo">FITNESS YAPARAK</div>
+                        <h2 class="hero-subtitle">BİYOLOJİK YAŞINIZI İYİLEŞTİRİN</h2>
+                        <p class="hero-description">Sağlık ve uzun ömür konusundaki yeni buluşlarla biyolojik yaşınızı iyileştirin.</p>
+                        <a href="#biohacking" class="btn btn-warning btn-lg mt-4">Keşfet</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Önceki</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Sonraki</span>
+    </button>
+</div>
+
+<!-- Fitness Section -->
+<section id="fitness" class="section-fitness">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h2 class="section-title-large">FITNESS</h2>
+                <p class="section-description">
+                    Yapay zeka destekli fitness ekipmanları ile performansınızı takip edin. 
+                    Rehberli güç, kardiyo ve mobilite antrenmanları. Yapay zeka teknolojisini 
+                    insan dokunuşu ile birleştirerek motivasyonunuzu ve ilerlemenizi sağlıyoruz.
+                </p>
+                <a asp-controller="Home" asp-action="FitnessBenefits" class="btn btn-outline-dark btn-lg">Daha Fazla Bilgi</a>
+            </div>
+            <div class="col-lg-6">
+                <div class="fitness-image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=800&q=80" alt="Fitness Equipment" class="img-fluid rounded">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Biohacking Section -->
+<section id="biohacking" class="section-biohacking">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 order-lg-2 mb-4 mb-lg-0">
+                <h2 class="section-title-large">AKILLI ANTREMAN PROGRAMI</h2>
+                <p class="section-description">
+                    Yapay zeka destekli antrenman programı oluşturan bu sistem, beslenme ve bilinçli
+                    bir şekilde spor yapmamızı sağlayacak programın olduğunu gösterir. Kişiselleştirilmiş
+                    fitness yolculuğunuzda size rehberlik eder.
+                </p>
+                <a asp-controller="Home" asp-action="BiohackingBenefits" class="btn btn-outline-dark btn-lg">Daha Fazla Bilgi</a>
+            </div>
+            <div class="col-lg-6 order-lg-1">
+                <div class="biohacking-image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=800&q=80"
+                         alt="Biohacking" class="img-fluid rounded">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Classes and Events Section -->
+<section id="classes" class="section-classes">
+    <div class="container">
+        <h2 class="section-title text-center mb-5" style="font-weight: 700; font-size: 2.2rem; color: #2c3e50; text-transform: uppercase; letter-spacing: 1px;">KADIR FITNESS ÜYELİKTE NE GİBİ FIRSATLARIMIZ VAR?</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="class-card">
+                    <h3 class="class-title">Sınıflar</h3>
+                    <p class="class-description">
+                        Üyelerimiz haftada 2 saat herhangi bir hizmetten ücretsiz faydalanabilecektir.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="class-card">
+                    <h3 class="class-title">Etkinlikler</h3>
+                    <p class="class-description">
+                        İyi bir parti, refahınız için gereklidir. Bir sonraki etkinliği yakında duyuracağız.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="class-card">
+                    <h3 class="class-title">Haberler</h3>
+                    <p class="class-description">
+                        Yapay zeka destekli fitness teknolojilerimizle işbirliğimizi duyurmaktan gurur duyuyoruz.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Membership Section -->
+<section id="membership" class="section-membership">
+    <div class="container">
+        <div class="membership-card">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h2 class="membership-title">KADIR FITNESS ÜYELİĞİ</h2>
+                    <div class="membership-badges">
+                        <span class="badge">Kişiselleştirilmiş Antrenman</span>
+                    </div>
+                    <ul class="membership-features">
+                        <li><i class="bi bi-check-circle-fill"></i> Devrimci Teknoloji</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Yapay Zeka Destekli Antrenman Planları</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Güçlendirici Atmosfer</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Ücretsiz Sınıflar</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Etkinlikler</li>
+                    </ul>
+                    @if (!User.Identity?.IsAuthenticated == true)
+                    {
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-warning btn-lg">Şimdi Katıl</a>
+                    }
+                </div>
+                <div class="col-lg-6">
+                    <div class="membership-image">
+                        <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80" 
+                             alt="Membership" class="img-fluid rounded">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+}

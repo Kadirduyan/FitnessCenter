@@ -1,0 +1,189 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - KADİR FITNESS</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/FitnessCenter.styles.css" asp-append-version="true" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        .navbar-contact-info {
+            margin-left: 2rem;
+            display: flex;
+            gap: 1.5rem;
+        }
+        .contact-item {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .contact-item:hover {
+            color: #fff;
+        }
+        .contact-item i {
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <!-- Sosyal medya linkleri kaldırıldı -->
+                </div>
+                <div class="col-md-6 text-end">
+                    <!-- İletişim bilgileri navbar'a taşındı -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-dark main-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                <span class="brand-name">KADIR</span>
+                <span class="brand-subtitle">FITNESS</span>
+            </a>
+
+            <!-- İletişim Bilgileri - Sol Üst Köşe -->
+            <div class="navbar-contact-info d-none d-lg-flex">
+                <span class="contact-item"><i class="bi bi-clock"></i> Açık: Her gün 05:00 - 22:00</span>
+            </div>
+
+            <button class="navbar-toggler hamburger-menu" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Fitness</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Services">Hizmetler</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Trainers" asp-action="List">Antrenörler</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Membership" asp-action="Index">Üyelik</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Locations" asp-action="Index">Lokasyon</a>
+                    </li>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Ai" asp-action="Index">AI Öneriler</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Appointments" asp-action="Index">Randevularım</a>
+                        </li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-warning fw-bold" href="#" role="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-shield-check me-1"></i>⚡ ADMIN PANELİ
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-lg">
+                                    <li><a class="dropdown-item fw-bold" asp-controller="Admin" asp-action="Appointments">
+                                        <i class="bi bi-calendar-check me-2"></i>Randevu Yönetimi</a></li>
+                                    <li><a class="dropdown-item fw-bold" asp-controller="Admin" asp-action="Trainers">
+                                        <i class="bi bi-person-badge me-2"></i>Antrenör Yönetimi</a></li>
+                                </ul>
+                            </li>
+                        }
+                    }
+                </ul>
+                <div class="navbar-actions ms-3">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <div class="dropdown">
+                            <a class="btn btn-outline-light btn-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                @User.Identity.Name
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#">Profil</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                        <button type="submit" class="dropdown-item">Çıkış Yap</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-sm me-2">Giriş</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main style="padding-top: 0;">
+        @RenderBody()
+    </main>
+
+    <footer class="footer-dark">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <h5 class="footer-brand">KADIR FITNESS®</h5>
+                    <p class="footer-text">Türkiye'nin ilk tam ölçekli yapay zeka destekli spor salonu. Teknolojiyi kullanarak kişiselleştirilmiş fitness ve sağlığı uygun fiyatlı hale getiriyoruz.</p>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6 class="footer-heading">KADIR FITNESS®</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Fitness</a></li>
+                        <li><a asp-controller="Trainers" asp-action="List">Antrenörler</a></li>
+                        <li><a asp-controller="Membership" asp-action="Index">Üyelik</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6 class="footer-heading">Bilgi</h6>
+                    <ul class="footer-links">
+                        <li><a asp-controller="Account" asp-action="Register">Kayıt Ol</a></li>
+                        <li><a asp-controller="Locations" asp-action="Index">Lokasyon</a></li>
+                        <li><a href="#">Üyelik</a></li>
+                        <li><a href="#">Faturalama ve İptal</a></li>
+                        <li><a href="#">Gizlilik Politikası</a></li>
+                        <li><a href="#">Kullanım Şartları</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6 class="footer-heading">İletişim</h6>
+                    <p class="footer-text">
+                        <strong>Adres:</strong> İstanbul, Türkiye<br>
+                        <strong>Telefon:</strong> (555) 123-4567<br>
+                        <strong>Email:</strong> info@fitnesscenter.com
+                    </p>
+                </div>
+            </div>
+            <hr class="footer-divider">
+            <div class="text-center">
+                <p class="footer-copyright">&copy; 2025 KADIR FITNESS. Tüm hakları saklıdır.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

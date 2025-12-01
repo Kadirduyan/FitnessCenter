@@ -1,0 +1,51 @@
+@model FitnessCenter.Models.Service
+@{
+    ViewData["Title"] = "Hizmet Sil";
+}
+
+<div class="container my-5">
+    <div class="card shadow-custom">
+        <div class="card-body p-5">
+            <h1 class="text-danger mb-4">Hizmeti Silmek İstediğinize Emin misiniz?</h1>
+            
+            <div class="alert alert-warning">
+                <strong>Dikkat!</strong> Bu işlem geri alınamaz. Bu hizmete ait tüm randevular etkilenebilir.
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <h5>Hizmet Bilgileri</h5>
+                    <table class="table table-borderless">
+                        <tr>
+                            <th>Hizmet Adı:</th>
+                            <td>@Model.Name</td>
+                        </tr>
+                        <tr>
+                            <th>Hizmet Türü:</th>
+                            <td><span class="badge bg-info">@Model.ServiceType</span></td>
+                        </tr>
+                        <tr>
+                            <th>Süre:</th>
+                            <td>@Model.DurationMinutes dakika</td>
+                        </tr>
+                        <tr>
+                            <th>Ücret:</th>
+                            <td>@Model.Price.ToString("N2") ₺</td>
+                        </tr>
+                        <tr>
+                            <th>Spor Salonu:</th>
+                            <td>@Model.FitnessCenter?.Name</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <form asp-action="Delete" method="post" class="mt-4">
+                <input type="hidden" asp-for="Id" />
+                <button type="submit" class="btn btn-danger">Sil</button>
+                <a asp-action="Index" class="btn btn-secondary">İptal</a>
+            </form>
+        </div>
+    </div>
+</div>
+

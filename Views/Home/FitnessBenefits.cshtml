@@ -1,0 +1,132 @@
+@{
+    ViewData["Title"] = "Fitness Yaparak Kendimize Ne Faydalar Sağlarız?";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-primary mb-3">
+                    <i class="bi bi-activity me-3"></i>Fitness Yaparak Kendimize Ne Faydalar Sağlarız?
+                </h1>
+                <p class="lead text-muted">Düzenli fitness aktiviteleri, hem fiziksel hem de mental sağlığımız için vazgeçilmez bir unsurdur.</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-heart-pulse-fill fs-1"></i>
+                            </div>
+                            <h4 class="card-title">Kardiyovasküler Sağlık</h4>
+                            <p class="card-text">Kalp ve damar sağlığını güçlendirir, kan basıncını dengeler, kalp krizi riskini azaltır.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm border-0" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-lightning-charge-fill fs-1"></i>
+                            </div>
+                            <h4 class="card-title">Enerji ve Dayanıklılık</h4>
+                            <p class="card-text">Günlük enerji seviyelerini artırır, yorgunluğu azaltır, daha aktif bir yaşam sağlar.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm border-0" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-shield-check fs-1"></i>
+                            </div>
+                            <h4 class="card-title">Bağışıklık Sistemi</h4>
+                            <p class="card-text">Vücut direncini güçlendirir, hastalıklara karşı koruyuculuk sağlar.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm border-0" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-emoji-smile fs-1"></i>
+                            </div>
+                            <h4 class="card-title">Mental Sağlık</h4>
+                            <p class="card-text">Stresi azaltır, endorfin salgısını artırır, depresyon ve anksiyete riskini düşürür.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm border-0" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white;">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-person-standing fs-1"></i>
+                            </div>
+                            <h4 class="card-title">Fiziksel Görünüm</h4>
+                            <p class="card-text">Kas kütlesini artırır, yağ oranını düşürür, daha fit ve sağlıklı bir vücut yapısı sağlar.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm border-0" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: black;">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-moon-stars-fill fs-1"></i>
+                            </div>
+                            <h4 class="card-title">Uyku Kalitesi</h4>
+                            <p class="card-text">Daha derin ve kaliteli uyku sağlar, gün içinde daha dinç hissetmenizi sağlar.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-5 text-center">
+                <div class="alert alert-info border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h5 class="alert-heading mb-3">
+                        <i class="bi bi-star-fill me-2"></i>Başlamak Hiç Bu Kadar Kolay Olmamıştı!
+                    </h5>
+                    <p class="mb-0">
+                        KADIR Fitness ile kişiselleştirilmiş antrenman programınızla hedeflerinize ulaşın.
+                        Profesyonel eğitmenlerimiz ve son teknoloji ekipmanlarımızla yanınızdayız.
+                    </p>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a asp-controller="Trainers" asp-action="List" class="btn btn-primary btn-lg me-3">
+                    <i class="bi bi-people-fill me-2"></i>Antrenörlerimizi Görün
+                </a>
+                <a asp-controller="Home" asp-action="Index" class="btn btn-outline-primary btn-lg">
+                    <i class="bi bi-house me-2"></i>Ana Sayfaya Dön
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Sayfa yüklendiğinde animasyon efekti
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 100);
+                }, index * 100);
+            });
+        });
+    </script>
+}

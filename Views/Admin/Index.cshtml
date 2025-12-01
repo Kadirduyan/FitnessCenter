@@ -1,0 +1,68 @@
+@{
+    ViewData["Title"] = "Yönetim Paneli";
+    var stats = ViewBag.Stats as dynamic;
+}
+
+<div class="container my-5">
+    <h1 class="mb-4">Yönetim Paneli</h1>
+
+    <div class="row mb-4">
+        <div class="col-md-6 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Antrenörler</h5>
+                    <h2 class="mb-0">@stats?.Trainers</h2>
+                    <small>Toplam kayıtlı antrenör sayısı</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Randevular</h5>
+                    <h2 class="mb-0">@stats?.Appointments</h2>
+                    @if (stats?.PendingAppointments > 0)
+                    {
+                        <small class="text-warning-emphasis">@stats?.PendingAppointments bekliyor onay</small>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Yönetim Araçları</h5>
+                    <div class="d-grid gap-2">
+                        <a asp-controller="Admin" asp-action="Appointments" class="btn btn-warning">
+                            <i class="bi bi-calendar-check me-2"></i>Randevu Yönetimi
+                            @if (stats?.PendingAppointments > 0)
+                            {
+                                <span class="badge bg-danger ms-2">@stats?.PendingAppointments</span>
+                            }
+                        </a>
+                        <a asp-controller="Admin" asp-action="Trainers" class="btn btn-success">
+                            <i class="bi bi-person-badge me-2"></i>Antrenör Yönetimi
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Randevu İstatistikleri</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><strong>Toplam Randevu:</strong> @stats?.Appointments</li>
+                        <li class="mb-2"><strong>Bekleyen Onay:</strong> @stats?.PendingAppointments</li>
+                        <li class="mb-2"><strong>Tamamlanan:</strong> @stats?.CompletedAppointments</li>
+                        <li class="mb-2"><strong>Aktif Antrenör:</strong> @stats?.Trainers</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

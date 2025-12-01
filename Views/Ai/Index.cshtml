@@ -1,0 +1,368 @@
+@{
+    ViewData["Title"] = "Yapay Zeka Destekli Öneriler";
+}
+
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-primary mb-3">
+            <i class="bi bi-robot me-3"></i>
+            Yapay Zeka Destekli Öneriler
+        </h1>
+        <p class="lead text-muted">
+            AI teknolojisi ile kişiselleştirilmiş fitness ve beslenme önerileri alın
+        </p>
+
+        <!-- API Seçimi -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title">AI Model Seçimi</h6>
+                        <select id="aiProvider" class="form-select">
+                            <option value="openai">OpenAI (GPT-4 Vision + DALL-E)</option>
+                            <option value="gemini" selected>Google Gemini (Ücretsiz)</option>
+                        </select>
+                        <small class="text-muted mt-1 d-block">
+                            Gemini ücretsiz ve hızlıdır. OpenAI daha gelişmiş görsel oluşturma yapar.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fotoğraf Analizi Bölümü -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-camera me-2"></i>
+                        Fotoğraf Analizi & AI Önerileri
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <h6 class="text-primary mb-3">
+                                <i class="bi bi-upload me-2"></i>
+                                Fotoğraf Yükle
+                            </h6>
+                            <form id="photoForm" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <input type="file" id="photoInput" class="form-control" accept="image/*" required />
+                                    <small class="text-muted">JPG, PNG veya GIF formatında bir fotoğraf yükleyin</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Analiz Türü</label>
+                                    <select id="analysisType" class="form-select">
+                                        <option value="body_analysis">Vücut Analizi</option>
+                                        <option value="posture_analysis">Duruş Analizi</option>
+                                        <option value="progress_tracking">İlerleme Takibi</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-search me-1"></i>Analiz Et
+                                </button>
+                            </form>
+                            <div id="photoResult" class="mt-3"></div>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <h6 class="text-primary mb-3">
+                                <i class="bi bi-magic me-2"></i>
+                                Vücut Dönüşümü Görseli
+                            </h6>
+                            <form id="transformationForm">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Mevcut Kilo (kg)</label>
+                                        <input type="number" id="currentWeight" class="form-control" placeholder="70" required />
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Hedef Kilo (kg)</label>
+                                        <input type="number" id="targetWeight" class="form-control" placeholder="75" required />
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Vücut Tipi</label>
+                                    <select id="transBodyType" class="form-select">
+                                        <option value="Ektomorf">Ektomorf (İnce)</option>
+                                        <option value="Mezomorf">Mezomorf (Atletik)</option>
+                                        <option value="Endomorf">Endomorf (Yapılı)</option>
+                                    </select>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Hedef</label>
+                                        <select id="transGoal" class="form-select">
+                                            <option value="Kas Geliştirme">Kas Geliştirme</option>
+                                            <option value="Kilo Verme">Kilo Verme</option>
+                                            <option value="Kilo Alma">Kilo Alma</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Süre (ay)</label>
+                                        <input type="number" id="timeframe" class="form-control" placeholder="6" min="1" max="24" required />
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Fitness Seviyesi</label>
+                                    <select id="transFitnessLevel" class="form-select">
+                                        <option value="Başlangıç">Başlangıç</option>
+                                        <option value="Orta">Orta</option>
+                                        <option value="İleri">İleri</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-sparkles me-1"></i>Görsel Oluştur
+                                </button>
+                            </form>
+                            <div id="transformationResult" class="mt-3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-activity me-2"></i>
+                        Egzersiz Önerileri
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="exerciseForm">
+                        <div class="mb-3">
+                            <label class="form-label">Boy (cm)</label>
+                            <input type="number" id="height" class="form-control" placeholder="Örn: 175" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Kilo (kg)</label>
+                            <input type="number" id="weight" class="form-control" placeholder="Örn: 70" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Vücut Tipi</label>
+                            <select id="bodyType" class="form-select">
+                                <option value="">Seçiniz</option>
+                                <option value="Ektomorf">Ektomorf (İnce)</option>
+                                <option value="Mezomorf">Mezomorf (Atletik)</option>
+                                <option value="Endomorf">Endomorf (Yapılı)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Hedef</label>
+                            <select id="goal" class="form-select">
+                                <option value="">Seçiniz</option>
+                                <option value="Kilo Verme">Kilo Verme</option>
+                                <option value="Kilo Alma">Kilo Alma</option>
+                                <option value="Kas Geliştirme">Kas Geliştirme</option>
+                                <option value="Güç Artırma">Güç Artırma</option>
+                                <option value="Genel Fitness">Genel Fitness</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Fitness Seviyesi</label>
+                            <select id="fitnessLevel" class="form-select">
+                                <option value="">Seçiniz</option>
+                                <option value="Başlangıç">Başlangıç</option>
+                                <option value="Orta">Orta</option>
+                                <option value="İleri">İleri</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Yaş (opsiyonel)</label>
+                            <input type="number" id="age" class="form-control" placeholder="Örn: 25" min="10" max="100" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Öneri Al</button>
+                    </form>
+                    <div id="exerciseResult" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-apple me-2"></i>
+                        Diyet Planı Önerileri
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="dietForm">
+                        <div class="mb-3">
+                            <label class="form-label">Boy (cm)</label>
+                            <input type="number" id="dietHeight" class="form-control" placeholder="Örn: 175" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Kilo (kg)</label>
+                            <input type="number" id="dietWeight" class="form-control" placeholder="Örn: 70" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Hedef</label>
+                            <select id="dietGoal" class="form-select">
+                                <option value="">Seçiniz</option>
+                                <option value="Kilo Verme">Kilo Verme</option>
+                                <option value="Kilo Alma">Kilo Alma</option>
+                                <option value="Kas Geliştirme">Kas Geliştirme</option>
+                                <option value="Sağlıklı Beslenme">Sağlıklı Beslenme</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Yaş (opsiyonel)</label>
+                            <input type="number" id="dietAge" class="form-control" placeholder="Örn: 25" min="10" max="100" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Diyet Kısıtlamaları</label>
+                            <input type="text" id="dietaryRestrictions" class="form-control" placeholder="Örn: Vejetaryen, Glutensiz" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Diyet Planı Al</button>
+                    </form>
+                    <div id="dietResult" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Fotoğraf analizi
+        $('#photoForm').submit(function(e) {
+            e.preventDefault();
+
+            var fileInput = $('#photoInput')[0];
+            if (!fileInput.files[0]) {
+                $('#photoResult').html('<div class="alert alert-danger">Lütfen bir fotoğraf seçin.</div>');
+                return;
+            }
+
+            var formData = new FormData();
+            formData.append('photo', fileInput.files[0]);
+            formData.append('analysisType', $('#analysisType').val());
+            formData.append('aiProvider', $('#aiProvider').val());
+
+            $('#photoResult').html('<div class="alert alert-info">Fotoğraf analiz ediliyor...</div>');
+
+            $.ajax({
+                url: '/Ai/AnalyzePhoto',
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    $('#photoResult').html('<div class="alert alert-success"><h6>Fotoğraf Analizi:</h6><pre style="white-space: pre-wrap;">' + response.analysis + '</pre></div>');
+                },
+                error: function(xhr) {
+                    var error = xhr.responseJSON?.error || 'Fotoğraf analizi sırasında hata oluştu';
+                    $('#photoResult').html('<div class="alert alert-danger">' + error + '</div>');
+                }
+            });
+        });
+
+        // Vücut dönüşümü görseli
+        $('#transformationForm').submit(function(e) {
+            e.preventDefault();
+            var data = {
+                currentWeight: parseInt($('#currentWeight').val()),
+                targetWeight: parseInt($('#targetWeight').val()),
+                bodyType: $('#transBodyType').val(),
+                goal: $('#transGoal').val(),
+                timeframe: parseInt($('#timeframe').val()),
+                fitnessLevel: $('#transFitnessLevel').val()
+            };
+
+            $('#transformationResult').html('<div class="alert alert-info">AI görseli oluşturuluyor... Bu işlem birkaç dakika sürebilir.</div>');
+
+            $.ajax({
+                url: '/Ai/GenerateBodyTransformation',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function(response) {
+                    if (response.imageUrl) {
+                        $('#transformationResult').html(
+                            '<div class="alert alert-success">' +
+                            '<h6>Vücut Dönüşümü Görseli Hazır!</h6>' +
+                            '<img src="' + response.imageUrl + '" class="img-fluid rounded mt-3" style="max-width: 100%; height: auto;" alt="Vücut Dönüşümü" />' +
+                            '</div>'
+                        );
+                    } else {
+                        $('#transformationResult').html('<div class="alert alert-warning">Görsel oluşturulamadı ama analiz tamamlandı.</div>');
+                    }
+                },
+                error: function(xhr) {
+                    var error = xhr.responseJSON?.error || 'Görsel oluşturma sırasında hata oluştu';
+                    $('#transformationResult').html('<div class="alert alert-danger">' + error + '</div>');
+                }
+            });
+        });
+
+        // Egzersiz önerileri
+        $('#exerciseForm').submit(function(e) {
+            e.preventDefault();
+            var data = {
+                height: parseInt($('#height').val()) || null,
+                weight: parseInt($('#weight').val()) || null,
+                bodyType: $('#bodyType').val(),
+                goal: $('#goal').val(),
+                fitnessLevel: $('#fitnessLevel').val(),
+                age: parseInt($('#age').val()) || null
+            };
+
+            $('#exerciseResult').html('<div class="alert alert-info">AI egzersiz planı hazırlıyor...</div>');
+
+            data.aiProvider = $('#aiProvider').val();
+
+            $.ajax({
+                url: '/Ai/GetExerciseRecommendation',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function(response) {
+                    $('#exerciseResult').html('<div class="alert alert-success"><h6>Egzersiz Önerileri:</h6><pre style="white-space: pre-wrap;">' + response.recommendation + '</pre></div>');
+                },
+                error: function(xhr) {
+                    var error = xhr.responseJSON?.error || 'Egzersiz önerisi alınırken hata oluştu';
+                    $('#exerciseResult').html('<div class="alert alert-danger">' + error + '</div>');
+                }
+            });
+        });
+
+        // Diyet planı
+        $('#dietForm').submit(function(e) {
+            e.preventDefault();
+            var data = {
+                height: parseInt($('#dietHeight').val()) || null,
+                weight: parseInt($('#dietWeight').val()) || null,
+                goal: $('#dietGoal').val(),
+                age: parseInt($('#dietAge').val()) || null,
+                dietaryRestrictions: $('#dietaryRestrictions').val()
+            };
+
+            $('#dietResult').html('<div class="alert alert-info">AI diyet planı hazırlıyor...</div>');
+
+            data.aiProvider = $('#aiProvider').val();
+
+            $.ajax({
+                url: '/Ai/GetDietPlan',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function(response) {
+                    $('#dietResult').html('<div class="alert alert-success"><h6>Diyet Planı:</h6><pre style="white-space: pre-wrap;">' + response.dietPlan + '</pre></div>');
+                },
+                error: function(xhr) {
+                    var error = xhr.responseJSON?.error || 'Diyet planı alınırken hata oluştu';
+                    $('#dietResult').html('<div class="alert alert-danger">' + error + '</div>');
+                }
+            });
+        });
+    </script>
+}
+
