@@ -87,7 +87,7 @@
                                            class="btn btn-sm btn-outline-warning">
                                             <i class="bi bi-pencil"></i> Düzenle
                                         </a>
-                                        <form asp-action="DeleteTrainer" asp-route-id="@trainer.Id"
+                                        <form asp-controller="Trainers" asp-action="Delete" asp-route-id="@trainer.Id"
                                               method="post" class="d-inline"
                                               onsubmit="return confirm('Bu antrenörü silmek istediğinizden emin misiniz?');">
                                             <button type="submit" class="btn btn-sm btn-outline-danger">

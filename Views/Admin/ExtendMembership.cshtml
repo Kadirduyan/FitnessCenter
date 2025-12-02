@@ -1,0 +1,55 @@
+@model FitnessCenter.Models.Membership
+
+@{
+    ViewData["Title"] = "Üyelik Uzat";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-calendar-plus me-2"></i>Üyelik Uzat
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h6>Üye Bilgileri</h6>
+                        <p class="mb-1"><strong>Ad Soyad:</strong> @Model.Member?.FirstName @Model.Member?.LastName</p>
+                        <p class="mb-1"><strong>E-posta:</strong> @Model.Member?.Email</p>
+                        <p class="mb-1"><strong>Mevcut Bitiş Tarihi:</strong> @Model.EndDate.ToString("dd.MM.yyyy")</p>
+                        <p class="mb-0"><strong>Kalan Gün:</strong> <span class="badge bg-@Model.StatusColor">@Model.DaysRemaining gün</span></p>
+                    </div>
+
+                    <form asp-action="ExtendMembership" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Uzatma Süresi *</label>
+                            <select name="membershipType" asp-items="ViewBag.MembershipTypes" class="form-select" required>
+                                <option value="">Seçiniz...</option>
+                            </select>
+                            <small class="form-text text-muted">Mevcut bitiş tarihinden itibaren uzatılacaktır.</small>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Bilgi:</strong> Seçtiğiniz süre, mevcut bitiş tarihine eklenecektir.
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle me-2"></i>Üyeliği Uzat
+                            </button>
+                            <a asp-action="Memberships" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Geri Dön
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

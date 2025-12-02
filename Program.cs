@@ -85,7 +85,7 @@ async Task SeedDataAsync(WebApplication app)
             await roleManager.CreateAsync(new IdentityRole("Member"));
         }
 
-        // Seed Admin User - Her zaman yeniden oluştur
+        // Seed Admin User
         var adminEmail = "G231210371@sakarya.edu.tr";
         var existingAdmin = await userManager.FindByEmailAsync(adminEmail);
 
@@ -114,34 +114,36 @@ async Task SeedDataAsync(WebApplication app)
                 Console.WriteLine("Admin rolü eklendi");
             }
         }
-
-        // Yeni admin kullanıcısını oluştur
-        var adminUser = new ApplicationUser
-        {
-            UserName = adminEmail,
-            Email = adminEmail,
-            EmailConfirmed = true,
-            FirstName = "Admin",
-            LastName = "User",
-            CreatedAt = DateTime.Now
-        };
-
-        var createResult = await userManager.CreateAsync(adminUser, "sau");
-        if (createResult.Succeeded)
-        {
-            Console.WriteLine("Admin kullanıcısı başarıyla oluşturuldu");
-            // Admin rolünü ata
-            if (!await roleManager.RoleExistsAsync("Admin"))
-            {
-                await roleManager.CreateAsync(new IdentityRole("Admin"));
-                Console.WriteLine("Admin rolü oluşturuldu");
-            }
-            await userManager.AddToRoleAsync(adminUser, "Admin");
-            Console.WriteLine("Admin rolü kullanıcıya atandı");
-        }
         else
         {
-            Console.WriteLine($"Admin oluşturma hatası: {string.Join(", ", createResult.Errors.Select(e => e.Description))}");
+            // Yeni admin kullanıcısını oluştur
+            var adminUser = new ApplicationUser
+            {
+                UserName = adminEmail,
+                Email = adminEmail,
+                EmailConfirmed = true,
+                FirstName = "Admin",
+                LastName = "User",
+                CreatedAt = DateTime.Now
+            };
+
+            var createResult = await userManager.CreateAsync(adminUser, "sau");
+            if (createResult.Succeeded)
+            {
+                Console.WriteLine("Admin kullanıcısı başarıyla oluşturuldu");
+                // Admin rolünü ata
+                if (!await roleManager.RoleExistsAsync("Admin"))
+                {
+                    await roleManager.CreateAsync(new IdentityRole("Admin"));
+                    Console.WriteLine("Admin rolü oluşturuldu");
+                }
+                await userManager.AddToRoleAsync(adminUser, "Admin");
+                Console.WriteLine("Admin rolü kullanıcıya atandı");
+            }
+            else
+            {
+                Console.WriteLine($"Admin oluşturma hatası: {string.Join(", ", createResult.Errors.Select(e => e.Description))}");
+            }
         }
 
         // Seed Fitness Center

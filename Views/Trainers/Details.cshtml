@@ -1,0 +1,111 @@
+@model FitnessCenter.Models.Trainer
+
+@{
+    ViewData["Title"] = "Antrenör Detayı";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-badge me-2"></i>@Model.FullName
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Spor Salonu</dt>
+                        <dd class="col-sm-8">@Model.FitnessCenter?.Name</dd>
+
+                        <dt class="col-sm-4">E-posta</dt>
+                        <dd class="col-sm-8">@Model.Email</dd>
+
+                        <dt class="col-sm-4">Telefon</dt>
+                        <dd class="col-sm-8">@Model.Phone</dd>
+
+                        <dt class="col-sm-4">Uzmanlık Alanları</dt>
+                        <dd class="col-sm-8">@Model.Specializations</dd>
+
+                        <dt class="col-sm-4">Açıklama</dt>
+                        <dd class="col-sm-8">@Model.Description</dd>
+
+                        <dt class="col-sm-4">Durum</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.IsActive)
+                            {
+                                <span class="badge bg-success">Aktif</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Pasif</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">Hizmetler</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.Services != null && Model.Services.Any())
+                            {
+                                foreach (var service in Model.Services)
+                                {
+                                    <span class="badge bg-info me-1">@service.Name</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted">Tanımlı hizmet yok</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clock-history me-2"></i>Müsaitlik Saatleri
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.Availabilities != null && Model.Availabilities.Any())
+                    {
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Gün</th>
+                                    <th>Başlangıç</th>
+                                    <th>Bitiş</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var a in Model.Availabilities.OrderBy(x => x.DayOfWeek).ThenBy(x => x.StartTime))
+                                {
+                                    <tr>
+                                        <td>@a.DayOfWeek</td>
+                                        <td>@a.StartTime.ToString(@"hh\:mm")</td>
+                                        <td>@a.EndTime.ToString(@"hh\:mm")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">Bu antrenör için tanımlı müsaitlik bulunmuyor.</p>
+                    }
+                </div>
+            </div>
+
+            <div class="mt-3 d-flex gap-2">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                    <i class="bi bi-pencil me-1"></i>Düzenle
+                </a>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Listeye Dön
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+

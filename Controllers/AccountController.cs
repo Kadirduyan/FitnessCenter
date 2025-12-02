@@ -81,6 +81,12 @@ namespace FitnessCenter.Controllers
                 Console.WriteLine($"Giriş denemesi: Email={model.Email}, Password Length={model.Password?.Length}");
 
                 // Tüm giriş işlemleri için aynı yöntem (admin ve üye)
+                if (string.IsNullOrEmpty(model.Password))
+                {
+                    ModelState.AddModelError(string.Empty, "Şifre gereklidir.");
+                    return View(model);
+                }
+
                 var result = await _signInManager.PasswordSignInAsync(
                     model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
 

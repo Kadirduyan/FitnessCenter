@@ -12,62 +12,62 @@
     <div class="row">
         @foreach (var item in Model)
         {
-            // HER ANTRENÖR İÇİN BENZERSİZ FİTNESSÇI MODEL FOTOĞRAFLARI
-            string imgUrl = "";
+            string? imgUrl = null;
+            var initials = $"{(string.IsNullOrWhiteSpace(item.FirstName) ? "?" : item.FirstName[0])}{(string.IsNullOrWhiteSpace(item.LastName) ? "" : item.LastName[0])}".ToUpper();
 
-            // Her antrenör için GERÇEK fitness koçu fotoğrafları (Google'dan)
             switch (item.FirstName)
             {
-                // ERKEK ANTRENÖRLER - Erkek fitness koçu fotoğrafları
                 case "Ahmet":
-                    imgUrl = "https://c.superprof.com/i/m/32540448/600/20240827210733/32540448.webp"; // Gerçek erkek koç 1
+                    imgUrl = "https://c.superprof.com/i/m/32540448/600/20240827210733/32540448.webp";
                     break;
                 case "Mehmet":
-                    imgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5dVF5ccEAYr5RZLpMXxyp6xCzybwTuF_e4g&s"; // Mehmet Kaya
+                    imgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5dVF5ccEAYr5RZLpMXxyp6xCzybwTuF_e4g&s";
                     break;
                 case "Burak":
-                    imgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStSJ2c_4nm0fuA8Q7RMHE9yqo8naKLSiYBLA&s"; // Burak Demir
+                    imgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStSJ2c_4nm0fuA8Q7RMHE9yqo8naKLSiYBLA&s";
                     break;
                 case "Can":
-                    imgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnk7HMwsjezVPG6qJpzkB8fS1N472Pgs7bdw&s"; // Can Şahin
+                    imgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnk7HMwsjezVPG6qJpzkB8fS1N472Pgs7bdw&s";
                     break;
                 case "Zafer":
-                    imgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCfitLZii4Vi3GtYgubK1csGdK-fm2xynoFA&s"; // Zafer Koç
+                    imgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCfitLZii4Vi3GtYgubK1csGdK-fm2xynoFA&s";
                     break;
                 case "Aras":
-                    imgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTk7K1xKtK-7znRZPm1KF-Km0bd0VTuINzISQ&s"; // Aras Tekin
+                    imgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTk7K1xKtK-7znRZPm1KF-Km0bd0VTuINzISQ&s";
                     break;
                 case "Rüzgar":
-                    imgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrFrDiz8JdfcvHw1fCA2dkydO-9z0sO8kKjg&s"; // Rüzgar Özdemir
+                    imgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrFrDiz8JdfcvHw1fCA2dkydO-9z0sO8kKjg&s";
                     break;
-
-                // KADIN ANTRENÖRLER - Kadın fitness koçları fotoğrafları
                 case "Merve":
-                    imgUrl = "https://www.ozeldersalani.com/images/teachers/1740636903.jpg"; // Merve Öztürk
+                    imgUrl = "https://www.ozeldersalani.com/images/teachers/1740636903.jpg";
                     break;
                 case "Sahra":
-                    imgUrl = "https://foto.haberler.com/haber/2020/09/25/alica-schmidt-borussia-dortmund-un-yeni-fitness-13627211_3187_m.jpg"; // Sahra Çelik
+                    imgUrl = "https://foto.haberler.com/haber/2020/09/25/alica-schmidt-borussia-dortmund-un-yeni-fitness-13627211_3187_m.jpg";
                     break;
                 case "Eda":
-                    imgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0B8ZEcrGxMxuS1fwt5UXqIxK-g7mEiWMdTg&s"; // Eda Yıldız
+                    imgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0B8ZEcrGxMxuS1fwt5UXqIxK-g7mEiWMdTg&s";
                     break;
                 case "Selin":
-                    imgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-QPj9vg-hfYp7gqAKnYSUWto_2rLbme0OWg&s"; // Selin Aydın
+                    imgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-QPj9vg-hfYp7gqAKnYSUWto_2rLbme0OWg&s";
                     break;
                 case "Gamze":
-                    imgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTV3mTudTNmRSYTcBbdT9k7mpIUHCRwazBEMA&s"; // Gamze Akın
-                    break;
-
-                default:
-                    // Varsayılan fotoğraf - fitness temalı
-                    imgUrl = "https://c.superprof.com/i/m/32540448/600/20240827210733/32540448.webp";
+                    imgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTV3mTudTNmRSYTcBbdT9k7mpIUHCRwazBEMA&s";
                     break;
             }
 
             <div class="col-md-4 mb-4">
                 <div class="card h-100 shadow border-0 hover-effect">
                     <div class="position-relative text-center pt-4 pb-2 bg-light">
-                        <img src="@imgUrl" class="rounded-circle shadow-sm" style="width: 140px; height: 140px; object-fit: cover; border: 4px solid white;" alt="@item.FirstName">
+                        @if (!string.IsNullOrWhiteSpace(imgUrl))
+                        {
+                            <img src="@imgUrl" class="rounded-circle shadow-sm trainer-photo" alt="@item.FirstName" loading="lazy">
+                        }
+                        else
+                        {
+                            <div class="rounded-circle shadow-sm trainer-placeholder d-inline-flex justify-content-center align-items-center">
+                                <span class="fw-bold">@initials</span>
+                            </div>
+                        }
                         <div class="mt-2">
                              <span class="badge bg-primary">@item.Specializations</span>
                         </div>
@@ -105,4 +105,18 @@
 <style>
     .hover-effect { transition: transform 0.3s ease; }
     .hover-effect:hover { transform: translateY(-5px); }
+    .trainer-photo {
+        width: 140px;
+        height: 140px;
+        object-fit: cover;
+        border: 4px solid white;
+    }
+    .trainer-placeholder {
+        width: 140px;
+        height: 140px;
+        border: 4px solid white;
+        background: #f0f0f0;
+        color: #555;
+        font-size: 2.5rem;
+    }
 </style>

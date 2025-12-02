@@ -65,18 +65,21 @@
                         <div class="mb-3">
                             <label class="form-label">Verdiği Hizmetler</label>
                             <div class="row">
-                                @foreach (var service in services)
+                                @if (services != null)
                                 {
-                                    <div class="col-md-6">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox"
-                                                   name="selectedServices" value="@service.Id" id="service-@service.Id">
-                                            <label class="form-check-label" for="service-@service.Id">
-                                                @service.Name
-                                                <small class="text-muted">(@service.ServiceType)</small>
-                                            </label>
+                                    @foreach (var service in services)
+                                    {
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox"
+                                                       name="selectedServices" value="@service.Id" id="service-@service.Id">
+                                                <label class="form-check-label" for="service-@service.Id">
+                                                    @service.Name
+                                                    <small class="text-muted">(@service.ServiceType)</small>
+                                                </label>
+                                            </div>
                                         </div>
-                                    </div>
+                                    }
                                 }
                             </div>
                             <small class="form-text text-muted">Antrenörün verebileceği hizmetleri seçin.</small>

@@ -35,7 +35,7 @@ namespace FitnessCenter.Controllers
 
 
         // GET: Admin/Appointments - Randevu Yönetimi
-        public async Task<IActionResult> Appointments(string status = null)
+        public async Task<IActionResult> Appointments(string? status = null)
         {
             var appointments = _context.Appointments
                 .Include(a => a.Member)
@@ -144,6 +144,8 @@ namespace FitnessCenter.Controllers
             if (ModelState.IsValid)
             {
                 trainer.CreatedAt = DateTime.Now;
+                // Yeni eklenen antrenörler varsayılan olarak aktif olsun
+                trainer.IsActive = true;
                 _context.Trainers.Add(trainer);
                 await _context.SaveChangesAsync();
 
@@ -177,6 +179,7 @@ namespace FitnessCenter.Controllers
         {
             var trainer = await _context.Trainers
                 .Include(t => t.Appointments)
+                .Include(t => t.Services)
                 .FirstOrDefaultAsync(t => t.Id == id);
 
             if (trainer == null)
@@ -191,11 +194,213 @@ namespace FitnessCenter.Controllers
                 return RedirectToAction("Trainers");
             }
 
+            // TrainerService ilişkilerini temizle (many-to-many)
+            trainer.Services.Clear();
+
             _context.Trainers.Remove(trainer);
             await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "Antrenör başarıyla silindi.";
             return RedirectToAction("Trainers");
+        }
+
+        // GET: Admin/Services - Hizmet Yönetimi
+        public async Task<IActionResult> Services()
+        {
+            var services = await _context.Services
+                .Include(s => s.FitnessCenter)
+                .OrderBy(s => s.Name)
+                .ToListAsync();
+
+            return View(services);
+        }
+
+        // GET: Admin/CreateService
+        public async Task<IActionResult> CreateService()
+        {
+            ViewBag.FitnessCenters = new SelectList(await _context.FitnessCenters.ToListAsync(), "Id", "Name");
+            ViewBag.ServiceTypes = new SelectList(Enum.GetValues(typeof(ServiceType)).Cast<ServiceType>()
+                .Select(e => new { Value = e.ToString(), Text = e.GetDisplayName() }), "Value", "Text");
+            return View();
+        }
+
+        // POST: Admin/CreateService
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateService(Service service)
+        {
+            if (ModelState.IsValid)
+            {
+                service.CreatedAt = DateTime.Now;
+                _context.Services.Add(service);
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Hizmet başarıyla eklendi.";
+                return RedirectToAction("Services");
+            }
+
+            ViewBag.FitnessCenters = new SelectList(await _context.FitnessCenters.ToListAsync(), "Id", "Name");
+            ViewBag.ServiceTypes = new SelectList(Enum.GetValues(typeof(ServiceType)).Cast<ServiceType>()
+                .Select(e => new { Value = e.ToString(), Text = e.GetDisplayName() }), "Value", "Text");
+            return View(service);
+        }
+
+        // GET: Admin/EditService/5
+        public async Task<IActionResult> EditService(int id)
+        {
+            var service = await _context.Services.FindAsync(id);
+            if (service == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.FitnessCenters = new SelectList(await _context.FitnessCenters.ToListAsync(), "Id", "Name", service.FitnessCenterId);
+            ViewBag.ServiceTypes = new SelectList(Enum.GetValues(typeof(ServiceType)).Cast<ServiceType>()
+                .Select(e => new { Value = e.ToString(), Text = e.GetDisplayName() }), "Value", "Text", service.ServiceType.ToString());
+            return View(service);
+        }
+
+        // POST: Admin/EditService/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditService(int id, Service service)
+        {
+            if (id != service.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(service);
+                    await _context.SaveChangesAsync();
+
+                    TempData["SuccessMessage"] = "Hizmet başarıyla güncellendi.";
+                    return RedirectToAction("Services");
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ServiceExists(service.Id))
+                    {
+                        return NotFound();
+                    }
+                    throw;
+                }
+            }
+
+            ViewBag.FitnessCenters = new SelectList(await _context.FitnessCenters.ToListAsync(), "Id", "Name", service.FitnessCenterId);
+            ViewBag.ServiceTypes = new SelectList(Enum.GetValues(typeof(ServiceType)).Cast<ServiceType>()
+                .Select(e => new { Value = e.ToString(), Text = e.GetDisplayName() }), "Value", "Text", service.ServiceType.ToString());
+            return View(service);
+        }
+
+        // POST: Admin/DeleteService/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteService(int id)
+        {
+            var service = await _context.Services
+                .Include(s => s.Appointments)
+                .Include(s => s.Trainers)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (service == null)
+            {
+                return NotFound();
+            }
+
+            // Aktif randevuları kontrol et
+            if (service.Appointments.Any(a => a.Status == AppointmentStatus.Approved || a.Status == AppointmentStatus.Pending))
+            {
+                TempData["ErrorMessage"] = "Bu hizmetin aktif randevuları olduğu için silinemez.";
+                return RedirectToAction("Services");
+            }
+
+            // TrainerService ilişkilerini temizle (many-to-many)
+            foreach (var trainer in service.Trainers.ToList())
+            {
+                trainer.Services.Remove(service);
+            }
+
+            _context.Services.Remove(service);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Hizmet başarıyla silindi.";
+            return RedirectToAction("Services");
+        }
+
+        private bool ServiceExists(int id)
+        {
+            return _context.Services.Any(e => e.Id == id);
+        }
+
+        // GET: Admin/Memberships - Üyelik Yönetimi
+        public async Task<IActionResult> Memberships()
+        {
+            var memberships = await _context.Memberships
+                .Include(m => m.Member)
+                .OrderByDescending(m => m.CreatedAt)
+                .ToListAsync();
+
+            return View(memberships);
+        }
+
+        // POST: Admin/DeleteMembership/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteMembership(int id)
+        {
+            var membership = await _context.Memberships.FindAsync(id);
+            if (membership == null)
+            {
+                return NotFound();
+            }
+
+            _context.Memberships.Remove(membership);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Üyelik başarıyla silindi.";
+            return RedirectToAction("Memberships");
+        }
+
+        // GET: Admin/ExtendMembership/5
+        public async Task<IActionResult> ExtendMembership(int id)
+        {
+            var membership = await _context.Memberships.FindAsync(id);
+            if (membership == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.MembershipTypes = new SelectList(Enum.GetValues(typeof(MembershipType)).Cast<MembershipType>()
+                .Select(e => new { Value = e.ToString(), Text = e.GetDisplayName() }), "Value", "Text", membership.MembershipType.ToString());
+            return View(membership);
+        }
+
+        // POST: Admin/ExtendMembership/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ExtendMembership(int id, MembershipType membershipType)
+        {
+            var membership = await _context.Memberships.FindAsync(id);
+            if (membership == null)
+            {
+                return NotFound();
+            }
+
+            // Mevcut bitiş tarihinden itibaren uzat
+            var extensionMonths = (int)membershipType;
+            membership.EndDate = membership.EndDate.AddMonths(extensionMonths);
+            membership.MembershipType = membershipType;
+            membership.UpdatedAt = DateTime.Now;
+            membership.IsActive = true;
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Üyelik {extensionMonths} ay uzatıldı. Yeni bitiş tarihi: {membership.EndDate:dd.MM.yyyy}";
+            return RedirectToAction("Memberships");
         }
 
     }

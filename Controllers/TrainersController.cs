@@ -233,15 +233,30 @@ namespace FitnessCenter.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var trainer = await _context.Trainers.FindAsync(id);
+            var trainer = await _context.Trainers
+                .Include(t => t.Services)
+                .Include(t => t.Appointments)
+                .FirstOrDefaultAsync(t => t.Id == id);
+            
             if (trainer != null) 
             {
-                // Eğer antrenörün randevuları varsa silmek yerine pasif yapabiliriz
-                // Ancak şimdilik doğrudan silme yapıyoruz (Cascade ayarlarınıza bağlı)
+                // Aktif randevuları kontrol et
+                if (trainer.Appointments.Any(a => a.Status == AppointmentStatus.Approved || a.Status == AppointmentStatus.Pending))
+                {
+                    TempData["ErrorMessage"] = "Bu antrenörün aktif randevuları olduğu için silinemez.";
+                    return RedirectToAction("Trainers", "Admin");
+                }
+
+                // TrainerService ilişkilerini temizle (many-to-many)
+                trainer.Services.Clear();
+
                 _context.Trainers.Remove(trainer);
+                await _context.SaveChangesAsync();
+                
+                TempData["SuccessMessage"] = "Antrenör başarıyla silindi.";
             }
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            // Admin panelinden geldiği için Admin/Trainers'a yönlendir
+            return RedirectToAction("Trainers", "Admin");
         }
 
         private bool TrainerExists(int id) => _context.Trainers.Any(e => e.Id == id);
