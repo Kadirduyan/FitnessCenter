@@ -71,67 +71,192 @@ namespace FitnessCenter.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null, bool? isAdminLogin = null)
         {
-            ViewData["ReturnUrl"] = returnUrl;
+            // adminLoginValue'yu daha geniş scope'a taşı
+            bool adminLoginValue = false;
+            LoginViewModel safeModel = model ?? new LoginViewModel();
 
-            if (ModelState.IsValid)
+            // Tüm action'ı try-catch ile sarmala - HTTP 400 hatalarını yakalamak için
+            try
             {
-                Console.WriteLine($"Giriş denemesi: Email={model.Email}, Password Length={model.Password?.Length}");
-
-                // Tüm giriş işlemleri için aynı yöntem (admin ve üye)
-                if (string.IsNullOrEmpty(model.Password))
+                // ViewBag'i en başta set et - güvenli şekilde
+                try
                 {
-                    ModelState.AddModelError(string.Empty, "Şifre gereklidir.");
-                    return View(model);
+                    if (isAdminLogin.HasValue)
+                    {
+                        adminLoginValue = isAdminLogin.Value;
+                    }
+                    else if (Request?.Form != null && Request.Form.ContainsKey("IsAdminLogin"))
+                    {
+                        var isAdminValue = Request.Form["IsAdminLogin"].ToString();
+                        adminLoginValue = isAdminValue.ToLower() == "true" || isAdminValue == "1";
+                    }
+                }
+                catch
+                {
+                    // Hata durumunda false olarak kal
+                    adminLoginValue = false;
                 }
 
-                var result = await _signInManager.PasswordSignInAsync(
-                    model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                safeModel.IsAdminLogin = adminLoginValue;
+                ViewBag.IsAdminLogin = adminLoginValue;
+                ViewData["ReturnUrl"] = returnUrl;
 
-                Console.WriteLine($"PasswordSignIn result: {result}");
-
-                if (result.Succeeded)
+                if (ModelState.IsValid && !string.IsNullOrEmpty(safeModel.Email) && !string.IsNullOrEmpty(safeModel.Password))
                 {
-                    Console.WriteLine("Giriş başarılı, kullanıcı bulunuyor...");
+                    Console.WriteLine($"Giriş denemesi: Email={safeModel.Email}, Password Length={safeModel.Password?.Length}");
 
-                    // Giriş başarılı - kullanıcının rolünü kontrol et
-                    var currentUser = await _userManager.FindByEmailAsync(model.Email);
-                    Console.WriteLine($"Current user: {currentUser?.Email}");
-
-                    if (currentUser != null)
+                    // Password null kontrolü
+                    if (string.IsNullOrEmpty(safeModel.Password))
                     {
-                        var isAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
-                        Console.WriteLine($"Is Admin: {isAdmin}");
+                        ModelState.AddModelError(string.Empty, "Yanlış e-posta veya şifre.");
+                        ViewBag.IsAdminLogin = adminLoginValue;
+                        safeModel.IsAdminLogin = adminLoginValue;
+                        return View(safeModel);
+                    }
 
-                        if (isAdmin)
+                    var result = await _signInManager.PasswordSignInAsync(
+                        safeModel.Email, safeModel.Password, safeModel.RememberMe, lockoutOnFailure: false);
+
+                    Console.WriteLine($"PasswordSignIn result: {result}");
+
+                    if (result.Succeeded)
+                    {
+                        Console.WriteLine("Giriş başarılı, kullanıcı bulunuyor...");
+
+                        try
                         {
-                            // Admin kullanıcısı - Admin paneline yönlendir
-                            Console.WriteLine("Admin giriş başarılı - yönlendirme yapılıyor!");
-                            return RedirectToAction("Index", "Admin");
-                        }
-                        else
-                        {
-                            // Normal üye - ana sayfaya yönlendir
-                            Console.WriteLine("Normal üye girişi - ana sayfaya yönlendirme...");
-                            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                            // Giriş başarılı - kullanıcının rolünü kontrol et
+                            var currentUser = await _userManager.FindByEmailAsync(safeModel.Email);
+                            Console.WriteLine($"Current user: {currentUser?.Email}");
+
+                            if (currentUser != null)
                             {
-                                return Redirect(returnUrl);
+                                var isAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
+                                Console.WriteLine($"Is Admin: {isAdmin}");
+
+                                // Form tipi kontrolü - Admin formundan geliyorsa sadece admin giriş yapabilir
+                                if (safeModel.IsAdminLogin && !isAdmin)
+                                {
+                                    try
+                                    {
+                                        await _signInManager.SignOutAsync();
+                                    }
+                                    catch { }
+                                    ModelState.AddModelError(string.Empty, "Yanlış e-posta veya şifre.");
+                                    ViewBag.IsAdminLogin = safeModel.IsAdminLogin;
+                                    safeModel.IsAdminLogin = adminLoginValue;
+                                    return View(safeModel);
+                                }
+
+                                // Üye formundan geliyorsa admin giriş yapamaz
+                                if (!safeModel.IsAdminLogin && isAdmin)
+                                {
+                                    try
+                                    {
+                                        await _signInManager.SignOutAsync();
+                                    }
+                                    catch { }
+                                    ModelState.AddModelError(string.Empty, "Yanlış e-posta veya şifre.");
+                                    ViewBag.IsAdminLogin = safeModel.IsAdminLogin;
+                                    safeModel.IsAdminLogin = adminLoginValue;
+                                    return View(safeModel);
+                                }
+
+                                if (isAdmin)
+                                {
+                                    // Admin kullanıcısı - Admin paneline yönlendir
+                                    Console.WriteLine("Admin giriş başarılı - yönlendirme yapılıyor!");
+                                    return RedirectToAction("Index", "Admin");
+                                }
+                                else
+                                {
+                                    // Normal üye - ana sayfaya yönlendir
+                                    Console.WriteLine("Normal üye girişi - ana sayfaya yönlendirme...");
+                                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                                    {
+                                        return Redirect(returnUrl);
+                                    }
+                                    return RedirectToAction("Index", "Home");
+                                }
                             }
-                            return RedirectToAction("Index", "Home");
+                            else
+                            {
+                                // Kullanıcı bulunamadı - çıkış yap ve hata göster
+                                Console.WriteLine("Kullanıcı bulunamadı!");
+                                try
+                                {
+                                    await _signInManager.SignOutAsync();
+                                }
+                                catch { }
+                                ModelState.AddModelError(string.Empty, "Yanlış e-posta veya şifre.");
+                                ViewBag.IsAdminLogin = adminLoginValue;
+                                safeModel.IsAdminLogin = adminLoginValue;
+                                return View(safeModel);
+                            }
                         }
+                        catch (Exception userCheckEx)
+                        {
+                            // Kullanıcı kontrolü sırasında hata
+                            Console.WriteLine($"Kullanıcı kontrolü hatası: {userCheckEx.Message}");
+                            try
+                            {
+                                await _signInManager.SignOutAsync();
+                            }
+                            catch { }
+                            ModelState.AddModelError(string.Empty, "Yanlış e-posta veya şifre.");
+                            ViewBag.IsAdminLogin = adminLoginValue;
+                            safeModel.IsAdminLogin = adminLoginValue;
+                            return View(safeModel);
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Geçersiz giriş bilgileri");
+                        ModelState.AddModelError(string.Empty, "Yanlış e-posta veya şifre.");
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Geçersiz giriş bilgileri");
+                    // ModelState geçersizse veya boş alanlar varsa
+                    if (string.IsNullOrEmpty(safeModel.Email) || string.IsNullOrEmpty(safeModel.Password))
+                    {
+                        ModelState.AddModelError(string.Empty, "Lütfen e-posta ve şifre alanlarını doldurun.");
+                    }
+                    else if (!ModelState.IsValid)
+                    {
+                        ModelState.AddModelError(string.Empty, "Lütfen tüm alanları doğru şekilde doldurun.");
+                    }
                 }
-
-                ModelState.AddModelError(string.Empty, "Geçersiz giriş denemesi.");
+            }
+            catch (Microsoft.AspNetCore.Antiforgery.AntiforgeryValidationException ex)
+            {
+                // Anti-forgery token hatası - sayfayı yeniden göster
+                Console.WriteLine($"Anti-forgery token hatası: {ex.Message}");
+                ModelState.Clear();
+                ModelState.AddModelError(string.Empty, "Yanlış e-posta veya şifre.");
+                ViewBag.IsAdminLogin = adminLoginValue;
+                safeModel.IsAdminLogin = adminLoginValue;
+                return View(safeModel);
+            }
+            catch (Exception ex)
+            {
+                // Hata durumunda logla ve kullanıcıya bilgi ver
+                Console.WriteLine($"Login hatası: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                ModelState.Clear();
+                ModelState.AddModelError(string.Empty, "Yanlış e-posta veya şifre.");
+            }
+            finally
+            {
+                // Her durumda ViewBag'i garantile
+                ViewBag.IsAdminLogin = adminLoginValue;
+                safeModel.IsAdminLogin = adminLoginValue;
             }
 
-            return View(model);
+            // Her durumda Login view'ını döndür - ViewBag zaten set edildi
+            return View(safeModel);
         }
 
         [HttpPost]
@@ -197,6 +322,9 @@ namespace FitnessCenter.Controllers
 
         [Display(Name = "Beni Hatırla")]
         public bool RememberMe { get; set; }
+
+        [Display(Name = "Admin Girişi")]
+        public bool IsAdminLogin { get; set; } = false;
     }
 }
 

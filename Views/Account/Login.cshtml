@@ -17,12 +17,12 @@
                     <!-- Rol Seçimi Tab'ları -->
                     <ul class="nav nav-tabs mb-4" id="loginTabs" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="member-tab" data-bs-toggle="tab" data-bs-target="#member-login" type="button" role="tab">
+                            <button class="nav-link @(ViewBag.IsAdminLogin == true ? "" : "active")" id="member-tab" data-bs-toggle="tab" data-bs-target="#member-login" type="button" role="tab">
                                 <i class="bi bi-person me-2"></i>Üye Girişi
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin-login" type="button" role="tab">
+                            <button class="nav-link @(ViewBag.IsAdminLogin == true ? "active" : "")" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin-login" type="button" role="tab">
                                 <i class="bi bi-shield-check me-2"></i>Admin Girişi
                             </button>
                         </li>
@@ -32,11 +32,12 @@
                     <div class="tab-content" id="loginTabsContent">
 
                         <!-- Üye Girişi -->
-                        <div class="tab-pane fade show active" id="member-login" role="tabpanel">
+                        <div class="tab-pane fade @(ViewBag.IsAdminLogin == true ? "" : "show active")" id="member-login" role="tabpanel">
                             <h5 class="text-center mb-3 text-primary">
                                 <i class="bi bi-person-circle me-2"></i>Üye Girişi
                             </h5>
                             <form asp-action="Login" method="post" id="memberLoginForm">
+                                <input type="hidden" asp-for="IsAdminLogin" value="false" />
                                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                                 <div class="mb-3">
@@ -69,7 +70,7 @@
                         </div>
 
                         <!-- Admin Girişi -->
-                        <div class="tab-pane fade" id="admin-login" role="tabpanel">
+                        <div class="tab-pane fade @(ViewBag.IsAdminLogin == true ? "show active" : "")" id="admin-login" role="tabpanel">
                             <h5 class="text-center mb-3 text-danger">
                                 <i class="bi bi-shield-lock me-2"></i>Admin Girişi
                             </h5>
@@ -81,13 +82,14 @@
                             </div>
 
                             <form asp-action="Login" method="post" id="adminLoginForm">
+                                <input type="hidden" name="IsAdminLogin" value="true" />
                                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                                 <div class="mb-3">
                                     <label asp-for="Email" class="form-label">
                                         <i class="bi bi-envelope me-1"></i>Admin E-posta
                                     </label>
-                                    <input asp-for="Email" class="form-control" id="adminEmail" placeholder="Admin e-posta adresi" />
+                                    <input asp-for="Email" class="form-control" id="adminEmail" name="Email" placeholder="Admin e-posta adresi" />
                                     <span asp-validation-for="Email" class="text-danger"></span>
                                 </div>
 
@@ -95,17 +97,13 @@
                                     <label asp-for="Password" class="form-label">
                                         <i class="bi bi-lock me-1"></i>Admin Şifre
                                     </label>
-                                    <input asp-for="Password" class="form-control" id="adminPassword" placeholder="Admin şifresi" />
+                                    <input asp-for="Password" class="form-control" id="adminPassword" name="Password" type="password" placeholder="Admin şifresi" />
                                     <span asp-validation-for="Password" class="text-danger"></span>
                                 </div>
 
-                                <div class="mb-3">
-                                    <div class="alert alert-info py-2">
-                                        <small>
-                                            <i class="bi bi-info-circle me-1"></i>
-                                            Admin bilgileri: G231210371@sakarya.edu.tr / sau
-                                        </small>
-                                    </div>
+                                <div class="mb-3 form-check">
+                                    <input asp-for="RememberMe" class="form-check-input" name="RememberMe" type="checkbox" />
+                                    <label asp-for="RememberMe" class="form-check-label">Beni Hatırla</label>
                                 </div>
 
                                 <div class="d-grid">
@@ -165,17 +163,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Tab değiştiğinde formları ayır
             const tabs = document.querySelectorAll('#loginTabs .nav-link');
-
-            tabs.forEach(tab => {
-                tab.addEventListener('shown.bs.tab', function (event) {
-                    const targetTab = event.target.getAttribute('data-bs-target');
-
-                    if (targetTab === '#admin-login') {
-                        // Admin tab'ı seçildiğinde bilgi mesajı göster
-                        showToast('Admin bilgileri: G231210371@sakarya.edu.tr / sau', 'info');
-                    }
-                });
-            });
         });
 
         // Admin bilgilerini manuel doldurma (kullanılmıyor)

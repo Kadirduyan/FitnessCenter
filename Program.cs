@@ -35,7 +35,10 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<FitnessCenter.Filters.AntiforgeryExceptionFilter>();
+});
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<FitnessCenter.Services.GeminiService>();
 
@@ -450,6 +453,55 @@ async Task SeedDataAsync(WebApplication app)
 
             context.TrainerAvailabilities.AddRange(availabilities);
             await context.SaveChangesAsync();
+        }
+
+        // Mevcut antrenörlere müsaitlik saatleri ekle (eğer yoksa)
+        var allTrainers = await context.Trainers.ToListAsync();
+        foreach (var trainer in allTrainers)
+        {
+            var existingAvailabilities = await context.TrainerAvailabilities
+                .Where(ta => ta.TrainerId == trainer.Id)
+                .ToListAsync();
+
+            if (!existingAvailabilities.Any())
+            {
+                Console.WriteLine($"Antrenör {trainer.FirstName} {trainer.LastName} için müsaitlik saatleri ekleniyor...");
+                var trainerAvailabilities = new List<FitnessCenter.Models.TrainerAvailability>();
+
+                // Pazartesi- Cuma: 06:00-22:00
+                for (int day = 1; day <= 5; day++)
+                {
+                    trainerAvailabilities.Add(new FitnessCenter.Models.TrainerAvailability
+                    {
+                        TrainerId = trainer.Id,
+                        DayOfWeek = (DayOfWeek)day,
+                        StartTime = new TimeSpan(6, 0, 0),
+                        EndTime = new TimeSpan(22, 0, 0)
+                    });
+                }
+
+                // Cumartesi: 08:00-20:00
+                trainerAvailabilities.Add(new FitnessCenter.Models.TrainerAvailability
+                {
+                    TrainerId = trainer.Id,
+                    DayOfWeek = DayOfWeek.Saturday,
+                    StartTime = new TimeSpan(8, 0, 0),
+                    EndTime = new TimeSpan(20, 0, 0)
+                });
+
+                // Pazar: 10:00-18:00
+                trainerAvailabilities.Add(new FitnessCenter.Models.TrainerAvailability
+                {
+                    TrainerId = trainer.Id,
+                    DayOfWeek = DayOfWeek.Sunday,
+                    StartTime = new TimeSpan(10, 0, 0),
+                    EndTime = new TimeSpan(18, 0, 0)
+                });
+
+                context.TrainerAvailabilities.AddRange(trainerAvailabilities);
+                await context.SaveChangesAsync();
+                Console.WriteLine($"Antrenör {trainer.FirstName} {trainer.LastName} için müsaitlik saatleri eklendi.");
+            }
         }
     }
     catch (Exception ex)

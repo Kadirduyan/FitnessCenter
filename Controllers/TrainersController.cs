@@ -86,6 +86,44 @@ namespace FitnessCenter.Controllers
 
                 _context.Add(trainer);
                 await _context.SaveChangesAsync();
+
+                // Yeni antrenör için müsaitlik saatleri ekle
+                var availabilities = new List<FitnessCenter.Models.TrainerAvailability>();
+
+                // Pazartesi- Cuma: 06:00-22:00, Cumartesi: 08:00-20:00, Pazar: 10:00-18:00
+                // Pazartesi - Cuma
+                for (int day = 1; day <= 5; day++)
+                {
+                    availabilities.Add(new FitnessCenter.Models.TrainerAvailability
+                    {
+                        TrainerId = trainer.Id,
+                        DayOfWeek = (DayOfWeek)day,
+                        StartTime = new TimeSpan(6, 0, 0),
+                        EndTime = new TimeSpan(22, 0, 0)
+                    });
+                }
+
+                // Cumartesi
+                availabilities.Add(new FitnessCenter.Models.TrainerAvailability
+                {
+                    TrainerId = trainer.Id,
+                    DayOfWeek = DayOfWeek.Saturday,
+                    StartTime = new TimeSpan(8, 0, 0),
+                    EndTime = new TimeSpan(20, 0, 0)
+                });
+
+                // Pazar
+                availabilities.Add(new FitnessCenter.Models.TrainerAvailability
+                {
+                    TrainerId = trainer.Id,
+                    DayOfWeek = DayOfWeek.Sunday,
+                    StartTime = new TimeSpan(10, 0, 0),
+                    EndTime = new TimeSpan(18, 0, 0)
+                });
+
+                _context.TrainerAvailabilities.AddRange(availabilities);
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
             
