@@ -139,20 +139,38 @@ namespace FitnessCenter.Controllers
         // POST: Admin/CreateTrainer
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateTrainer(Trainer trainer, int[] selectedServices)
+        public async Task<IActionResult> CreateTrainer(CreateTrainerViewModel model)
         {
+            // Spor salonu çalışma saatlerini kontrol et
+            var fitnessCenter = await _context.FitnessCenters.FindAsync(model.FitnessCenterId);
+            if (fitnessCenter != null)
+            {
+                if (model.StartTime < fitnessCenter.OpenTime || model.EndTime > fitnessCenter.CloseTime)
+                {
+                    ModelState.AddModelError("", $"Antrenör çalışma saatleri spor salonu çalışma saatleri ({fitnessCenter.OpenTime:hh\\:mm} - {fitnessCenter.CloseTime:hh\\:mm}) içinde olmalıdır.");
+                }
+            }
+
             if (ModelState.IsValid)
             {
-                trainer.CreatedAt = DateTime.Now;
-                // Yeni eklenen antrenörler varsayılan olarak aktif olsun
-                trainer.IsActive = true;
+                var trainer = new Trainer
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Email = model.Email,
+                    Specializations = model.Specializations,
+                    Description = model.Description,
+                    FitnessCenterId = model.FitnessCenterId,
+                    CreatedAt = DateTime.Now
+                };
+
                 _context.Trainers.Add(trainer);
                 await _context.SaveChangesAsync();
 
                 // Seçilen hizmetleri antrenöre ekle
-                if (selectedServices != null && selectedServices.Length > 0)
+                if (model.SelectedServices != null && model.SelectedServices.Length > 0)
                 {
-                    foreach (var serviceId in selectedServices)
+                    foreach (var serviceId in model.SelectedServices)
                     {
                         var service = await _context.Services.FindAsync(serviceId);
                         if (service != null)
@@ -163,13 +181,49 @@ namespace FitnessCenter.Controllers
                     await _context.SaveChangesAsync();
                 }
 
+                // Antrenör çalışma saatlerini ekle
+                var availabilities = new List<TrainerAvailability>();
+
+                // Pazartesi- Cuma: Kullanıcı tarafından belirlenen saatlerde
+                for (int day = 1; day <= 5; day++)
+                {
+                    availabilities.Add(new TrainerAvailability
+                    {
+                        TrainerId = trainer.Id,
+                        DayOfWeek = (DayOfWeek)day,
+                        StartTime = model.StartTime,
+                        EndTime = model.EndTime
+                    });
+                }
+
+                // Cumartesi: Kullanıcı tarafından belirlenen saatlerde
+                availabilities.Add(new TrainerAvailability
+                {
+                    TrainerId = trainer.Id,
+                    DayOfWeek = DayOfWeek.Saturday,
+                    StartTime = model.StartTime,
+                    EndTime = model.EndTime
+                });
+
+                // Pazar: Kullanıcı tarafından belirlenen saatlerde
+                availabilities.Add(new TrainerAvailability
+                {
+                    TrainerId = trainer.Id,
+                    DayOfWeek = DayOfWeek.Sunday,
+                    StartTime = model.StartTime,
+                    EndTime = model.EndTime
+                });
+
+                _context.TrainerAvailabilities.AddRange(availabilities);
+                await _context.SaveChangesAsync();
+
                 TempData["SuccessMessage"] = "Antrenör başarıyla eklendi.";
                 return RedirectToAction("Trainers");
             }
 
             ViewBag.FitnessCenters = new SelectList(await _context.FitnessCenters.ToListAsync(), "Id", "Name");
             ViewBag.Services = await _context.Services.ToListAsync();
-            return View(trainer);
+            return View(model);
         }
 
         // POST: Admin/DeleteTrainer/5

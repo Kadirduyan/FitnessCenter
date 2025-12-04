@@ -394,10 +394,10 @@ namespace FitnessCenter.Controllers
             return View(appointment);
         }
 
-        // POST: Appointments/Delete/5
-        [HttpPost, ActionName("Delete")]
+        // POST: Appointments/Cancel/5 - Üye randevuyu iptal eder
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Cancel(int id)
         {
             var appointment = await _context.Appointments.FindAsync(id);
             if (appointment != null)
@@ -406,6 +406,13 @@ namespace FitnessCenter.Controllers
                 if (!User.IsInRole("Admin") && appointment.MemberId != user!.Id)
                 {
                     return Forbid();
+                }
+
+                // Sadece beklemede olan randevular iptal edilebilir
+                if (appointment.Status != AppointmentStatus.Pending)
+                {
+                    TempData["ErrorMessage"] = "Bu randevu zaten işleme alınmış.";
+                    return RedirectToAction(nameof(Index));
                 }
 
                 // Admin değilse, randevu saati geçmemiş ve son 24 saat içinde alınmış olmalı
@@ -436,7 +443,53 @@ namespace FitnessCenter.Controllers
             }
 
             await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = "Randevu başarıyla iptal edildi.";
+            TempData["SuccessMessage"] = "Randevu başarıyla iptal edildi. Para iadesi 3 iş günü içinde ödenecektir.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // POST: Appointments/Delete/5 - Admin randevuyu siler
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var appointment = await _context.Appointments.FindAsync(id);
+            if (appointment != null)
+            {
+                // Sadece onaylanmış, reddedilmiş, tamamlanmış veya iptal edilmiş randevular silinebilir
+                if (appointment.Status != AppointmentStatus.Approved && appointment.Status != AppointmentStatus.Rejected &&
+                    appointment.Status != AppointmentStatus.Completed && appointment.Status != AppointmentStatus.Cancelled)
+                {
+                    TempData["ErrorMessage"] = "Bu randevu henüz işleme alınmamış.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Veritabanından tamamen kaldır
+                _context.Appointments.Remove(appointment);
+            }
+
+            await _context.SaveChangesAsync();
+
+            // Para iadesi mesajını durumuna göre ayarla
+            string refundMessage = "";
+            if (appointment!.Status == AppointmentStatus.Approved)
+            {
+                refundMessage = "Onaylanmış randevu silindi. Üyeye 3 iş günü içinde para iadesi yapılacaktır.";
+            }
+            else if (appointment.Status == AppointmentStatus.Rejected)
+            {
+                refundMessage = "Reddedilmiş randevu silindi. Üyeye 3 iş günü içinde para iadesi yapılacaktır.";
+            }
+            else if (appointment.Status == AppointmentStatus.Cancelled)
+            {
+                refundMessage = "İptal edilmiş randevu silindi.";
+            }
+            else
+            {
+                refundMessage = "Tamamlanmış randevu silindi.";
+            }
+
+            TempData["SuccessMessage"] = $"Randevu başarıyla silindi. {refundMessage}";
             return RedirectToAction(nameof(Index));
         }
 

@@ -19,20 +19,12 @@
                 </h5>
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-3 text-center">
-                        <img src="https://randomuser.me/api/portraits/men/@((trainer.Id + 10) % 99).jpg"
-                             class="rounded-circle shadow-sm mb-3" style="width: 80px; height: 80px; object-fit: cover;" alt="@trainer.FirstName">
-                    </div>
-                    <div class="col-md-9">
-                        <p class="mb-1"><strong>Uzmanlık Alanları:</strong> @trainer.Specializations</p>
-                        <p class="mb-1"><strong>Salon:</strong> @trainer.FitnessCenter?.Name</p>
-                        @if (!string.IsNullOrEmpty(trainer.Description))
-                        {
-                            <p class="mb-0"><strong>Hakkında:</strong> @trainer.Description</p>
-                        }
-                    </div>
-                </div>
+                <p class="mb-1"><strong>Uzmanlık Alanları:</strong> @trainer.Specializations</p>
+                <p class="mb-1"><strong>Salon:</strong> @trainer.FitnessCenter?.Name</p>
+                @if (!string.IsNullOrEmpty(trainer.Description))
+                {
+                    <p class="mb-0"><strong>Hakkında:</strong> @trainer.Description</p>
+                }
             </div>
         </div>
     }

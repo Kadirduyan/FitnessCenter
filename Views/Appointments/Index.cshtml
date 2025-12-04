@@ -201,16 +201,16 @@
                                         </a>
                                     }
 
-                                    @if ((item.Status == AppointmentStatus.Pending || item.Status == AppointmentStatus.Approved) && User.IsInRole("Admin"))
+                                    @if ((item.Status == AppointmentStatus.Approved || item.Status == AppointmentStatus.Rejected || item.Status == AppointmentStatus.Completed || item.Status == AppointmentStatus.Cancelled) && User.IsInRole("Admin"))
                                     {
                                         <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline"
-                                              onsubmit="return confirm('Bu randevuyu iptal etmek istediğinizden emin misiniz?')">
+                                              onsubmit="return confirm('Bu randevuyu silmek istediğinizden emin misiniz?')">
                                             <button type="submit" class="btn btn-danger btn-sm">
-                                                <i class="bi bi-x-circle me-1"></i>İptal Et
+                                                <i class="bi bi-x-circle me-1"></i>Sil
                                             </button>
                                         </form>
                                     }
-                                    else if (item.Status == AppointmentStatus.Pending || item.Status == AppointmentStatus.Approved)
+                                    else if (item.Status == AppointmentStatus.Pending)
                                     {
                                         var now = DateTime.Now;
                                         var appointmentDateTime = item.AppointmentDate.Date + item.AppointmentTime;
@@ -219,9 +219,9 @@
 
                                         if (canCancel)
                                         {
-                                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline"
-                                                  onsubmit="return confirm('Bu randevuyu iptal etmek istediğinizden emin misiniz?')">
-                                                <button type="submit" class="btn btn-danger btn-sm">
+                                            <form asp-action="Cancel" asp-route-id="@item.Id" method="post" class="d-inline"
+                                                  onsubmit="return confirm('Bu randevuyu iptal etmek istediğinizden emin misiniz? Para iadesi 3 iş günü içinde ödenecektir.')">
+                                                <button type="submit" class="btn btn-warning btn-sm">
                                                     <i class="bi bi-x-circle me-1"></i>İptal Et
                                                 </button>
                                             </form>

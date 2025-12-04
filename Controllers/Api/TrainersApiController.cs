@@ -54,7 +54,6 @@ namespace FitnessCenter.Controllers.Api
                     t.LastName,
                     FullName = t.FullName,
                     t.Email,
-                    t.Phone,
                     t.Specializations,
                     t.Description,
                     t.IsActive,
@@ -98,7 +97,6 @@ namespace FitnessCenter.Controllers.Api
                 trainer.LastName,
                 FullName = trainer.FullName,
                 trainer.Email,
-                trainer.Phone,
                 trainer.Specializations,
                 trainer.Description,
                 trainer.IsActive,
@@ -169,7 +167,6 @@ namespace FitnessCenter.Controllers.Api
                     t.LastName,
                     FullName = t.FullName,
                     t.Email,
-                    t.Phone,
                     t.Specializations,
                     Availability = t.Availabilities
                         .Where(a => a.DayOfWeek == dayOfWeek)

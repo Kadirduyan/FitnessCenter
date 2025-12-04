@@ -20,12 +20,25 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var fitnessCenters = await _context.FitnessCenters
-            .Include(fc => fc.Services)
-            .Include(fc => fc.Trainers)
-            .ToListAsync();
+        if (User.IsInRole("Admin"))
+        {
+            // Admin için istatistik verileri
+            ViewBag.TotalAppointments = await _context.Appointments.CountAsync();
+            ViewBag.TotalTrainers = await _context.Trainers.CountAsync(t => t.IsActive);
+            ViewBag.TotalServices = await _context.Services.CountAsync();
+            ViewBag.TotalMembers = await _context.Users.CountAsync();
+        }
+        else
+        {
+            // Normal üye için fitness center verileri
+            var fitnessCenters = await _context.FitnessCenters
+                .Include(fc => fc.Services)
+                .Include(fc => fc.Trainers)
+                .ToListAsync();
 
-        ViewBag.FitnessCenters = fitnessCenters;
+            ViewBag.FitnessCenters = fitnessCenters;
+        }
+
         return View();
     }
 

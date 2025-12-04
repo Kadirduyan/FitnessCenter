@@ -171,7 +171,6 @@ namespace FitnessCenter.Controllers
                     trainerToUpdate.FirstName = trainer.FirstName;
                     trainerToUpdate.LastName = trainer.LastName;
                     trainerToUpdate.Email = trainer.Email;
-                    trainerToUpdate.Phone = trainer.Phone;
                     trainerToUpdate.Specializations = trainer.Specializations;
                     trainerToUpdate.Description = trainer.Description;
                     trainerToUpdate.FitnessCenterId = trainer.FitnessCenterId;

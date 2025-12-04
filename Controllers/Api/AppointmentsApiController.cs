@@ -85,8 +85,7 @@ namespace FitnessCenter.Controllers.Api
                     {
                         a.Trainer!.Id,
                         FullName = a.Trainer.FullName,
-                        a.Trainer.Email,
-                        a.Trainer.Phone
+                        a.Trainer.Email
                     },
                     Service = new
                     {
@@ -144,7 +143,6 @@ namespace FitnessCenter.Controllers.Api
                     appointment.Trainer!.Id,
                     FullName = appointment.Trainer.FullName,
                     appointment.Trainer.Email,
-                    appointment.Trainer.Phone
                 },
                 Service = new
                 {
