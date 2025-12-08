@@ -4,10 +4,31 @@
     ViewData["Title"] = "Üyelik Yönetimi";
 }
 
-<div class="container my-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">Üyelik Yönetimi</h1>
-    </div>
+<!-- Admin Page Container - Dark Theme -->
+<div class="admin-page">
+    <div class="container-fluid py-4">
+        <!-- Header Section -->
+        <div class="admin-header-section mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="page-title-section">
+                        <div class="page-icon">
+                            <i class="bi bi-card-checklist"></i>
+                        </div>
+                        <div class="page-title-content">
+                            <h1 class="page-title">ÜYELİK YÖNETİMİ</h1>
+                            <p class="page-subtitle">Üyelikleri görüntüleyin ve yönetin</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a href="/Admin/Index" class="admin-back-btn">
+                        <i class="bi bi-arrow-left me-2"></i>
+                        Panele Dön
+                    </a>
+                </div>
+            </div>
+        </div>
 
     @if (TempData["SuccessMessage"] != null)
     {
@@ -25,73 +46,626 @@
         </div>
     }
 
-    <div class="card">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Üye</th>
-                            <th>Üyelik Türü</th>
-                            <th>Başlangıç Tarihi</th>
-                            <th>Bitiş Tarihi</th>
-                            <th>Kalan Gün</th>
-                            <th>Ücret</th>
-                            <th>Durum</th>
-                            <th>İşlemler</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var membership in Model)
-                        {
-                            <tr>
-                                <td>
-                                    <div>
-                                        <strong>@membership.Member?.FirstName @membership.Member?.LastName</strong><br>
-                                        <small class="text-muted">@membership.Member?.Email</small>
+        <!-- Memberships Grid -->
+        @if (Model.Any())
+        {
+            <div class="memberships-grid">
+                @foreach (var membership in Model)
+                {
+                    <div class="membership-card-modern">
+                        <!-- Membership Card Header -->
+                        <div class="membership-card-header">
+                            <div class="member-info-section">
+                                <div class="member-avatar">
+                                    <span class="avatar-text">@(membership.Member?.FirstName[0])@(membership.Member?.LastName[0])</span>
+                                </div>
+                                <div class="member-details">
+                                    <h4 class="member-name">@membership.Member?.FirstName @membership.Member?.LastName</h4>
+                                    <div class="member-email">
+                                        <i class="bi bi-envelope-fill"></i>
+                                        <span>@membership.Member?.Email</span>
                                     </div>
-                                </td>
-                                <td>
-                                    <span class="badge bg-info">@membership.MembershipType.GetDisplayName()</span>
-                                </td>
-                                <td>@membership.StartDate.ToString("dd.MM.yyyy")</td>
-                                <td>@membership.EndDate.ToString("dd.MM.yyyy")</td>
-                                <td>
-                                    <span class="badge bg-@membership.StatusColor">@membership.DaysRemaining gün</span>
-                                </td>
-                                <td><strong>@membership.Price.ToString("C")</strong></td>
-                                <td>
-                                    <span class="badge bg-@membership.StatusColor">@membership.StatusText</span>
-                                </td>
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        <a asp-action="ExtendMembership" asp-route-id="@membership.Id"
-                                           class="btn btn-sm btn-outline-success">
-                                            <i class="bi bi-calendar-plus"></i> Uzat
-                                        </a>
-                                        <form asp-action="DeleteMembership" asp-route-id="@membership.Id"
-                                              method="post" class="d-inline"
-                                              onsubmit="return confirm('Bu üyeliği silmek istediğinizden emin misiniz?');">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                <i class="bi bi-trash"></i> Sil
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+                                </div>
+                            </div>
+                            <div class="membership-status">
+                                <span class="status-badge @(membership.StatusColor)">
+                                    @membership.StatusText
+                                </span>
+                            </div>
+                        </div>
 
-            @if (!Model.Any())
-            {
-                <div class="text-center py-5">
-                    <i class="bi bi-card-checklist text-muted" style="font-size: 3rem;"></i>
-                    <h5 class="text-muted mt-3">Henüz üyelik kaydı bulunmuyor</h5>
+                        <!-- Membership Card Body -->
+                        <div class="membership-card-body">
+                            <!-- Membership Type -->
+                            <div class="membership-type-section">
+                                <div class="type-icon">
+                                    <i class="bi bi-card-checklist"></i>
+                                </div>
+                                <div class="type-info">
+                                    <div class="type-label">ÜYELİK TÜRÜ</div>
+                                    <div class="type-value">@membership.MembershipType.GetDisplayName()</div>
+                                </div>
+                            </div>
+
+                            <!-- Membership Dates -->
+                            <div class="membership-dates">
+                                <div class="date-item">
+                                    <div class="date-icon">
+                                        <i class="bi bi-calendar-event"></i>
+                                    </div>
+                                    <div class="date-content">
+                                        <div class="date-label">Başlangıç</div>
+                                        <div class="date-value">@membership.StartDate.ToString("dd.MM.yyyy")</div>
+                                    </div>
+                                </div>
+
+                                <div class="date-item">
+                                    <div class="date-icon">
+                                        <i class="bi bi-calendar-x"></i>
+                                    </div>
+                                    <div class="date-content">
+                                        <div class="date-label">Bitiş</div>
+                                        <div class="date-value">@membership.EndDate.ToString("dd.MM.yyyy")</div>
+                                    </div>
+                                </div>
+
+                                <div class="date-item">
+                                    <div class="date-icon @(membership.DaysRemaining <= 7 ? "warning" : membership.DaysRemaining <= 30 ? "info" : "success")">
+                                        <i class="bi bi-hourglass-split"></i>
+                                    </div>
+                                    <div class="date-content">
+                                        <div class="date-label">Kalan Gün</div>
+                                        <div class="date-value @(membership.DaysRemaining <= 7 ? "warning" : membership.DaysRemaining <= 30 ? "info" : "success")">
+                                            @membership.DaysRemaining gün
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Membership Price -->
+                            <div class="membership-price-section">
+                                <div class="price-icon">
+                                    <i class="bi bi-cash-coin"></i>
+                                </div>
+                                <div class="price-info">
+                                    <div class="price-label">ÜCRET</div>
+                                    <div class="price-value">@membership.Price.ToString("C")</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Membership Actions -->
+                        <div class="membership-card-actions">
+                            <div class="action-buttons">
+                                <a asp-action="ExtendMembership" asp-route-id="@membership.Id"
+                                   class="action-btn extend-btn">
+                                    <i class="bi bi-calendar-plus-fill"></i>
+                                    <span>Üyeliği Uzat</span>
+                                </a>
+                                <form asp-action="DeleteMembership" asp-route-id="@membership.Id"
+                                      method="post" class="d-inline"
+                                      onsubmit="return confirm('Bu üyeliği silmek istediğinizden emin misiniz?');">
+                                    <button type="submit" class="action-btn delete-btn">
+                                        <i class="bi bi-trash-fill"></i>
+                                        <span>Sil</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <!-- Empty State -->
+            <div class="empty-state-section">
+                <div class="empty-state-content">
+                    <div class="empty-icon">
+                        <i class="bi bi-card-checklist"></i>
+                    </div>
+                    <h3 class="empty-title">Henüz Üyelik Kaydı Bulunmuyor</h3>
+                    <p class="empty-description">Sistemde aktif üyelik bulunmuyor. Üyeler üyelik satın aldığında burada görünecek.</p>
                 </div>
-            }
-        </div>
+            </div>
+        }
     </div>
 </div>
+
+<!-- Admin Dark Theme Styles -->
+<style>
+    /* Admin Page Base Styles */
+    .admin-page {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        min-height: 100vh;
+        color: #e0e0e0;
+    }
+
+    /* Header Section */
+    .admin-header-section {
+        background: linear-gradient(135deg, #2a2a2a 0%, #3d3d3d 100%);
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        border: 1px solid #404040;
+    }
+
+    .page-title-section {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .page-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin: 0;
+        color: #ffffff;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        letter-spacing: 1px;
+    }
+
+    .page-subtitle {
+        margin: 5px 0 0 0;
+        color: #b0b0b0;
+        font-size: 1rem;
+    }
+
+    .admin-back-btn {
+        background: linear-gradient(135deg, #4a4a4a 0%, #5a5a5a 100%);
+        color: #ffffff;
+        padding: 12px 24px;
+        border-radius: 10px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: 1px solid #606060;
+    }
+
+    .admin-back-btn:hover {
+        background: linear-gradient(135deg, #5a5a5a 0%, #6a6a6a 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        color: #ffffff;
+    }
+
+    /* Memberships Grid */
+    .memberships-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+        gap: 25px;
+    }
+
+    /* Membership Cards */
+    .membership-card-modern {
+        background: linear-gradient(135deg, #2a2a2a 0%, #3d3d3d 100%);
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        border: 1px solid #404040;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .membership-card-modern:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        border-color: #505050;
+    }
+
+    .membership-card-modern::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+    }
+
+    /* Card Header */
+    .membership-card-header {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #404040;
+    }
+
+    .member-info-section {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .member-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .member-details {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .member-name {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin: 0;
+    }
+
+    .member-email {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #b0b0b0;
+        font-size: 0.9rem;
+    }
+
+    .member-email i {
+        color: #667eea;
+    }
+
+    .membership-status {
+        flex-shrink: 0;
+    }
+
+    .status-badge {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-badge.active {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+    }
+
+    .status-badge.expired {
+        background: linear-gradient(135deg, #dc3545, #fd7e14);
+        color: white;
+    }
+
+    .status-badge.expiring {
+        background: linear-gradient(135deg, #ffc107, #fd7e14);
+        color: white;
+    }
+
+    /* Card Body */
+    .membership-card-body {
+        padding: 25px;
+    }
+
+    .membership-type-section {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        border-radius: 10px;
+        border: 1px solid #404040;
+    }
+
+    .type-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.3rem;
+        flex-shrink: 0;
+    }
+
+    .type-info {
+        flex: 1;
+    }
+
+    .type-label {
+        color: #b0b0b0;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 2px;
+    }
+
+    .type-value {
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    /* Membership Dates */
+    .membership-dates {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .date-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        border-radius: 10px;
+        border: 1px solid #404040;
+    }
+
+    .date-icon {
+        width: 35px;
+        height: 35px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #17a2b8, #6610f2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    .date-icon.warning {
+        background: linear-gradient(135deg, #ffc107, #fd7e14);
+    }
+
+    .date-icon.info {
+        background: linear-gradient(135deg, #17a2b8, #6610f2);
+    }
+
+    .date-icon.success {
+        background: linear-gradient(135deg, #28a745, #20c997);
+    }
+
+    .date-content {
+        flex: 1;
+    }
+
+    .date-label {
+        color: #b0b0b0;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 2px;
+    }
+
+    .date-value {
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .date-value.warning {
+        color: #ffc107;
+    }
+
+    .date-value.info {
+        color: #17a2b8;
+    }
+
+    .date-value.success {
+        color: #28a745;
+    }
+
+    /* Membership Price */
+    .membership-price-section {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        border-radius: 10px;
+        border: 1px solid #404040;
+        margin-bottom: 0;
+    }
+
+    .price-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #28a745, #20c997);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.3rem;
+        flex-shrink: 0;
+    }
+
+    .price-info {
+        flex: 1;
+    }
+
+    .price-label {
+        color: #b0b0b0;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 2px;
+    }
+
+    .price-value {
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 1.3rem;
+    }
+
+    /* Actions */
+    .membership-card-actions {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        padding: 20px;
+        border-top: 1px solid #404040;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        flex: 1;
+        justify-content: center;
+    }
+
+    .extend-btn {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+    }
+
+    .extend-btn:hover {
+        background: linear-gradient(135deg, #218838, #1aa085);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+    }
+
+    .delete-btn {
+        background: linear-gradient(135deg, #dc3545, #fd7e14);
+        color: white;
+    }
+
+    .delete-btn:hover {
+        background: linear-gradient(135deg, #c82333, #e8680d);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+    }
+
+    /* Empty State */
+    .empty-state-section {
+        background: linear-gradient(135deg, #2a2a2a 0%, #3d3d3d 100%);
+        border-radius: 15px;
+        padding: 60px 40px;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        border: 1px solid #404040;
+    }
+
+    .empty-state-content {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: #667eea;
+        margin-bottom: 20px;
+        opacity: 0.7;
+    }
+
+    .empty-title {
+        color: #ffffff;
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    .empty-description {
+        color: #b0b0b0;
+        font-size: 1.1rem;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .page-title {
+            font-size: 1.8rem;
+        }
+
+        .memberships-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .membership-card-header {
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+
+        .member-info-section {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .membership-dates {
+            grid-template-columns: 1fr;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .action-btn {
+            width: 100%;
+        }
+    }
+
+    /* Animation for loading */
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .membership-card-modern {
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    .membership-card-modern:nth-child(1) { animation-delay: 0.1s; }
+    .membership-card-modern:nth-child(2) { animation-delay: 0.2s; }
+    .membership-card-modern:nth-child(3) { animation-delay: 0.3s; }
+    .membership-card-modern:nth-child(4) { animation-delay: 0.4s; }
+</style>
 

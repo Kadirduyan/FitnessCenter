@@ -30,6 +30,200 @@
         .contact-item i {
             font-size: 1rem;
         }
+
+        /* Admin Dropdown Professional Design */
+        .admin-dropdown-toggle {
+            background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+            color: #ffffff !important;
+            border: 1px solid #404040;
+            border-radius: 25px;
+            padding: 8px 16px !important;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.85rem;
+            position: relative;
+        }
+
+        .admin-dropdown-toggle:hover {
+            background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
+            border-color: #555555;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            color: #ffffff !important;
+        }
+
+        .admin-dropdown-toggle:focus {
+            box-shadow: 0 0 0 0.2rem rgba(64, 64, 64, 0.5);
+        }
+
+        .admin-text {
+            background: linear-gradient(45deg, #007bff, #28a745, #ffc107, #dc3545);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .dropdown-arrow {
+            font-size: 0.7rem;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item.dropdown:hover .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .admin-dropdown-menu {
+            background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%);
+            border: 1px solid #404040;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            padding: 0;
+            min-width: 320px;
+            margin-top: 8px;
+        }
+
+        .admin-dropdown-menu::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            right: 20px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid #404040;
+        }
+
+        .admin-dropdown-menu::after {
+            content: '';
+            position: absolute;
+            top: -7px;
+            right: 20px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid #2a2a2a;
+        }
+
+        .dropdown-header {
+            background: linear-gradient(135deg, #333333 0%, #262626 100%);
+            color: #ffffff;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.8rem;
+            padding: 12px 16px;
+            margin: 0;
+            border-bottom: 1px solid #404040;
+        }
+
+        .admin-menu-item {
+            display: flex !important;
+            align-items: center;
+            padding: 12px 16px !important;
+            color: #e0e0e0 !important;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid #333333;
+        }
+
+        .admin-menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .admin-menu-item:hover {
+            background: linear-gradient(135deg, #3a3a3a 0%, #2e2e2e 100%);
+            color: #ffffff !important;
+            transform: translateX(5px);
+        }
+
+        .menu-icon {
+            background: linear-gradient(135deg, #4a4a4a 0%, #333333 100%);
+            border-radius: 10px;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 1.2rem;
+            margin-right: 12px;
+            flex-shrink: 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .menu-content {
+            flex: 1;
+        }
+
+        .menu-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #ffffff;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .menu-description {
+            font-size: 0.75rem;
+            color: #a0a0a0;
+            margin: 0;
+            font-weight: 400;
+        }
+
+        /* Custom scrollbar for dropdown */
+        .admin-dropdown-menu::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .admin-dropdown-menu::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+
+        .admin-dropdown-menu::-webkit-scrollbar-thumb {
+            background: #404040;
+            border-radius: 3px;
+        }
+
+        .admin-dropdown-menu::-webkit-scrollbar-thumb:hover {
+            background: #555555;
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 768px) {
+            .admin-dropdown-toggle {
+                padding: 6px 12px !important;
+                margin: 0 5px;
+                font-size: 0.75rem;
+            }
+
+            .admin-dropdown-menu {
+                min-width: 280px;
+                margin-top: 5px;
+            }
+
+            .menu-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
+
+            .menu-title {
+                font-size: 0.9rem;
+            }
+
+            .menu-description {
+                font-size: 0.7rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -99,18 +293,61 @@
                     @if (User.IsInRole("Admin"))
                     {
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-warning fw-bold" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="bi bi-shield-check me-1"></i>⚡ ADMIN PANELİ
+                            <a class="nav-link admin-dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-shield-check-fill me-2"></i>
+                                <span class="admin-text">ADMIN PANELİ</span>
+                                <i class="bi bi-chevron-down ms-1 dropdown-arrow"></i>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end shadow-lg">
-                                <li><a class="dropdown-item fw-bold" asp-controller="Admin" asp-action="Appointments">
-                                    <i class="bi bi-calendar-check me-2"></i>Randevu Yönetimi</a></li>
-                                <li><a class="dropdown-item fw-bold" asp-controller="Admin" asp-action="Trainers">
-                                    <i class="bi bi-person-badge me-2"></i>Antrenör Yönetimi</a></li>
-                                <li><a class="dropdown-item fw-bold" asp-controller="Admin" asp-action="Services">
-                                    <i class="bi bi-list-check me-2"></i>Hizmet Yönetimi</a></li>
-                                <li><a class="dropdown-item fw-bold" asp-controller="Admin" asp-action="Memberships">
-                                    <i class="bi bi-card-checklist me-2"></i>Üyelik Yönetimi</a></li>
+                            <ul class="dropdown-menu admin-dropdown-menu shadow-xl">
+                                <li class="dropdown-header">
+                                    <i class="bi bi-gear-fill me-2"></i>
+                                    Yönetim Modülleri
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item admin-menu-item" asp-controller="Admin" asp-action="Appointments">
+                                        <div class="menu-icon">
+                                            <i class="bi bi-calendar-check-fill"></i>
+                                        </div>
+                                        <div class="menu-content">
+                                            <div class="menu-title">Randevu Yönetimi</div>
+                                            <div class="menu-description">Tüm randevuları yönet</div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item admin-menu-item" asp-controller="Admin" asp-action="Trainers">
+                                        <div class="menu-icon">
+                                            <i class="bi bi-person-badge-fill"></i>
+                                        </div>
+                                        <div class="menu-content">
+                                            <div class="menu-title">Antrenör Yönetimi</div>
+                                            <div class="menu-description">Antrenörleri yönet</div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item admin-menu-item" asp-controller="Admin" asp-action="Services">
+                                        <div class="menu-icon">
+                                            <i class="bi bi-tools-fill"></i>
+                                        </div>
+                                        <div class="menu-content">
+                                            <div class="menu-title">Hizmet Yönetimi</div>
+                                            <div class="menu-description">Hizmetleri yönet</div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item admin-menu-item" asp-controller="Admin" asp-action="Memberships">
+                                        <div class="menu-icon">
+                                            <i class="bi bi-card-checklist-fill"></i>
+                                        </div>
+                                        <div class="menu-content">
+                                            <div class="menu-title">Üyelik Yönetimi</div>
+                                            <div class="menu-description">Üyelikleri yönet</div>
+                                        </div>
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                     }

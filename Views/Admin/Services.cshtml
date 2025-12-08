@@ -4,13 +4,35 @@
     ViewData["Title"] = "Hizmet Yönetimi";
 }
 
-<div class="container my-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">Hizmet Yönetimi</h1>
-        <a asp-action="CreateService" class="btn btn-success">
-            <i class="bi bi-plus-circle me-2"></i>Yeni Hizmet Ekle
-        </a>
-    </div>
+<!-- Admin Page Container - Dark Theme -->
+<div class="admin-page">
+    <div class="container-fluid py-4">
+        <!-- Header Section -->
+        <div class="admin-header-section mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="page-title-section">
+                        <div class="page-icon">
+                            <i class="bi bi-tools"></i>
+                        </div>
+                        <div class="page-title-content">
+                            <h1 class="page-title">HİZMET YÖNETİMİ</h1>
+                            <p class="page-subtitle">Hizmetleri görüntüleyin ve yönetin</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a href="/Admin/Index" class="admin-back-btn">
+                        <i class="bi bi-arrow-left me-2"></i>
+                        Panele Dön
+                    </a>
+                    <a asp-action="CreateService" class="admin-add-btn">
+                        <i class="bi bi-plus-circle-fill me-2"></i>
+                        Yeni Hizmet Ekle
+                    </a>
+                </div>
+            </div>
+        </div>
 
     @if (TempData["SuccessMessage"] != null)
     {
@@ -28,69 +50,489 @@
         </div>
     }
 
-    <div class="card">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Hizmet Adı</th>
-                            <th>Hizmet Türü</th>
-                            <th>Süre</th>
-                            <th>Ücret</th>
-                            <th>Spor Salonu</th>
-                            <th>İşlemler</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var service in Model)
-                        {
-                            <tr>
-                                <td>
-                                    <strong>@service.Name</strong>
-                                    @if (!string.IsNullOrEmpty(service.Description))
-                                    {
-                                        <br><small class="text-muted">@service.Description</small>
-                                    }
-                                </td>
-                                <td>
-                                    <span class="badge bg-primary">@service.ServiceType.GetDisplayName()</span>
-                                </td>
-                                <td>@service.DurationMinutes dakika</td>
-                                <td><strong>@service.Price.ToString("C")</strong></td>
-                                <td>@service.FitnessCenter?.Name</td>
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        <a asp-action="EditService" asp-route-id="@service.Id"
-                                           class="btn btn-sm btn-outline-warning">
-                                            <i class="bi bi-pencil"></i> Düzenle
-                                        </a>
-                                        <form asp-action="DeleteService" asp-route-id="@service.Id"
-                                              method="post" class="d-inline"
-                                              onsubmit="return confirm('Bu hizmeti silmek istediğinizden emin misiniz?');">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                <i class="bi bi-trash"></i> Sil
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+        <!-- Services Grid -->
+        @if (Model.Any())
+        {
+            <div class="services-grid">
+                @foreach (var service in Model)
+                {
+                    <div class="service-card-modern">
+                        <!-- Service Card Header -->
+                        <div class="service-card-header">
+                            <div class="service-icon-section">
+                                <div class="service-icon">
+                                    <i class="bi bi-tools"></i>
+                                </div>
+                                <div class="service-type-badge">
+                                    <span class="service-type">@service.ServiceType.GetDisplayName()</span>
+                                </div>
+                            </div>
+                            <div class="service-actions">
+                                <a asp-action="EditService" asp-route-id="@service.Id"
+                                   class="action-btn edit-btn" title="Düzenle">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
+                                <form asp-action="DeleteService" asp-route-id="@service.Id"
+                                      method="post" class="d-inline"
+                                      onsubmit="return confirm('Bu hizmeti silmek istediğinizden emin misiniz?');">
+                                    <button type="submit" class="action-btn delete-btn" title="Sil">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
 
-            @if (!Model.Any())
-            {
-                <div class="text-center py-5">
-                    <i class="bi bi-list-check text-muted" style="font-size: 3rem;"></i>
-                    <h5 class="text-muted mt-3">Henüz hizmet eklenmemiş</h5>
-                    <a asp-action="CreateService" class="btn btn-primary mt-3">
+                        <!-- Service Card Body -->
+                        <div class="service-card-body">
+                            <!-- Service Info -->
+                            <div class="service-info-section">
+                                <h3 class="service-name">@service.Name</h3>
+                                @if (!string.IsNullOrEmpty(service.Description))
+                                {
+                                    <div class="service-description">
+                                        <i class="bi bi-info-circle-fill"></i>
+                                        <span>@service.Description</span>
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Service Details -->
+                            <div class="service-details">
+                                <div class="detail-item">
+                                    <div class="detail-icon">
+                                        <i class="bi bi-clock-fill"></i>
+                                    </div>
+                                    <div class="detail-content">
+                                        <div class="detail-label">Süre</div>
+                                        <div class="detail-value">@service.DurationMinutes dakika</div>
+                                    </div>
+                                </div>
+
+                                <div class="detail-item">
+                                    <div class="detail-icon">
+                                        <i class="bi bi-cash-coin"></i>
+                                    </div>
+                                    <div class="detail-content">
+                                        <div class="detail-label">Ücret</div>
+                                        <div class="detail-value">@service.Price.ToString("C")</div>
+                                    </div>
+                                </div>
+
+                                <div class="detail-item">
+                                    <div class="detail-icon">
+                                        <i class="bi bi-geo-alt-fill"></i>
+                                    </div>
+                                    <div class="detail-content">
+                                        <div class="detail-label">Spor Salonu</div>
+                                        <div class="detail-value">@service.FitnessCenter?.Name</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <!-- Empty State -->
+            <div class="empty-state-section">
+                <div class="empty-state-content">
+                    <div class="empty-icon">
+                        <i class="bi bi-list-check"></i>
+                    </div>
+                    <h3 class="empty-title">Henüz Hizmet Eklenmemiş</h3>
+                    <p class="empty-description">Sistemde kayıtlı hizmet bulunmuyor. İlk hizmeti ekleyerek başlayabilirsiniz.</p>
+                    <a asp-action="CreateService" class="admin-add-btn">
+                        <i class="bi bi-plus-circle-fill me-2"></i>
                         İlk Hizmeti Ekle
                     </a>
                 </div>
-            }
-        </div>
+            </div>
+        }
     </div>
 </div>
+
+<!-- Admin Dark Theme Styles -->
+<style>
+    /* Admin Page Base Styles */
+    .admin-page {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        min-height: 100vh;
+        color: #e0e0e0;
+    }
+
+    /* Header Section */
+    .admin-header-section {
+        background: linear-gradient(135deg, #2a2a2a 0%, #3d3d3d 100%);
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        border: 1px solid #404040;
+    }
+
+    .page-title-section {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .page-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin: 0;
+        color: #ffffff;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        letter-spacing: 1px;
+    }
+
+    .page-subtitle {
+        margin: 5px 0 0 0;
+        color: #b0b0b0;
+        font-size: 1rem;
+    }
+
+    .admin-back-btn {
+        background: linear-gradient(135deg, #4a4a4a 0%, #5a5a5a 100%);
+        color: #ffffff;
+        padding: 12px 24px;
+        border-radius: 10px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: 1px solid #606060;
+        margin-right: 15px;
+    }
+
+    .admin-back-btn:hover {
+        background: linear-gradient(135deg, #5a5a5a 0%, #6a6a6a 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        color: #ffffff;
+    }
+
+    .admin-add-btn {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: #ffffff;
+        padding: 12px 24px;
+        border-radius: 10px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: 1px solid #28a745;
+    }
+
+    .admin-add-btn:hover {
+        background: linear-gradient(135deg, #218838, #1aa085);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+        color: #ffffff;
+    }
+
+    /* Services Grid */
+    .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 25px;
+    }
+
+    /* Service Cards */
+    .service-card-modern {
+        background: linear-gradient(135deg, #2a2a2a 0%, #3d3d3d 100%);
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        border: 1px solid #404040;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .service-card-modern:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        border-color: #505050;
+    }
+
+    .service-card-modern::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+    }
+
+    /* Card Header */
+    .service-card-header {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #404040;
+    }
+
+    .service-icon-section {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .service-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .service-type-badge {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .service-type {
+        background: linear-gradient(135deg, #17a2b8, #6610f2);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .service-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .action-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+    }
+
+    .edit-btn {
+        background: linear-gradient(135deg, #ffc107, #fd7e14);
+        color: white;
+    }
+
+    .edit-btn:hover {
+        background: linear-gradient(135deg, #e0a800, #e8680d);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+    }
+
+    .delete-btn {
+        background: linear-gradient(135deg, #dc3545, #fd7e14);
+        color: white;
+    }
+
+    .delete-btn:hover {
+        background: linear-gradient(135deg, #c82333, #e8680d);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+    }
+
+    /* Card Body */
+    .service-card-body {
+        padding: 25px;
+    }
+
+    .service-info-section {
+        margin-bottom: 20px;
+    }
+
+    .service-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 8px;
+    }
+
+    .service-description {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        color: #b0b0b0;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .service-description i {
+        color: #667eea;
+        margin-top: 2px;
+        flex-shrink: 0;
+    }
+
+    /* Service Details */
+    .service-details {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        border-radius: 10px;
+        border: 1px solid #404040;
+    }
+
+    .detail-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .detail-content {
+        flex: 1;
+    }
+
+    .detail-label {
+        color: #b0b0b0;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 2px;
+    }
+
+    .detail-value {
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    /* Empty State */
+    .empty-state-section {
+        background: linear-gradient(135deg, #2a2a2a 0%, #3d3d3d 100%);
+        border-radius: 15px;
+        padding: 60px 40px;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        border: 1px solid #404040;
+    }
+
+    .empty-state-content {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: #667eea;
+        margin-bottom: 20px;
+        opacity: 0.7;
+    }
+
+    .empty-title {
+        color: #ffffff;
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    .empty-description {
+        color: #b0b0b0;
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .page-title {
+            font-size: 1.8rem;
+        }
+
+        .services-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .service-card-header {
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+
+        .service-actions {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .service-details {
+            gap: 12px;
+        }
+
+        .detail-item {
+            padding: 10px;
+        }
+    }
+
+    /* Animation for loading */
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .service-card-modern {
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    .service-card-modern:nth-child(1) { animation-delay: 0.1s; }
+    .service-card-modern:nth-child(2) { animation-delay: 0.2s; }
+    .service-card-modern:nth-child(3) { animation-delay: 0.3s; }
+    .service-card-modern:nth-child(4) { animation-delay: 0.4s; }
+</style>
 

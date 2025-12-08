@@ -3,16 +3,31 @@
     ViewData["Title"] = "Randevu Yönetimi";
 }
 
-<div class="container my-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="display-5 fw-bold">
-            <i class="bi bi-calendar-check text-primary me-3"></i>
-            Randevu Yönetimi
-        </h1>
-        <a asp-action="Index" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-2"></i>Panele Dön
-        </a>
-    </div>
+<!-- Admin Page Container - Dark Theme -->
+<div class="admin-page">
+    <div class="container-fluid py-4">
+        <!-- Header Section -->
+        <div class="admin-header-section mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="page-title-section">
+                        <div class="page-icon">
+                            <i class="bi bi-calendar-check-fill"></i>
+                        </div>
+                        <div class="page-title-content">
+                            <h1 class="page-title">RANDEVU YÖNETİMİ</h1>
+                            <p class="page-subtitle">Tüm randevuları görüntüleyin ve yönetin</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a href="/Admin/Index" class="admin-back-btn">
+                        <i class="bi bi-arrow-left me-2"></i>
+                        Panele Dön
+                    </a>
+                </div>
+            </div>
+        </div>
 
     @if (TempData["SuccessMessage"] != null)
     {
@@ -23,356 +38,968 @@
         </div>
     }
 
-    <!-- Filtre Butonları -->
-    <div class="mb-4">
-        <div class="btn-group" role="group">
-            <a asp-action="Appointments" asp-route-status=""
-               class="btn @(ViewBag.CurrentStatus == null ? "btn-primary" : "btn-outline-primary")">
-                Tüm Randevular
-            </a>
-            <a asp-action="Appointments" asp-route-status="Pending"
-               class="btn @(ViewBag.CurrentStatus == "Pending" ? "btn-warning" : "btn-outline-warning")">
-                <i class="bi bi-hourglass-split me-1"></i>Bekleyen (@ViewBag.PendingCount)
-            </a>
-            <a asp-action="Appointments" asp-route-status="Approved"
-               class="btn @(ViewBag.CurrentStatus == "Approved" ? "btn-success" : "btn-outline-success")">
-                <i class="bi bi-check-circle me-1"></i>Onaylanan
-            </a>
-            <a asp-action="Appointments" asp-route-status="Rejected"
-               class="btn @(ViewBag.CurrentStatus == "Rejected" ? "btn-danger" : "btn-outline-danger")">
-                <i class="bi bi-x-circle me-1"></i>Reddedilen
-            </a>
-            <a asp-action="Appointments" asp-route-status="Completed"
-               class="btn @(ViewBag.CurrentStatus == "Completed" ? "btn-info" : "btn-outline-info")">
-                <i class="bi bi-check-circle-fill me-1"></i>Tamamlanan
-            </a>
+        <!-- Status Filter Section -->
+        <div class="filter-section mb-4">
+            <div class="filter-tabs">
+                <a asp-action="Appointments" asp-route-status=""
+                   class="filter-tab @(ViewBag.CurrentStatus == null ? "active" : "")">
+                    <div class="filter-icon">
+                        <i class="bi bi-grid-3x3-gap"></i>
+                    </div>
+                    <div class="filter-content">
+                        <span class="filter-title">Tüm Randevular</span>
+                        <span class="filter-count">@Model.Count()</span>
+                    </div>
+                </a>
+                <a asp-action="Appointments" asp-route-status="Pending"
+                   class="filter-tab @(ViewBag.CurrentStatus == "Pending" ? "active" : "")">
+                    <div class="filter-icon pending">
+                        <i class="bi bi-hourglass-split"></i>
+                    </div>
+                    <div class="filter-content">
+                        <span class="filter-title">Bekleyen</span>
+                        <span class="filter-count">@ViewBag.PendingCount</span>
+                    </div>
+                </a>
+                <a asp-action="Appointments" asp-route-status="Approved"
+                   class="filter-tab @(ViewBag.CurrentStatus == "Approved" ? "active" : "")">
+                    <div class="filter-icon approved">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <div class="filter-content">
+                        <span class="filter-title">Onaylanan</span>
+                        <span class="filter-count">@Model.Count(m => m.Status == FitnessCenter.Models.AppointmentStatus.Approved)</span>
+                    </div>
+                </a>
+                <a asp-action="Appointments" asp-route-status="Rejected"
+                   class="filter-tab @(ViewBag.CurrentStatus == "Rejected" ? "active" : "")">
+                    <div class="filter-icon rejected">
+                        <i class="bi bi-x-circle"></i>
+                    </div>
+                    <div class="filter-content">
+                        <span class="filter-title">Reddedilen</span>
+                        <span class="filter-count">@Model.Count(m => m.Status == FitnessCenter.Models.AppointmentStatus.Rejected)</span>
+                    </div>
+                </a>
+                <a asp-action="Appointments" asp-route-status="Completed"
+                   class="filter-tab @(ViewBag.CurrentStatus == "Completed" ? "active" : "")">
+                    <div class="filter-icon completed">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                    <div class="filter-content">
+                        <span class="filter-title">Tamamlanan</span>
+                        <span class="filter-count">@Model.Count(m => m.Status == FitnessCenter.Models.AppointmentStatus.Completed)</span>
+                    </div>
+                </a>
+            </div>
         </div>
-    </div>
 
-    @if (Model.Any())
-    {
-        <div class="row">
-            @foreach (var item in Model)
-            {
-                <div class="col-lg-6 mb-4">
-                    <div class="appointment-card card h-100 shadow-sm hover-lift">
-                        <!-- Kart Başlığı -->
-                        <div class="card-header text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 class="mb-1">
-                                        <i class="bi bi-calendar-event me-2"></i>
-                                        Randevu #@item.Id.ToString("D6")
-                                    </h5>
-                                    <small class="opacity-75">@item.CreatedAt.ToString("dd.MM.yyyy HH:mm")</small>
+        @if (Model.Any())
+        {
+            <div class="appointments-grid">
+                @foreach (var item in Model)
+                {
+                    <div class="appointment-card-modern">
+                        <!-- Card Header -->
+                        <div class="appointment-card-header">
+                            <div class="appointment-id-section">
+                                <div class="appointment-id">
+                                    <i class="bi bi-calendar-event"></i>
+                                    <span>#@item.Id.ToString("D6")</span>
                                 </div>
-                                <div class="text-end">
-                                    @switch (item.Status)
-                                    {
-                                        case AppointmentStatus.Pending:
-                                            <span class="badge bg-warning">
-                                                <i class="bi bi-hourglass-split me-1"></i>Beklemede
-                                            </span>
-                                            break;
-                                        case AppointmentStatus.Approved:
-                                            <span class="badge bg-success">
-                                                <i class="bi bi-check-circle-fill me-1"></i>Onaylandı
-                                            </span>
-                                            break;
-                                        case AppointmentStatus.Rejected:
-                                            <span class="badge bg-danger">
-                                                <i class="bi bi-x-circle-fill me-1"></i>Reddedildi
-                                            </span>
-                                            break;
-                                        case AppointmentStatus.Completed:
-                                            <span class="badge bg-info">
-                                                <i class="bi bi-check-circle-fill me-1"></i>Tamamlandı
-                                            </span>
-                                            break;
-                                        case AppointmentStatus.Cancelled:
-                                            <span class="badge bg-secondary">
-                                                <i class="bi bi-x-circle-fill me-1"></i>İptal Edildi
-                                            </span>
-                                            break;
-                                    }
+                                <div class="appointment-date">
+                                    <i class="bi bi-clock-history"></i>
+                                    @item.CreatedAt.ToString("dd.MM.yyyy HH:mm")
                                 </div>
+                            </div>
+                            <div class="appointment-status">
+                                @switch (item.Status)
+                                {
+                                    case AppointmentStatus.Pending:
+                                        <span class="status-badge pending">
+                                            <i class="bi bi-hourglass-split"></i>
+                                            Beklemede
+                                        </span>
+                                        break;
+                                    case AppointmentStatus.Approved:
+                                        <span class="status-badge approved">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            Onaylandı
+                                        </span>
+                                        break;
+                                    case AppointmentStatus.Rejected:
+                                        <span class="status-badge rejected">
+                                            <i class="bi bi-x-circle-fill"></i>
+                                            Reddedildi
+                                        </span>
+                                        break;
+                                    case AppointmentStatus.Completed:
+                                        <span class="status-badge completed">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            Tamamlandı
+                                        </span>
+                                        break;
+                                    case AppointmentStatus.Cancelled:
+                                        <span class="status-badge cancelled">
+                                            <i class="bi bi-x-circle-fill"></i>
+                                            İptal Edildi
+                                        </span>
+                                        break;
+                                }
                             </div>
                         </div>
 
-                        <!-- Kart İçeriği -->
-                        <div class="card-body">
-                            <!-- Tarih ve Saat -->
-                            <div class="text-center mb-4">
-                                <div class="date-display bg-light p-3 rounded-3">
-                                    <div class="row align-items-center">
-                                        <div class="col-4">
-                                            <div class="day-name text-primary fw-bold">
-                                                @item.AppointmentDate.ToString("ddd", new System.Globalization.CultureInfo("tr-TR"))
-                                            </div>
-                                            <div class="day-number display-6 fw-bold text-dark">
-                                                @item.AppointmentDate.ToString("dd")
-                                            </div>
-                                            <div class="month-year text-muted small">
-                                                @item.AppointmentDate.ToString("MMM yyyy", new System.Globalization.CultureInfo("tr-TR"))
-                                            </div>
+                        <!-- Appointment Body -->
+                        <div class="appointment-card-body">
+                            <!-- Date & Time Section -->
+                            <div class="appointment-datetime-section">
+                                <div class="datetime-display">
+                                    <div class="date-info">
+                                        <div class="day-name">
+                                            @item.AppointmentDate.ToString("dddd", new System.Globalization.CultureInfo("tr-TR"))
                                         </div>
-                                        <div class="col-4">
-                                            <div class="time-display">
-                                                <i class="bi bi-clock-fill text-primary fs-4"></i>
-                                                <div class="time-text h5 fw-bold mt-2">
-                                                    @item.AppointmentTime.ToString(@"hh\:mm")
-                                                </div>
-                                            </div>
+                                        <div class="day-number">
+                                            @item.AppointmentDate.ToString("dd")
                                         </div>
-                                        <div class="col-4">
-                                            <div class="duration-display">
-                                                <i class="bi bi-stopwatch text-info fs-4"></i>
-                                                <div class="duration-text small mt-2">
-                                                    @item.Service?.DurationMinutes dk
-                                                </div>
-                                            </div>
+                                        <div class="month-year">
+                                            @item.AppointmentDate.ToString("MMMM yyyy", new System.Globalization.CultureInfo("tr-TR"))
+                                        </div>
+                                    </div>
+                                    <div class="time-info">
+                                        <div class="time-icon">
+                                            <i class="bi bi-clock-fill"></i>
+                                        </div>
+                                        <div class="time-value">
+                                            @item.AppointmentTime.ToString(@"hh\:mm")
+                                        </div>
+                                    </div>
+                                    <div class="duration-info">
+                                        <div class="duration-icon">
+                                            <i class="bi bi-stopwatch"></i>
+                                        </div>
+                                        <div class="duration-value">
+                                            @item.Service?.DurationMinutes dk
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="row">
-                                <!-- Üye Bilgileri -->
-                                <div class="col-md-6 mb-3">
-                                    <div class="info-box">
-                                        <h6 class="text-primary mb-2">
-                                            <i class="bi bi-person me-1"></i>Üye
-                                        </h6>
-                                        <div class="member-info">
-                                            <div class="fw-bold">@item.Member?.FirstName @item.Member?.LastName</div>
-                                            <small class="text-muted">@item.Member?.Email</small>
-                                            @if (!string.IsNullOrEmpty(item.Member?.PhoneNumber))
-                                            {
-                                                <br><small class="text-muted">@item.Member?.PhoneNumber</small>
-                                            }
+                            <!-- Appointment Info Grid -->
+                            <div class="appointment-info-grid">
+                                <!-- Member Info -->
+                                <div class="info-card">
+                                    <div class="info-card-header">
+                                        <div class="info-icon">
+                                            <i class="bi bi-person-fill"></i>
                                         </div>
+                                        <h6>ÜYE BİLGİLERİ</h6>
+                                    </div>
+                                    <div class="info-card-body">
+                                        <div class="info-primary">@item.Member?.FirstName @item.Member?.LastName</div>
+                                        <div class="info-secondary">@item.Member?.Email</div>
+                                        @if (!string.IsNullOrEmpty(item.Member?.PhoneNumber))
+                                        {
+                                            <div class="info-tertiary">@item.Member?.PhoneNumber</div>
+                                        }
                                     </div>
                                 </div>
 
-                                <!-- Antrenör Bilgileri -->
-                                <div class="col-md-6 mb-3">
-                                    <div class="info-box">
-                                        <h6 class="text-primary mb-2">
-                                            <i class="bi bi-person-badge me-1"></i>Antrenör
-                                        </h6>
-                                        <div class="trainer-info">
-                                            <div class="fw-bold">@item.Trainer?.FullName</div>
-                                            <small class="text-muted">@item.Trainer?.Specializations</small>
+                                <!-- Trainer Info -->
+                                <div class="info-card">
+                                    <div class="info-card-header">
+                                        <div class="info-icon">
+                                            <i class="bi bi-person-badge-fill"></i>
                                         </div>
+                                        <h6>ANTRENÖR BİLGİLERİ</h6>
+                                    </div>
+                                    <div class="info-card-body">
+                                        <div class="info-primary">@item.Trainer?.FullName</div>
+                                        <div class="info-secondary">@item.Trainer?.Specializations</div>
+                                    </div>
+                                </div>
+
+                                <!-- Service Info -->
+                                <div class="info-card">
+                                    <div class="info-card-header">
+                                        <div class="info-icon">
+                                            <i class="bi bi-tools"></i>
+                                        </div>
+                                        <h6>HİZMET BİLGİLERİ</h6>
+                                    </div>
+                                    <div class="info-card-body">
+                                        <div class="info-primary">@item.Service?.Name</div>
+                                        <div class="info-secondary">Süre: @item.Service?.DurationMinutes dakika</div>
+                                        <div class="info-tertiary">Ücret: ₺@item.Service?.Price.ToString("N0")</div>
+                                    </div>
+                                </div>
+
+                                <!-- Gym Info -->
+                                <div class="info-card">
+                                    <div class="info-card-header">
+                                        <div class="info-icon">
+                                            <i class="bi bi-geo-alt-fill"></i>
+                                        </div>
+                                        <h6>SPOR SALONU</h6>
+                                    </div>
+                                    <div class="info-card-body">
+                                        <div class="info-primary">@item.Trainer?.FitnessCenter?.Name</div>
+                                        <div class="info-secondary">@item.Trainer?.FitnessCenter?.Address</div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Hizmet Bilgileri -->
-                            <div class="mb-3">
-                                <div class="info-box">
-                                    <h6 class="text-primary mb-2">
-                                        <i class="bi bi-tools me-1"></i>Hizmet
-                                    </h6>
-                                    <div class="service-info">
-                                        <div class="fw-bold">@item.Service?.Name</div>
-                                        <small class="text-muted">
-                                            Süre: @item.Service?.DurationMinutes dk |
-                                            Ücret: ₺@item.Service?.Price.ToString("N0")
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Salon Bilgileri -->
-                            <div class="mb-3">
-                                <div class="info-box">
-                                    <h6 class="text-primary mb-2">
-                                        <i class="bi bi-geo-alt me-1"></i>Salon
-                                    </h6>
-                                    <div class="gym-info">
-                                        <div class="fw-bold">@item.Trainer?.FitnessCenter?.Name</div>
-                                        <small class="text-muted">@item.Trainer?.FitnessCenter?.Address</small>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Notlar -->
+                            <!-- Notes Section -->
                             @if (!string.IsNullOrEmpty(item.Notes))
                             {
-                                <div class="mb-3">
-                                    <div class="info-box">
-                                        <h6 class="text-primary mb-2">
-                                            <i class="bi bi-sticky me-1"></i>Not
-                                        </h6>
-                                        <div class="notes-content bg-light p-2 rounded small">
-                                            @item.Notes
-                                        </div>
+                                <div class="appointment-notes-section">
+                                    <div class="notes-header">
+                                        <i class="bi bi-sticky-fill"></i>
+                                        <span>Notlar</span>
+                                    </div>
+                                    <div class="notes-content">
+                                        @item.Notes
                                     </div>
                                 </div>
                             }
 
-                            <!-- Güncellenme Tarihi -->
+                            <!-- Updated At -->
                             @if (item.UpdatedAt.HasValue)
                             {
-                                <div class="mb-3">
-                                    <small class="text-muted">
-                                        <i class="bi bi-pencil me-1"></i>
-                                        Son güncelleme: @item.UpdatedAt.Value.ToString("dd.MM.yyyy HH:mm")
-                                    </small>
+                                <div class="appointment-updated-info">
+                                    <i class="bi bi-pencil-fill"></i>
+                                    <span>Son güncelleme: @item.UpdatedAt.Value.ToString("dd.MM.yyyy HH:mm")</span>
                                 </div>
                             }
                         </div>
 
-                        <!-- Kart Alt Kısmı - İşlemler -->
-                        <div class="card-footer bg-light">
-                            <div class="d-flex justify-content-between align-items-center">
+                        <!-- Appointment Actions -->
+                        <div class="appointment-card-actions">
+                            <div class="action-buttons">
                                 <a asp-controller="Appointments" asp-action="Confirm" asp-route-id="@item.Id"
-                                   class="btn btn-outline-primary btn-sm">
-                                    <i class="bi bi-eye me-1"></i>Detay
+                                   class="action-btn view-btn">
+                                    <i class="bi bi-eye-fill"></i>
+                                    <span>Detay Görüntüle</span>
                                 </a>
 
-                                <div class="action-buttons">
-                                    @if (item.Status == AppointmentStatus.Pending)
-                                    {
-                                        <form asp-action="ApproveAppointment" asp-route-id="@item.Id" method="post"
-                                              class="d-inline me-2"
-                                              onsubmit="return confirm('Bu randevuyu onaylamak istediğinizden emin misiniz?')">
-                                            <button type="submit" class="btn btn-success btn-sm">
-                                                <i class="bi bi-check-circle me-1"></i>Onayla
-                                            </button>
-                                        </form>
+                                @if (item.Status == AppointmentStatus.Pending)
+                                {
+                                    <form asp-action="ApproveAppointment" asp-route-id="@item.Id" method="post"
+                                          class="d-inline"
+                                          onsubmit="return confirm('Bu randevuyu onaylamak istediğinizden emin misiniz?')">
+                                        <button type="submit" class="action-btn approve-btn">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            <span>Onayla</span>
+                                        </button>
+                                    </form>
 
-                                        <form asp-action="RejectAppointment" asp-route-id="@item.Id" method="post"
-                                              class="d-inline"
-                                              onsubmit="return confirm('Bu randevuyu reddetmek istediğinizden emin misiniz?')">
-                                            <button type="submit" class="btn btn-danger btn-sm">
-                                                <i class="bi bi-x-circle me-1"></i>Reddet
-                                            </button>
-                                        </form>
-                                    }
-                                    else if (item.Status == AppointmentStatus.Approved)
-                                    {
-                                        <form asp-action="CompleteAppointment" asp-route-id="@item.Id" method="post"
-                                              class="d-inline"
-                                              onsubmit="return confirm('Bu randevuyu tamamlandı olarak işaretlemek istediğinizden emin misiniz?')">
-                                            <button type="submit" class="btn btn-info btn-sm">
-                                                <i class="bi bi-check-circle-fill me-1"></i>Tamamlandı
-                                            </button>
-                                        </form>
-                                    }
-                                </div>
+                                    <form asp-action="RejectAppointment" asp-route-id="@item.Id" method="post"
+                                          class="d-inline"
+                                          onsubmit="return confirm('Bu randevuyu reddetmek istediğinizden emin misiniz?')">
+                                        <button type="submit" class="action-btn reject-btn">
+                                            <i class="bi bi-x-circle-fill"></i>
+                                            <span>Reddet</span>
+                                        </button>
+                                    </form>
+                                }
+                                else if (item.Status == AppointmentStatus.Approved)
+                                {
+                                    <form asp-action="CompleteAppointment" asp-route-id="@item.Id" method="post"
+                                          class="d-inline"
+                                          onsubmit="return confirm('Bu randevuyu tamamlandı olarak işaretlemek istediğinizden emin misiniz?')">
+                                        <button type="submit" class="action-btn complete-btn">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            <span>Tamamlandı</span>
+                                        </button>
+                                    </form>
+                                }
                             </div>
                         </div>
                     </div>
-                </div>
-            }
-        </div>
-    }
-    else
-    {
-        <!-- Randevu Yok Durumu -->
-        <div class="text-center py-5">
-            <div class="empty-state">
-                <i class="bi bi-calendar-x text-muted" style="font-size: 4rem;"></i>
-                <h3 class="mt-3 text-muted">
-                    @if (ViewBag.CurrentStatus == "Pending")
-                    {
-                        <text>Bekleyen Randevu Yok</text>
-                    }
-                    else if (ViewBag.CurrentStatus == "Approved")
-                    {
-                        <text>Onaylanan Randevu Yok</text>
-                    }
-                    else if (ViewBag.CurrentStatus == "Rejected")
-                    {
-                        <text>Reddedilen Randevu Yok</text>
-                    }
-                    else if (ViewBag.CurrentStatus == "Completed")
-                    {
-                        <text>Tamamlanan Randevu Yok</text>
-                    }
-                    else
-                    {
-                        <text>Henüz Randevu Yok</text>
-                    }
-                </h3>
-                <p class="text-muted">
-                    @if (ViewBag.CurrentStatus == null)
-                    {
-                        <text>Randevular burada görünecek.</text>
-                    }
-                    else
-                    {
-                        <text>Bu kategoride randevu bulunmuyor.</text>
-                    }
-                </p>
+                }
             </div>
-        </div>
-    }
+        }
+        else
+        {
+            <!-- Empty State -->
+            <div class="empty-state-section">
+                <div class="empty-state-content">
+                    <div class="empty-icon">
+                        <i class="bi bi-calendar-x"></i>
+                    </div>
+                    <h3 class="empty-title">
+                        @if (ViewBag.CurrentStatus == "Pending")
+                        {
+                            <text>Bekleyen Randevu Yok</text>
+                        }
+                        else if (ViewBag.CurrentStatus == "Approved")
+                        {
+                            <text>Onaylanan Randevu Yok</text>
+                        }
+                        else if (ViewBag.CurrentStatus == "Rejected")
+                        {
+                            <text>Reddedilen Randevu Yok</text>
+                        }
+                        else if (ViewBag.CurrentStatus == "Completed")
+                        {
+                            <text>Tamamlanan Randevu Yok</text>
+                        }
+                        else
+                        {
+                            <text>Henüz Randevu Yok</text>
+                        }
+                    </h3>
+                    <p class="empty-description">
+                        @if (ViewBag.CurrentStatus == null)
+                        {
+                            <text>Randevular burada görünecek.</text>
+                        }
+                        else
+                        {
+                            <text>Bu kategoride randevu bulunmuyor.</text>
+                        }
+                    </p>
+                </div>
+            </div>
+        }
+    </div>
 </div>
 
+<!-- Admin Dark Theme Styles -->
 <style>
-    .appointment-card {
-        transition: all 0.3s ease;
-        border: 1px solid #e9ecef;
+    /* Admin Page Base Styles */
+    .admin-page {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        min-height: 100vh;
+        color: #e0e0e0;
+    }
+
+    /* Header Section */
+    .admin-header-section {
+        background: linear-gradient(135deg, #2a2a2a 0%, #3d3d3d 100%);
         border-radius: 15px;
-        overflow: hidden;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        border: 1px solid #404040;
     }
 
-    .hover-lift:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+    .page-title-section {
+        display: flex;
+        align-items: center;
+        gap: 20px;
     }
 
-    .date-display {
-        border: 2px solid #dee2e6 !important;
+    .page-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
     }
 
-    .info-box {
-        background: #f8f9fa;
-        padding: 15px;
-        border-radius: 10px;
-        height: 100%;
-    }
-
-    .day-name {
-        font-size: 0.9rem;
-        text-transform: uppercase;
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin: 0;
+        color: #ffffff;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         letter-spacing: 1px;
     }
 
-    .month-year {
+    .page-subtitle {
+        margin: 5px 0 0 0;
+        color: #b0b0b0;
+        font-size: 1rem;
+    }
+
+    .admin-back-btn {
+        background: linear-gradient(135deg, #4a4a4a 0%, #5a5a5a 100%);
+        color: #ffffff;
+        padding: 12px 24px;
+        border-radius: 10px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: 1px solid #606060;
+    }
+
+    .admin-back-btn:hover {
+        background: linear-gradient(135deg, #5a5a5a 0%, #6a6a6a 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        color: #ffffff;
+    }
+
+    /* Filter Section */
+    .filter-section {
+        background: linear-gradient(135deg, #2a2a2a 0%, #3d3d3d 100%);
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        border: 1px solid #404040;
+    }
+
+    .filter-tabs {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .filter-tab {
+        background: linear-gradient(135deg, #3a3a3a 0%, #4a4a4a 100%);
+        border: 1px solid #505050;
+        border-radius: 12px;
+        padding: 20px;
+        text-decoration: none;
+        color: #e0e0e0;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex: 1;
+        min-width: 200px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .filter-tab::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        transition: left 0.5s;
+    }
+
+    .filter-tab:hover::before {
+        left: 100%;
+    }
+
+    .filter-tab:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        border-color: #606060;
+    }
+
+    .filter-tab.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: #667eea;
+        color: white;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .filter-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        background: rgba(255,255,255,0.1);
+        color: #ffffff;
+    }
+
+    .filter-tab.active .filter-icon {
+        background: rgba(255,255,255,0.2);
+    }
+
+    .filter-icon.pending { color: #ffc107; }
+    .filter-icon.approved { color: #28a745; }
+    .filter-icon.rejected { color: #dc3545; }
+    .filter-icon.completed { color: #17a2b8; }
+
+    .filter-content {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .filter-title {
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .filter-count {
+        background: rgba(255,255,255,0.2);
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        min-width: 25px;
+        text-align: center;
+    }
+
+    .filter-tab.active .filter-count {
+        background: rgba(255,255,255,0.3);
+    }
+
+    /* Appointments Grid */
+    .appointments-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+        gap: 25px;
+    }
+
+    /* Appointment Cards */
+    .appointment-card-modern {
+        background: linear-gradient(135deg, #2a2a2a 0%, #3d3d3d 100%);
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        border: 1px solid #404040;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .appointment-card-modern:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        border-color: #505050;
+    }
+
+    .appointment-card-modern::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+    }
+
+    /* Card Header */
+    .appointment-card-header {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #404040;
+    }
+
+    .appointment-id-section {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .appointment-id {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #ffffff;
+    }
+
+    .appointment-id i {
+        color: #667eea;
+    }
+
+    .appointment-date {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.9rem;
+        color: #b0b0b0;
+    }
+
+    .appointment-date i {
+        color: #888;
+    }
+
+    .appointment-status {
+        flex-shrink: 0;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
 
-    .time-display, .duration-display {
+    .status-badge.pending {
+        background: linear-gradient(135deg, #ff6b35, #f7931e);
+        color: white;
+    }
+
+    .status-badge.approved {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+    }
+
+    .status-badge.rejected {
+        background: linear-gradient(135deg, #dc3545, #fd7e14);
+        color: white;
+    }
+
+    .status-badge.completed {
+        background: linear-gradient(135deg, #17a2b8, #6610f2);
+        color: white;
+    }
+
+    .status-badge.cancelled {
+        background: linear-gradient(135deg, #6c757d, #495057);
+        color: white;
+    }
+
+    /* Card Body */
+    .appointment-card-body {
+        padding: 25px;
+    }
+
+    /* DateTime Section */
+    .appointment-datetime-section {
+        margin-bottom: 25px;
+    }
+
+    .datetime-display {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        border-radius: 12px;
+        padding: 20px;
         display: flex;
-        flex-direction: column;
+        justify-content: space-around;
         align-items: center;
+        border: 1px solid #404040;
     }
 
-    .time-text, .duration-text {
-        margin-top: 5px;
+    .date-info, .time-info, .duration-info {
+        text-align: center;
+        flex: 1;
     }
 
-    .card-header {
-        border-bottom: none !important;
+    .day-name {
+        color: #667eea;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 5px;
     }
 
-    .card-footer {
-        border-top: 1px solid #dee2e6 !important;
-        background: #f8f9fa !important;
+    .day-number {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #ffffff;
+        line-height: 1;
+        margin-bottom: 5px;
     }
 
-    .empty-state {
-        max-width: 400px;
+    .month-year {
+        color: #b0b0b0;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .time-icon, .duration-icon {
+        color: #667eea;
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+    }
+
+    .time-value, .duration-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #ffffff;
+    }
+
+    .duration-value {
+        color: #17a2b8;
+    }
+
+    /* Info Grid */
+    .appointment-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .info-card {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #404040;
+        transition: all 0.3s ease;
+    }
+
+    .info-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        border-color: #505050;
+    }
+
+    .info-card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .info-card-header h6 {
+        margin: 0;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .info-icon {
+        width: 35px;
+        height: 35px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.1rem;
+    }
+
+    .info-card-body {
+        padding: 15px;
+    }
+
+    .info-primary {
+        font-weight: 700;
+        font-size: 1rem;
+        color: #ffffff;
+        margin-bottom: 5px;
+    }
+
+    .info-secondary {
+        color: #b0b0b0;
+        font-size: 0.9rem;
+        margin-bottom: 3px;
+    }
+
+    .info-tertiary {
+        color: #888;
+        font-size: 0.8rem;
+    }
+
+    /* Notes Section */
+    .appointment-notes-section {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 15px;
+        border: 1px solid #404040;
+    }
+
+    .notes-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: #ffc107;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .notes-content {
+        background: rgba(0,0,0,0.3);
+        padding: 12px;
+        border-radius: 8px;
+        color: #e0e0e0;
+        font-style: italic;
+        border-left: 3px solid #ffc107;
+    }
+
+    /* Updated Info */
+    .appointment-updated-info {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        color: #888;
+        margin-bottom: 15px;
+        justify-content: flex-end;
+    }
+
+    /* Actions */
+    .appointment-card-actions {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        padding: 20px;
+        border-top: 1px solid #404040;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .view-btn {
+        background: linear-gradient(135deg, #17a2b8, #6610f2);
+        color: white;
+    }
+
+    .view-btn:hover {
+        background: linear-gradient(135deg, #138496, #5a0fc8);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(23, 162, 184, 0.3);
+    }
+
+    .approve-btn {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+    }
+
+    .approve-btn:hover {
+        background: linear-gradient(135deg, #218838, #1aa085);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+    }
+
+    .reject-btn {
+        background: linear-gradient(135deg, #dc3545, #fd7e14);
+        color: white;
+    }
+
+    .reject-btn:hover {
+        background: linear-gradient(135deg, #c82333, #e8680d);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+    }
+
+    .complete-btn {
+        background: linear-gradient(135deg, #17a2b8, #6610f2);
+        color: white;
+    }
+
+    .complete-btn:hover {
+        background: linear-gradient(135deg, #138496, #5a0fc8);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(23, 162, 184, 0.3);
+    }
+
+    /* Empty State */
+    .empty-state-section {
+        background: linear-gradient(135deg, #2a2a2a 0%, #3d3d3d 100%);
+        border-radius: 15px;
+        padding: 60px 40px;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        border: 1px solid #404040;
+    }
+
+    .empty-state-content {
+        max-width: 500px;
         margin: 0 auto;
     }
 
-    .badge {
-        font-size: 0.75rem;
-        padding: 0.375rem 0.75rem;
+    .empty-icon {
+        font-size: 4rem;
+        color: #667eea;
+        margin-bottom: 20px;
+        opacity: 0.7;
     }
+
+    .empty-title {
+        color: #ffffff;
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    .empty-description {
+        color: #b0b0b0;
+        font-size: 1.1rem;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .page-title {
+            font-size: 1.8rem;
+        }
+
+        .filter-tabs {
+            flex-direction: column;
+        }
+
+        .filter-tab {
+            min-width: auto;
+        }
+
+        .appointments-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .appointment-info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .datetime-display {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .action-btn {
+            justify-content: center;
+        }
+    }
+
+    /* Animation for loading */
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .appointment-card-modern {
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    .appointment-card-modern:nth-child(1) { animation-delay: 0.1s; }
+    .appointment-card-modern:nth-child(2) { animation-delay: 0.2s; }
+    .appointment-card-modern:nth-child(3) { animation-delay: 0.3s; }
+    .appointment-card-modern:nth-child(4) { animation-delay: 0.4s; }
 </style>
