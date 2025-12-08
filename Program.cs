@@ -39,8 +39,12 @@ builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add<FitnessCenter.Filters.AntiforgeryExceptionFilter>();
 });
+builder.Services.AddControllers();
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<FitnessCenter.Services.GeminiService>();
+
+// Background Service: Randevu Otomatik Onay Servisi
+builder.Services.AddHostedService<FitnessCenter.Services.AppointmentAutoApprovalService>();
 
 var app = builder.Build();
 
@@ -61,6 +65,8 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapControllers();
 
 app.MapControllerRoute(
     name: "default",

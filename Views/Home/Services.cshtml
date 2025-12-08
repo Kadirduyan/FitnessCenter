@@ -16,7 +16,13 @@
                     <button class="btn btn-outline-dark filter-btn active" data-filter="all">Tümü</button>
                     @foreach (var type in serviceTypes)
                     {
-                        <button class="btn btn-outline-dark filter-btn" data-filter="@type">@type</button>
+                        @* Spinning, GroupClass ve Other filtrelerini kaldır *@
+                        @if (type != FitnessCenter.Models.ServiceType.Spinning && 
+                             type != FitnessCenter.Models.ServiceType.GroupClass && 
+                             type != FitnessCenter.Models.ServiceType.Other)
+                        {
+                            <button class="btn btn-outline-dark filter-btn" data-filter="@type">@type</button>
+                        }
                     }
                 </div>
             </div>

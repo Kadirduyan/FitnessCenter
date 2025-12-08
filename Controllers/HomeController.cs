@@ -22,11 +22,8 @@ public class HomeController : Controller
     {
         if (User.IsInRole("Admin"))
         {
-            // Admin için istatistik verileri
-            ViewBag.TotalAppointments = await _context.Appointments.CountAsync();
-            ViewBag.TotalTrainers = await _context.Trainers.CountAsync(t => t.IsActive);
-            ViewBag.TotalServices = await _context.Services.CountAsync();
-            ViewBag.TotalMembers = await _context.Users.CountAsync();
+            // Admin kullanıcılarını direkt Admin paneline yönlendir
+            return RedirectToAction("Index", "Admin");
         }
         else
         {
@@ -52,9 +49,18 @@ public class HomeController : Controller
             .ThenBy(s => s.Name)
             .ToListAsync();
 
-        ViewBag.ServiceTypes = Enum.GetValues(typeof(ServiceType))
-            .Cast<ServiceType>()
+        // Filtreleri veritabanındaki hizmetlerden dinamik olarak oluştur
+        // Böylece yeni eklenen hizmetlerin ServiceType'ları otomatik olarak filtrelerde görünecek
+        var availableServiceTypes = services
+            .Select(s => s.ServiceType)
+            .Distinct()
+            .Where(type => type != ServiceType.Spinning && 
+                          type != ServiceType.GroupClass && 
+                          type != ServiceType.Other)
+            .OrderBy(type => type)
             .ToList();
+
+        ViewBag.ServiceTypes = availableServiceTypes;
 
         return View(services);
     }

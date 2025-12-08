@@ -8,61 +8,61 @@
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0">
+            <div class="card trainer-edit-card">
+                <div class="card-header trainer-edit-header">
+                    <h5 class="mb-0 trainer-edit-title">
                         <i class="bi bi-pencil me-2"></i>Antrenör Düzenle
                     </h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body trainer-edit-body">
                     <form asp-action="Edit" method="post">
                         <input type="hidden" asp-for="Id" />
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label asp-for="FirstName" class="form-label">Ad *</label>
-                                <input asp-for="FirstName" class="form-control" required />
+                                <label asp-for="FirstName" class="form-label trainer-edit-label">Ad *</label>
+                                <input asp-for="FirstName" class="form-control trainer-edit-input" required />
                                 <span asp-validation-for="FirstName" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label asp-for="LastName" class="form-label">Soyad *</label>
-                                <input asp-for="LastName" class="form-control" required />
+                                <label asp-for="LastName" class="form-label trainer-edit-label">Soyad *</label>
+                                <input asp-for="LastName" class="form-control trainer-edit-input" required />
                                 <span asp-validation-for="LastName" class="text-danger"></span>
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Email" class="form-label">E-posta</label>
-                            <input asp-for="Email" type="email" class="form-control" />
+                            <label asp-for="Email" class="form-label trainer-edit-label">E-posta</label>
+                            <input asp-for="Email" type="email" class="form-control trainer-edit-input" />
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
 
 
                         <div class="mb-3">
-                            <label asp-for="Specializations" class="form-label">Uzmanlık Alanları *</label>
-                            <textarea asp-for="Specializations" class="form-control" rows="2"
+                            <label asp-for="Specializations" class="form-label trainer-edit-label">Uzmanlık Alanları *</label>
+                            <textarea asp-for="Specializations" class="form-control trainer-edit-input" rows="2"
                                       placeholder="Örn: Güç Antrenmanı, Kas Geliştirme, Kişisel Antrenman" required></textarea>
-                            <small class="form-text text-muted">Virgülle ayırarak birden fazla uzmanlık alanı ekleyebilirsiniz.</small>
+                            <small class="form-text trainer-edit-help-text">Virgülle ayırarak birden fazla uzmanlık alanı ekleyebilirsiniz.</small>
                             <span asp-validation-for="Specializations" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Description" class="form-label">Açıklama</label>
-                            <textarea asp-for="Description" class="form-control" rows="3"
+                            <label asp-for="Description" class="form-label trainer-edit-label">Açıklama</label>
+                            <textarea asp-for="Description" class="form-control trainer-edit-input" rows="3"
                                       placeholder="Antrenör hakkında kısa bir açıklama..."></textarea>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="FitnessCenterId" class="form-label">Spor Salonu *</label>
-                            <select asp-for="FitnessCenterId" asp-items="ViewBag.FitnessCenterId" class="form-select" required>
+                            <label asp-for="FitnessCenterId" class="form-label trainer-edit-label">Spor Salonu *</label>
+                            <select asp-for="FitnessCenterId" asp-items="ViewBag.FitnessCenterId" class="form-select trainer-edit-select" required>
                                 <option value="">Seçiniz...</option>
                             </select>
                             <span asp-validation-for="FitnessCenterId" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Verdiği Hizmetler</label>
+                            <label class="form-label trainer-edit-label">Verdiği Hizmetler</label>
                             <div class="row">
                                 @if (services != null)
                                 {
@@ -70,28 +70,28 @@
                                     {
                                         var isChecked = Model.Services.Any(s => s.Id == service.Id);
                                         <div class="col-md-6">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox"
+                                            <div class="form-check trainer-edit-checkbox">
+                                                <input class="form-check-input trainer-edit-checkbox-input" type="checkbox"
                                                        name="selectedServices" value="@service.Id" id="service-@service.Id"
                                                        @(isChecked ? "checked" : "")>
-                                                <label class="form-check-label" for="service-@service.Id">
+                                                <label class="form-check-label trainer-edit-checkbox-label" for="service-@service.Id">
                                                     @service.Name
-                                                    <small class="text-muted">(@service.ServiceType)</small>
+                                                    <small class="trainer-edit-service-type">(@service.ServiceType)</small>
                                                 </label>
                                             </div>
                                         </div>
                                     }
                                 }
                             </div>
-                            <small class="form-text text-muted">Antrenörün verebileceği hizmetleri seçin.</small>
+                            <small class="form-text trainer-edit-help-text">Antrenörün verebileceği hizmetleri seçin.</small>
                         </div>
 
 
                         <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-warning">
+                            <button type="submit" class="btn trainer-edit-save-button">
                                 <i class="bi bi-check-circle me-2"></i>Değişiklikleri Kaydet
                             </button>
-                            <a asp-action="Index" class="btn btn-secondary">
+                            <a asp-action="Index" class="btn trainer-edit-cancel-button">
                                 <i class="bi bi-arrow-left me-2"></i>Geri Dön
                             </a>
                         </div>
@@ -106,4 +106,141 @@
     <partial name="_ValidationScriptsPartial" />
 }
 
+<style>
+    /* Page Background Dark Theme */
+    body:not(.admin-page) {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+        min-height: 100vh;
+    }
+
+    body:not(.admin-page) .container.my-5,
+    main.user-authenticated .container.my-5 {
+        background: transparent !important;
+    }
+
+    /* Dark Theme Styles for Trainer Edit Page */
+    main.user-authenticated .trainer-edit-card,
+    body:not(.admin-page) .trainer-edit-card {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+        border: 1px solid #555555 !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+    }
+
+    main.user-authenticated .trainer-edit-header,
+    body:not(.admin-page) .trainer-edit-header {
+        background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%) !important;
+        color: #1a1a1a !important;
+        border-bottom: 2px solid #ffc107 !important;
+    }
+
+    main.user-authenticated .trainer-edit-title,
+    body:not(.admin-page) .trainer-edit-title {
+        color: #1a1a1a !important;
+        font-weight: 700;
+    }
+
+    main.user-authenticated .trainer-edit-title i,
+    body:not(.admin-page) .trainer-edit-title i {
+        color: #1a1a1a !important;
+    }
+
+    main.user-authenticated .trainer-edit-body,
+    body:not(.admin-page) .trainer-edit-body {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+        color: #e0d4a0 !important;
+    }
+
+    main.user-authenticated .trainer-edit-label,
+    body:not(.admin-page) .trainer-edit-label {
+        color: #ffd700 !important;
+        font-weight: 600;
+    }
+
+    main.user-authenticated .trainer-edit-input,
+    main.user-authenticated .trainer-edit-select,
+    body:not(.admin-page) .trainer-edit-input,
+    body:not(.admin-page) .trainer-edit-select {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+        border: 1px solid #555555 !important;
+        color: #e0d4a0 !important;
+    }
+
+    main.user-authenticated .trainer-edit-input:focus,
+    main.user-authenticated .trainer-edit-select:focus,
+    body:not(.admin-page) .trainer-edit-input:focus,
+    body:not(.admin-page) .trainer-edit-select:focus {
+        background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%) !important;
+        border-color: #ffc107 !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+    }
+
+    main.user-authenticated .trainer-edit-input::placeholder,
+    body:not(.admin-page) .trainer-edit-input::placeholder {
+        color: #888888 !important;
+    }
+
+    main.user-authenticated .trainer-edit-help-text,
+    body:not(.admin-page) .trainer-edit-help-text {
+        color: #888888 !important;
+    }
+
+    main.user-authenticated .trainer-edit-checkbox-label,
+    body:not(.admin-page) .trainer-edit-checkbox-label {
+        color: #e0d4a0 !important;
+    }
+
+    main.user-authenticated .trainer-edit-service-type,
+    body:not(.admin-page) .trainer-edit-service-type {
+        color: #888888 !important;
+    }
+
+    main.user-authenticated .trainer-edit-checkbox-input:checked,
+    body:not(.admin-page) .trainer-edit-checkbox-input:checked {
+        background-color: #ffc107 !important;
+        border-color: #ffc107 !important;
+    }
+
+    main.user-authenticated .trainer-edit-save-button,
+    body:not(.admin-page) .trainer-edit-save-button {
+        background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%) !important;
+        color: #1a1a1a !important;
+        border: none !important;
+        font-weight: 600;
+        box-shadow: 0 4px 16px rgba(255, 193, 7, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    main.user-authenticated .trainer-edit-save-button:hover,
+    body:not(.admin-page) .trainer-edit-save-button:hover {
+        background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+        color: #1a1a1a !important;
+    }
+
+    main.user-authenticated .trainer-edit-cancel-button,
+    body:not(.admin-page) .trainer-edit-cancel-button {
+        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    main.user-authenticated .trainer-edit-cancel-button:hover,
+    body:not(.admin-page) .trainer-edit-cancel-button:hover {
+        background: linear-gradient(135deg, #5a6268 0%, #495057 100%) !important;
+        transform: translateY(-2px);
+        color: #ffffff !important;
+    }
+
+    /* Override any white backgrounds */
+    body:not(.admin-page) .card:not(.trainer-edit-card),
+    body:not(.admin-page) .bg-white,
+    body:not(.admin-page) .bg-light {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+        color: #e0d4a0 !important;
+    }
+</style>
 

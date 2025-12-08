@@ -8,50 +8,50 @@
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">
+            <div class="card trainer-create-card">
+                <div class="card-header trainer-create-header">
+                    <h5 class="mb-0 trainer-create-title">
                         <i class="bi bi-person-plus me-2"></i>Yeni Antrenör Ekle
                     </h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body trainer-create-body">
                     <form asp-action="CreateTrainer" method="post">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label asp-for="FirstName" class="form-label">Ad *</label>
-                                <input asp-for="FirstName" class="form-control" required />
+                                <label asp-for="FirstName" class="form-label trainer-create-label">Ad *</label>
+                                <input asp-for="FirstName" class="form-control trainer-create-input" required />
                                 <span asp-validation-for="FirstName" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label asp-for="LastName" class="form-label">Soyad *</label>
-                                <input asp-for="LastName" class="form-control" required />
+                                <label asp-for="LastName" class="form-label trainer-create-label">Soyad *</label>
+                                <input asp-for="LastName" class="form-control trainer-create-input" required />
                                 <span asp-validation-for="LastName" class="text-danger"></span>
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Email" class="form-label">E-posta</label>
-                            <input asp-for="Email" type="email" class="form-control" />
+                            <label asp-for="Email" class="form-label trainer-create-label">E-posta</label>
+                            <input asp-for="Email" type="email" class="form-control trainer-create-input" />
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Specializations" class="form-label">Uzmanlık Alanları *</label>
-                            <textarea asp-for="Specializations" class="form-control" rows="2"
+                            <label asp-for="Specializations" class="form-label trainer-create-label">Uzmanlık Alanları *</label>
+                            <textarea asp-for="Specializations" class="form-control trainer-create-input" rows="2"
                                       placeholder="Örn: Güç Antrenmanı, Kas Geliştirme, Kişisel Antrenman" required></textarea>
-                            <small class="form-text text-muted">Virgülle ayırarak birden fazla uzmanlık alanı ekleyebilirsiniz.</small>
+                            <small class="form-text trainer-create-help-text">Virgülle ayırarak birden fazla uzmanlık alanı ekleyebilirsiniz.</small>
                             <span asp-validation-for="Specializations" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Description" class="form-label">Açıklama</label>
-                            <textarea asp-for="Description" class="form-control" rows="3"
+                            <label asp-for="Description" class="form-label trainer-create-label">Açıklama</label>
+                            <textarea asp-for="Description" class="form-control trainer-create-input" rows="3"
                                       placeholder="Antrenör hakkında kısa bir açıklama..."></textarea>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="FitnessCenterId" class="form-label">Spor Salonu *</label>
-                            <select asp-for="FitnessCenterId" asp-items="ViewBag.FitnessCenters" class="form-select" required>
+                            <label asp-for="FitnessCenterId" class="form-label trainer-create-label">Spor Salonu *</label>
+                            <select asp-for="FitnessCenterId" asp-items="ViewBag.FitnessCenters" class="form-select trainer-create-select" required>
                                 <option value="">Seçiniz...</option>
                             </select>
                             <span asp-validation-for="FitnessCenterId" class="text-danger"></span>
@@ -59,51 +59,51 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label asp-for="StartTime" class="form-label">Çalışma Başlangıç Saati *</label>
-                                <input asp-for="StartTime" class="form-control" type="time" required />
+                                <label asp-for="StartTime" class="form-label trainer-create-label">Çalışma Başlangıç Saati *</label>
+                                <input asp-for="StartTime" class="form-control trainer-create-input" type="time" required />
                                 <span asp-validation-for="StartTime" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label asp-for="EndTime" class="form-label">Çalışma Bitiş Saati *</label>
-                                <input asp-for="EndTime" class="form-control" type="time" required />
+                                <label asp-for="EndTime" class="form-label trainer-create-label">Çalışma Bitiş Saati *</label>
+                                <input asp-for="EndTime" class="form-control trainer-create-input" type="time" required />
                                 <span asp-validation-for="EndTime" class="text-danger"></span>
                             </div>
                         </div>
-                        <div class="alert alert-info">
+                        <div class="alert trainer-create-info-alert">
                             <i class="bi bi-info-circle me-2"></i>
                             <strong>Bilgi:</strong> Antrenör çalışma saatleri spor salonu çalışma saatleri (05:00 - 22:00) içinde olmalıdır.
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Verdiği Hizmetler</label>
+                            <label class="form-label trainer-create-label">Verdiği Hizmetler</label>
                             <div class="row">
                                 @if (services != null)
                                 {
                                     @foreach (var service in services)
                                     {
                                         <div class="col-md-6">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox"
+                                            <div class="form-check trainer-create-checkbox">
+                                                <input class="form-check-input trainer-create-checkbox-input" type="checkbox"
                                                        name="SelectedServices" value="@service.Id" id="service-@service.Id"
                                                        checked="@(Model?.SelectedServices?.Contains(service.Id) ?? false)">
-                                                <label class="form-check-label" for="service-@service.Id">
+                                                <label class="form-check-label trainer-create-checkbox-label" for="service-@service.Id">
                                                     @service.Name
-                                                    <small class="text-muted">(@service.ServiceType)</small>
+                                                    <small class="trainer-create-service-type">(@service.ServiceType)</small>
                                                 </label>
                                             </div>
                                         </div>
                                     }
                                 }
                             </div>
-                            <small class="form-text text-muted">Antrenörün verebileceği hizmetleri seçin.</small>
+                            <small class="form-text trainer-create-help-text">Antrenörün verebileceği hizmetleri seçin.</small>
                         </div>
 
 
                         <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-success">
+                            <button type="submit" class="btn trainer-create-save-button">
                                 <i class="bi bi-check-circle me-2"></i>Antrenörü Kaydet
                             </button>
-                            <a asp-action="Trainers" class="btn btn-secondary">
+                            <a asp-action="Trainers" class="btn trainer-create-cancel-button">
                                 <i class="bi bi-arrow-left me-2"></i>Geri Dön
                             </a>
                         </div>
@@ -117,3 +117,176 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+
+<style>
+    /* Page Background Dark Theme */
+    body:not(.admin-page) {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+        min-height: 100vh;
+    }
+
+    body:not(.admin-page) .container.my-5,
+    main.user-authenticated .container.my-5 {
+        background: transparent !important;
+    }
+
+    /* Dark Theme Styles for Trainer Create Page */
+    body:not(.admin-page) .trainer-create-card,
+    main.user-authenticated .trainer-create-card {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+        border: 1px solid #555555 !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+    }
+
+    body:not(.admin-page) .trainer-create-header,
+    main.user-authenticated .trainer-create-header {
+        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%) !important;
+        color: #ffffff !important;
+        border-bottom: 2px solid #ffc107 !important;
+    }
+
+    body:not(.admin-page) .trainer-create-title,
+    main.user-authenticated .trainer-create-title {
+        color: #ffffff !important;
+        font-weight: 700;
+    }
+
+    body:not(.admin-page) .trainer-create-title i,
+    main.user-authenticated .trainer-create-title i {
+        color: #ffffff !important;
+    }
+
+    body:not(.admin-page) .trainer-create-body,
+    main.user-authenticated .trainer-create-body {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+        color: #e0d4a0 !important;
+    }
+
+    body:not(.admin-page) .trainer-create-label,
+    main.user-authenticated .trainer-create-label {
+        color: #ffd700 !important;
+        font-weight: 600;
+    }
+
+    body:not(.admin-page) .trainer-create-input,
+    body:not(.admin-page) .trainer-create-select,
+    main.user-authenticated .trainer-create-input,
+    main.user-authenticated .trainer-create-select {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+        border: 1px solid #555555 !important;
+        color: #e0d4a0 !important;
+    }
+
+    body:not(.admin-page) .trainer-create-input:focus,
+    body:not(.admin-page) .trainer-create-select:focus,
+    main.user-authenticated .trainer-create-input:focus,
+    main.user-authenticated .trainer-create-select:focus {
+        background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%) !important;
+        border-color: #ffc107 !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+    }
+
+    /* Select Option Dark Theme for Trainer Create Page */
+    body:not(.admin-page) .trainer-create-select option,
+    main.user-authenticated .trainer-create-select option {
+        background-color: #2a2a2a !important;
+        color: #e0d4a0 !important;
+        padding: 10px 15px !important;
+    }
+
+    body:not(.admin-page) .trainer-create-select option:hover,
+    body:not(.admin-page) .trainer-create-select option:focus,
+    body:not(.admin-page) .trainer-create-select option:checked,
+    main.user-authenticated .trainer-create-select option:hover,
+    main.user-authenticated .trainer-create-select option:focus,
+    main.user-authenticated .trainer-create-select option:checked {
+        background-color: #3a3a3a !important;
+        background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%) !important;
+        color: #ffd700 !important;
+    }
+
+    body:not(.admin-page) select.trainer-create-select,
+    main.user-authenticated select.trainer-create-select {
+        background-color: #2a2a2a !important;
+        background-image: none !important;
+    }
+
+    body:not(.admin-page) .trainer-create-input::placeholder,
+    main.user-authenticated .trainer-create-input::placeholder {
+        color: #888888 !important;
+    }
+
+    body:not(.admin-page) .trainer-create-help-text,
+    main.user-authenticated .trainer-create-help-text {
+        color: #888888 !important;
+    }
+
+    body:not(.admin-page) .trainer-create-checkbox-label,
+    main.user-authenticated .trainer-create-checkbox-label {
+        color: #e0d4a0 !important;
+    }
+
+    body:not(.admin-page) .trainer-create-service-type,
+    main.user-authenticated .trainer-create-service-type {
+        color: #888888 !important;
+    }
+
+    body:not(.admin-page) .trainer-create-checkbox-input:checked,
+    main.user-authenticated .trainer-create-checkbox-input:checked {
+        background-color: #ffc107 !important;
+        border-color: #ffc107 !important;
+    }
+
+    body:not(.admin-page) .trainer-create-info-alert,
+    main.user-authenticated .trainer-create-info-alert {
+        background: linear-gradient(135deg, #1e3a5f 0%, #2a4a6f 100%) !important;
+        border: 1px solid #3a6a9f !important;
+        color: #e0d4a0 !important;
+    }
+
+    body:not(.admin-page) .trainer-create-info-alert i,
+    main.user-authenticated .trainer-create-info-alert i {
+        color: #4fc3f7 !important;
+    }
+
+    body:not(.admin-page) .trainer-create-info-alert strong,
+    main.user-authenticated .trainer-create-info-alert strong {
+        color: #ffd700 !important;
+    }
+
+    body:not(.admin-page) .trainer-create-save-button,
+    main.user-authenticated .trainer-create-save-button {
+        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        font-weight: 600;
+        box-shadow: 0 4px 16px rgba(40, 167, 69, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    body:not(.admin-page) .trainer-create-save-button:hover,
+    main.user-authenticated .trainer-create-save-button:hover {
+        background: linear-gradient(135deg, #1e7e34 0%, #155724 100%) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        color: #ffffff !important;
+    }
+
+    body:not(.admin-page) .trainer-create-cancel-button,
+    main.user-authenticated .trainer-create-cancel-button {
+        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    body:not(.admin-page) .trainer-create-cancel-button:hover,
+    main.user-authenticated .trainer-create-cancel-button:hover {
+        background: linear-gradient(135deg, #5a6268 0%, #495057 100%) !important;
+        transform: translateY(-2px);
+        color: #ffffff !important;
+    }
+</style>
+

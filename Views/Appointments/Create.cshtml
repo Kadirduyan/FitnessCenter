@@ -193,6 +193,15 @@
                         const option = document.createElement('option');
                         option.value = slot.value;
                         option.textContent = slot.time;
+                        
+                        // Dolu saatleri devre dışı bırak ve kırmızı göster
+                        if (slot.isBooked === true || slot.isBooked === 'true') {
+                            option.disabled = true;
+                            option.style.color = '#dc3545';
+                            option.style.fontWeight = 'bold';
+                            option.style.backgroundColor = '#f8d7da';
+                        }
+                        
                         timeSelect.appendChild(option);
                     });
 

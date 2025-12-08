@@ -7,41 +7,41 @@
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">
+            <div class="card service-create-card">
+                <div class="card-header service-create-header">
+                    <h5 class="mb-0 service-create-title">
                         <i class="bi bi-plus-circle me-2"></i>Yeni Hizmet Ekle
                     </h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body service-create-body">
                     <form asp-action="CreateService" method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                         <div class="mb-3">
-                            <label asp-for="Name" class="form-label">Hizmet Adı *</label>
-                            <input asp-for="Name" class="form-control" required />
+                            <label asp-for="Name" class="form-label service-create-label">Hizmet Adı *</label>
+                            <input asp-for="Name" class="form-control service-create-input" required />
                             <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Description" class="form-label">Açıklama</label>
-                            <textarea asp-for="Description" class="form-control" rows="3"
+                            <label asp-for="Description" class="form-label service-create-label">Açıklama</label>
+                            <textarea asp-for="Description" class="form-control service-create-input" rows="3"
                                       placeholder="Hizmet hakkında kısa bir açıklama..."></textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label asp-for="ServiceType" class="form-label">Hizmet Türü *</label>
-                                <select asp-for="ServiceType" asp-items="ViewBag.ServiceTypes" class="form-select" required>
+                                <label asp-for="ServiceType" class="form-label service-create-label">Hizmet Türü *</label>
+                                <select asp-for="ServiceType" asp-items="ViewBag.ServiceTypes" class="form-select service-create-select" required>
                                     <option value="">Seçiniz...</option>
                                 </select>
                                 <span asp-validation-for="ServiceType" class="text-danger"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label asp-for="FitnessCenterId" class="form-label">Spor Salonu *</label>
-                                <select asp-for="FitnessCenterId" asp-items="ViewBag.FitnessCenters" class="form-select" required>
+                                <label asp-for="FitnessCenterId" class="form-label service-create-label">Spor Salonu *</label>
+                                <select asp-for="FitnessCenterId" asp-items="ViewBag.FitnessCenters" class="form-select service-create-select" required>
                                     <option value="">Seçiniz...</option>
                                 </select>
                                 <span asp-validation-for="FitnessCenterId" class="text-danger"></span>
@@ -50,23 +50,23 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label asp-for="DurationMinutes" class="form-label">Süre (Dakika) *</label>
-                                <input asp-for="DurationMinutes" class="form-control" type="number" min="1" max="480" required />
+                                <label asp-for="DurationMinutes" class="form-label service-create-label">Süre (Dakika) *</label>
+                                <input asp-for="DurationMinutes" class="form-control service-create-input" type="number" min="1" max="480" required />
                                 <span asp-validation-for="DurationMinutes" class="text-danger"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label asp-for="Price" class="form-label">Ücret (TL) *</label>
-                                <input asp-for="Price" class="form-control" type="number" step="0.01" min="0" required />
+                                <label asp-for="Price" class="form-label service-create-label">Ücret (TL) *</label>
+                                <input asp-for="Price" class="form-control service-create-input" type="number" step="0.01" min="0" required />
                                 <span asp-validation-for="Price" class="text-danger"></span>
                             </div>
                         </div>
 
                         <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-success">
+                            <button type="submit" class="btn service-create-save-button">
                                 <i class="bi bi-check-circle me-2"></i>Hizmeti Kaydet
                             </button>
-                            <a asp-action="Services" class="btn btn-secondary">
+                            <a asp-action="Services" class="btn service-create-cancel-button">
                                 <i class="bi bi-arrow-left me-2"></i>Geri Dön
                             </a>
                         </div>
@@ -80,4 +80,138 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+
+<style>
+    /* Page Background Dark Theme */
+    body:not(.admin-page) {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+        min-height: 100vh;
+    }
+
+    body:not(.admin-page) .container.my-5,
+    main.user-authenticated .container.my-5 {
+        background: transparent !important;
+    }
+
+    /* Dark Theme Styles for Service Create Page */
+    body:not(.admin-page) .service-create-card,
+    main.user-authenticated .service-create-card {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+        border: 1px solid #555555 !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+    }
+
+    body:not(.admin-page) .service-create-header,
+    main.user-authenticated .service-create-header {
+        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%) !important;
+        color: #ffffff !important;
+        border-bottom: 2px solid #ffc107 !important;
+    }
+
+    body:not(.admin-page) .service-create-title,
+    main.user-authenticated .service-create-title {
+        color: #ffffff !important;
+        font-weight: 700;
+    }
+
+    body:not(.admin-page) .service-create-title i,
+    main.user-authenticated .service-create-title i {
+        color: #ffffff !important;
+    }
+
+    body:not(.admin-page) .service-create-body,
+    main.user-authenticated .service-create-body {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+        color: #e0d4a0 !important;
+    }
+
+    body:not(.admin-page) .service-create-label,
+    main.user-authenticated .service-create-label {
+        color: #ffd700 !important;
+        font-weight: 600;
+    }
+
+    body:not(.admin-page) .service-create-input,
+    body:not(.admin-page) .service-create-select,
+    main.user-authenticated .service-create-input,
+    main.user-authenticated .service-create-select {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+        border: 1px solid #555555 !important;
+        color: #e0d4a0 !important;
+    }
+
+    body:not(.admin-page) .service-create-input:focus,
+    body:not(.admin-page) .service-create-select:focus,
+    main.user-authenticated .service-create-input:focus,
+    main.user-authenticated .service-create-select:focus {
+        background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%) !important;
+        border-color: #ffc107 !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+    }
+
+    /* Select Option Dark Theme for Service Create Page */
+    body:not(.admin-page) .service-create-select option,
+    main.user-authenticated .service-create-select option {
+        background-color: #2a2a2a !important;
+        color: #e0d4a0 !important;
+        padding: 10px 15px !important;
+    }
+
+    body:not(.admin-page) .service-create-select option:hover,
+    body:not(.admin-page) .service-create-select option:focus,
+    body:not(.admin-page) .service-create-select option:checked,
+    main.user-authenticated .service-create-select option:hover,
+    main.user-authenticated .service-create-select option:focus,
+    main.user-authenticated .service-create-select option:checked {
+        background-color: #3a3a3a !important;
+        background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%) !important;
+        color: #ffd700 !important;
+    }
+
+    body:not(.admin-page) select.service-create-select,
+    main.user-authenticated select.service-create-select {
+        background-color: #2a2a2a !important;
+        background-image: none !important;
+    }
+
+    body:not(.admin-page) .service-create-input::placeholder,
+    main.user-authenticated .service-create-input::placeholder {
+        color: #888888 !important;
+    }
+
+    body:not(.admin-page) .service-create-save-button,
+    main.user-authenticated .service-create-save-button {
+        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        font-weight: 600;
+        box-shadow: 0 4px 16px rgba(40, 167, 69, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    body:not(.admin-page) .service-create-save-button:hover,
+    main.user-authenticated .service-create-save-button:hover {
+        background: linear-gradient(135deg, #1e7e34 0%, #155724 100%) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        color: #ffffff !important;
+    }
+
+    body:not(.admin-page) .service-create-cancel-button,
+    main.user-authenticated .service-create-cancel-button {
+        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    body:not(.admin-page) .service-create-cancel-button:hover,
+    main.user-authenticated .service-create-cancel-button:hover {
+        background: linear-gradient(135deg, #5a6268 0%, #495057 100%) !important;
+        transform: translateY(-2px);
+        color: #ffffff !important;
+    }
+</style>
 

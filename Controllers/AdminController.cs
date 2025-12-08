@@ -19,13 +19,15 @@ namespace FitnessCenter.Controllers
 
         public IActionResult Index()
         {
-            // Sadece randevu ve antrenör istatistikleri
+            // Tüm istatistikler
             var stats = new
             {
-                Trainers = _context.Trainers.Count(),
+                Trainers = _context.Trainers.Count(t => t.IsActive),
                 Appointments = _context.Appointments.Count(),
                 PendingAppointments = _context.Appointments.Count(a => a.Status == AppointmentStatus.Pending),
-                CompletedAppointments = _context.Appointments.Count(a => a.Status == AppointmentStatus.Completed)
+                CompletedAppointments = _context.Appointments.Count(a => a.Status == AppointmentStatus.Completed),
+                Services = _context.Services.Count(),
+                Members = _context.Users.Count()
             };
 
             ViewBag.Stats = stats;

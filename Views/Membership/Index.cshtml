@@ -72,11 +72,11 @@
                                     <div class="circular-timer-container">
                                         <div class="circular-timer" id="circular-timer">
                                             <svg width="80" height="80" viewBox="0 0 80 80">
-                                                <circle cx="40" cy="40" r="35" stroke="#e9ecef" stroke-width="8" fill="none"/>
-                                                <circle cx="40" cy="40" r="35" stroke="@(Model.DaysRemaining <= 7 ? "#dc3545" : Model.DaysRemaining <= 14 ? "#ffc107" : "#198754")"
+                                                <circle cx="40" cy="40" r="35" stroke="#555555" stroke-width="8" fill="none" opacity="0.3" class="bg-circle"/>
+                                                <circle cx="40" cy="40" r="35" stroke="@(Model.DaysRemaining <= 7 ? "#dc3545" : Model.DaysRemaining <= 14 ? "#ffc107" : "#28a745")"
                                                         stroke-width="8" fill="none" stroke-linecap="round"
                                                         stroke-dasharray="219.91" stroke-dashoffset="0" id="progress-circle"
-                                                        transform="rotate(-90 40 40)"/>
+                                                        transform="rotate(-90 40 40)" class="progress-circle"/>
                                             </svg>
                                             <div class="timer-text" id="timer-text">
                                                 @Model.DaysRemaining
@@ -198,13 +198,9 @@
                         <div class="text-end">
                             @if (Model.IsActive)
                             {
-                                <form asp-action="Cancel" asp-route-id="@Model.Id" method="post"
-                                      class="d-inline"
-                                      onsubmit="return confirm('Üyeliğinizi iptal etmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')">
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="bi bi-x-circle me-1"></i>Üyeliği İptal Et
-                                    </button>
-                                </form>
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelMembershipModal">
+                                    <i class="bi bi-x-circle me-1"></i>Üyeliği İptal Et
+                                </button>
                             }
                         </div>
                     </div>
@@ -255,10 +251,6 @@
                     <ul class="list-unstyled mb-0">
                         <li class="mb-2">
                             <i class="bi bi-check-circle-fill text-success me-2"></i>
-                            24/7 Salon Erişimi
-                        </li>
-                        <li class="mb-2">
-                            <i class="bi bi-check-circle-fill text-success me-2"></i>
                             Profesyonel Antrenörler
                         </li>
                         <li class="mb-2">
@@ -284,14 +276,90 @@
     </div>
 </div>
 
+<!-- Üyelik İptal Onay Modal -->
+<div class="modal fade" id="cancelMembershipModal" tabindex="-1" aria-labelledby="cancelMembershipModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content membership-cancel-modal">
+            <div class="modal-header membership-cancel-modal-header">
+                <h5 class="modal-title" id="cancelMembershipModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    Üyelik İptal Onayı
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body membership-cancel-modal-body">
+                <div class="alert alert-danger mb-3">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    <strong>ÖNEMLİ UYARI!</strong>
+                </div>
+                <p class="mb-3">
+                    Üyeliğinizi iptal etmek istediğinizden emin misiniz?
+                </p>
+                <div class="membership-cancel-warning-box">
+                    <h6 class="mb-2">
+                        <i class="bi bi-x-circle-fill me-2"></i>
+                        Para İadesi Yapılmaz
+                    </h6>
+                    <p class="mb-0">
+                        Üyeliğinizi iptal ettiğinizde, ödediğiniz ücret için <strong>para iadesi yapılmaz</strong>. 
+                        Üyeliğiniz anında sona erecek ve kalan süre için erişim hakkınız kaybolacaktır.
+                    </p>
+                </div>
+                <div class="mt-3">
+                    <p class="mb-0">
+                        <strong>İptal etmek istediğinizden emin misiniz?</strong>
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer membership-cancel-modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-1"></i>İptal
+                </button>
+                <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-check-circle me-1"></i>Evet, İptal Et
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
     .bg-gradient-primary {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
 
+    /* Dark Theme Enhancements */
+    main.user-authenticated .bg-gradient-primary {
+        background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%) !important;
+        color: #1a1a1a !important;
+    }
+
+    main.user-authenticated .card-header.bg-primary {
+        background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%) !important;
+        color: #1a1a1a !important;
+    }
+
+    main.user-authenticated .card-header.bg-primary h6,
+    main.user-authenticated .card-header.bg-primary i {
+        color: #1a1a1a !important;
+    }
+
+    main.user-authenticated .card-header.bg-success {
+        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%) !important;
+        color: #ffffff !important;
+    }
+
+    main.user-authenticated .card-header.bg-success h6,
+    main.user-authenticated .card-header.bg-success i {
+        color: #ffffff !important;
+    }
+
     .info-item {
-        margin-bottom: 8px;
-        padding: 4px 0;
+        margin-bottom: 12px;
+        padding: 8px 0;
         border-bottom: 1px solid #f8f9fa;
     }
 
@@ -312,6 +380,12 @@
     .card-footer {
         border-top: 1px solid #dee2e6 !important;
         background: #f8f9fa !important;
+    }
+
+    /* Dark Theme Card Footer */
+    main.user-authenticated .card-footer {
+        border-top: 1px solid #555555 !important;
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
     }
 
     .progress {
@@ -348,9 +422,10 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        font-size: 18px;
+        font-size: 20px;
         font-weight: bold;
-        color: #333;
+        color: #ffd700;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
     }
 
     .timer-label {
@@ -358,15 +433,139 @@
         top: 65%;
         left: 50%;
         transform: translateX(-50%);
-        font-size: 10px;
-        color: #666;
-        font-weight: 500;
+        font-size: 11px;
+        color: #ffc107;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .countdown-detail {
         font-family: 'Courier New', monospace;
-        font-size: 0.9em;
+        font-size: 1.1em;
         font-weight: bold;
+        padding: 8px 12px;
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%);
+        border: 1px solid #ffc107;
+        border-radius: 8px;
+        min-width: 120px;
+        text-align: center;
+    }
+
+    /* Dark Theme Overrides */
+    main.user-authenticated .timer-text {
+        color: #ffd700 !important;
+    }
+
+    main.user-authenticated .timer-label {
+        color: #ffc107 !important;
+    }
+
+    main.user-authenticated .countdown-detail {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+        border-color: #ffc107 !important;
+        color: #ffd700 !important;
+    }
+
+    main.user-authenticated .countdown-detail.text-success {
+        color: #28a745 !important;
+        border-color: #28a745 !important;
+    }
+
+    main.user-authenticated .countdown-detail.text-danger {
+        color: #dc3545 !important;
+        border-color: #dc3545 !important;
+    }
+
+    main.user-authenticated .circular-timer svg circle[stroke="#e9ecef"] {
+        stroke: #555555 !important;
+    }
+
+    main.user-authenticated .info-item {
+        border-bottom-color: #555555 !important;
+        color: #e0d4a0;
+    }
+
+    main.user-authenticated .info-item strong {
+        color: #ffd700;
+    }
+
+    /* Üyelik İptal Modal Dark Theme */
+    main.user-authenticated .membership-cancel-modal {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+        border: 1px solid #555555 !important;
+        color: #e0d4a0 !important;
+    }
+
+    main.user-authenticated .membership-cancel-modal-header {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+        border-bottom: 2px solid #ffc107 !important;
+        color: #ffffff !important;
+    }
+
+    main.user-authenticated .membership-cancel-modal-header .modal-title {
+        color: #ffffff !important;
+        font-weight: 700;
+    }
+
+    main.user-authenticated .membership-cancel-modal-header .btn-close {
+        filter: invert(1);
+    }
+
+    main.user-authenticated .membership-cancel-modal-body {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+        color: #e0d4a0 !important;
+    }
+
+    main.user-authenticated .membership-cancel-modal-body p {
+        color: #e0d4a0 !important;
+    }
+
+    main.user-authenticated .membership-cancel-modal-body strong {
+        color: #ffd700 !important;
+    }
+
+    main.user-authenticated .membership-cancel-warning-box {
+        background: linear-gradient(135deg, #3a1a1a 0%, #2a0f0f 100%) !important;
+        border: 2px solid #dc3545 !important;
+        border-radius: 8px;
+        padding: 16px;
+        margin: 16px 0;
+    }
+
+    main.user-authenticated .membership-cancel-warning-box h6 {
+        color: #ff6b6b !important;
+        font-weight: 700;
+    }
+
+    main.user-authenticated .membership-cancel-warning-box p {
+        color: #ffcccc !important;
+    }
+
+    main.user-authenticated .membership-cancel-warning-box i {
+        color: #ff6b6b !important;
+    }
+
+    main.user-authenticated .membership-cancel-modal-footer {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+        border-top: 1px solid #555555 !important;
+    }
+
+    main.user-authenticated .membership-cancel-modal-footer .btn-secondary {
+        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%) !important;
+        border: none !important;
+        color: #ffffff !important;
+    }
+
+    main.user-authenticated .membership-cancel-modal-footer .btn-danger {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+        border: none !important;
+        color: #ffffff !important;
+        font-weight: 600;
+    }
+
+    main.user-authenticated .membership-cancel-modal-footer .btn-danger:hover {
+        background: linear-gradient(135deg, #c82333 0%, #bd2130 100%) !important;
     }
 </style>
 
@@ -400,9 +599,9 @@
             const circumference = 2 * Math.PI * 35;
             const strokeDashoffset = circumference * progress;
 
-            // Renk belirle
+            // Renk belirle - Enhanced for dark theme
             let colorClass = 'text-success';
-            let strokeColor = '#198754';
+            let strokeColor = '#28a745';
             if (days <= 7) {
                 colorClass = 'text-danger';
                 strokeColor = '#dc3545';

@@ -224,9 +224,169 @@
                 font-size: 0.7rem;
             }
         }
+
+        /* Professional Dark Theme for User Menu */
+        .navbar-nav .nav-link {
+            background: transparent;
+            border-radius: 8px;
+            margin: 0 4px;
+            transition: all 0.3s ease;
+            position: relative;
+            color: #e0e0e0 !important;
+            font-weight: 500;
+        }
+
+        .navbar-nav .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #007bff, #00d4ff);
+            transition: width 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+            color: #ffffff !important;
+            transform: translateY(-1px);
+        }
+
+        .navbar-nav .nav-link:hover::before {
+            width: 80%;
+        }
+
+        /* User Dropdown Professional Design */
+        .navbar-actions .user-dropdown-toggle {
+            background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%) !important;
+            border: 1px solid #404040 !important;
+            color: #ffffff !important;
+            border-radius: 20px;
+            padding: 8px 16px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .navbar-actions .user-dropdown-toggle:hover {
+            background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%) !important;
+            border-color: #ffc107 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+        }
+
+        .navbar-actions .user-dropdown-menu {
+            background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+            border: 1px solid #555555 !important;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            padding: 8px 0;
+            min-width: 220px;
+            margin-top: 8px;
+        }
+
+        .navbar-actions .user-dropdown-item {
+            color: #e0d4a0 !important;
+            padding: 12px 20px;
+            transition: all 0.3s ease;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .navbar-actions .user-dropdown-item i {
+            color: #ffc107 !important;
+            width: 20px;
+        }
+
+        .navbar-actions .user-dropdown-item:hover {
+            background: linear-gradient(135deg, #3a3a3a 0%, #2e2e2e 100%) !important;
+            color: #ffd700 !important;
+            transform: translateX(5px);
+        }
+
+        .navbar-actions .user-dropdown-item.user-dropdown-logout {
+            color: #ff6b6b !important;
+        }
+
+        .navbar-actions .user-dropdown-item.user-dropdown-logout:hover {
+            background: linear-gradient(135deg, #3a1a1a 0%, #2a0f0f 100%) !important;
+            color: #ff8787 !important;
+        }
+
+        .navbar-actions .user-dropdown-item.user-dropdown-logout i {
+            color: #ff6b6b !important;
+        }
+
+        .navbar-actions .user-dropdown-divider {
+            border-color: #555555 !important;
+            margin: 8px 0;
+            opacity: 0.5;
+        }
+
+        /* Login Button Professional Design */
+        .navbar-actions .btn-outline-light {
+            background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+            border: 1px solid #404040;
+            color: #ffffff !important;
+            border-radius: 20px;
+            padding: 8px 20px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .navbar-actions .btn-outline-light:hover {
+            background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
+            border-color: #555555;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            color: #ffffff !important;
+        }
+
+        /* Navbar Brand Enhancement */
+        .navbar-brand {
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+
+        .brand-name {
+            background: linear-gradient(135deg, #ffffff 0%, #b0b0b0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Hamburger Menu Professional Design */
+        .hamburger-menu {
+            border: 1px solid #404040;
+            border-radius: 8px;
+            padding: 8px;
+            background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+        }
+
+        .hamburger-menu span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: #ffffff;
+            margin: 4px 0;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .hamburger-menu:hover {
+            background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
+            border-color: #555555;
+        }
     </style>
 </head>
-<body>
+<body class="@(User.Identity?.IsAuthenticated == true && !User.IsInRole("Admin") ? "user-authenticated-body" : "")">
     <div class="top-header">
         <div class="container-fluid">
             <div class="row align-items-center">
@@ -263,25 +423,25 @@
                 <ul class="navbar-nav ms-auto">
                     @if (!User.IsInRole("Admin"))
                     {
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Fitness</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Services">Hizmetler</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Trainers" asp-action="List">Antrenörler</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Membership" asp-action="Index">Üyelik</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Locations" asp-action="Index">Lokasyon</a>
-                        </li>
                         @if (User.Identity?.IsAuthenticated == true)
                         {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Fitness</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Services">Hizmetler</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Trainers" asp-action="List">Antrenörler</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Membership" asp-action="Index">Üyelik</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Locations" asp-action="Index">Lokasyon</a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Ai" asp-action="Index">AI Öneriler</a>
                             </li>
@@ -356,15 +516,15 @@
                     @if (User.Identity?.IsAuthenticated == true)
                     {
                         <div class="dropdown">
-                            <a class="btn btn-outline-light btn-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <a class="btn btn-outline-light btn-sm dropdown-toggle user-dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                                 @User.Identity.Name
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#">Profil</a></li>
-                                <li><hr class="dropdown-divider"></li>
+                            <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu">
+                                <li><a class="dropdown-item user-dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profil</a></li>
+                                <li><hr class="dropdown-divider user-dropdown-divider"></li>
                                 <li>
                                     <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                                        <button type="submit" class="dropdown-item">Çıkış Yap</button>
+                                        <button type="submit" class="dropdown-item user-dropdown-item user-dropdown-logout"><i class="bi bi-box-arrow-right me-2"></i>Çıkış Yap</button>
                                     </form>
                                 </li>
                             </ul>
@@ -372,14 +532,15 @@
                     }
                     else
                     {
-                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-sm me-2">Giriş</a>
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-outline-light btn-sm me-2">Kayıt Ol</a>
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-sm">Giriş</a>
                     }
                 </div>
             </div>
         </div>
     </nav>
 
-    <main style="padding-top: 0;">
+    <main class="@(User.Identity?.IsAuthenticated == true && !User.IsInRole("Admin") ? "user-authenticated" : "")" style="padding-top: 0;">
         @RenderBody()
     </main>
 

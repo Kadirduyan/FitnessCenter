@@ -6,67 +6,90 @@
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card shadow-custom">
-                <div class="card-body p-5">
-                    <h2 class="text-center mb-4 fw-bold">Üye Ol</h2>
+            <div class="card shadow-custom register-card">
+                <div class="card-header register-card-header text-center">
+                    <h4 class="mb-0 register-card-title">
+                        <i class="bi bi-person-plus-fill me-2"></i>Üye Ol
+                    </h4>
+                </div>
+                <div class="card-body p-5 register-card-body">
                     <form asp-action="Register" method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
                         
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label asp-for="FirstName" class="form-label"></label>
-                                <input asp-for="FirstName" class="form-control" placeholder="Adınız" />
+                                <label asp-for="FirstName" class="form-label register-label">
+                                    <i class="bi bi-person me-1"></i>Ad
+                                </label>
+                                <input asp-for="FirstName" class="form-control register-input" placeholder="Adınız" />
                                 <span asp-validation-for="FirstName" class="text-danger"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label asp-for="LastName" class="form-label"></label>
-                                <input asp-for="LastName" class="form-control" placeholder="Soyadınız" />
+                                <label asp-for="LastName" class="form-label register-label">
+                                    <i class="bi bi-person me-1"></i>Soyad
+                                </label>
+                                <input asp-for="LastName" class="form-control register-input" placeholder="Soyadınız" />
                                 <span asp-validation-for="LastName" class="text-danger"></span>
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Email" class="form-label"></label>
-                            <input asp-for="Email" class="form-control" placeholder="E-posta adresiniz" />
+                            <label asp-for="Email" class="form-label register-label">
+                                <i class="bi bi-envelope me-1"></i>E-posta
+                            </label>
+                            <input asp-for="Email" class="form-control register-input" placeholder="E-posta adresiniz" />
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Password" class="form-label"></label>
-                            <input asp-for="Password" class="form-control" placeholder="Şifreniz" />
+                            <label asp-for="Password" class="form-label register-label">
+                                <i class="bi bi-lock me-1"></i>Şifre
+                            </label>
+                            <input asp-for="Password" class="form-control register-input" placeholder="Şifreniz" />
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="ConfirmPassword" class="form-label"></label>
-                            <input asp-for="ConfirmPassword" class="form-control" placeholder="Şifrenizi tekrar giriniz" />
+                            <label asp-for="ConfirmPassword" class="form-label register-label">
+                                <i class="bi bi-lock-fill me-1"></i>Şifre Tekrar
+                            </label>
+                            <input asp-for="ConfirmPassword" class="form-control register-input" placeholder="Şifrenizi tekrar giriniz" />
                             <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label asp-for="DateOfBirth" class="form-label"></label>
-                                <input asp-for="DateOfBirth" class="form-control" type="date" />
+                                <label asp-for="DateOfBirth" class="form-label register-label">
+                                    <i class="bi bi-calendar me-1"></i>Doğum Tarihi
+                                </label>
+                                <input asp-for="DateOfBirth" class="form-control register-input" type="date" />
                                 <span asp-validation-for="DateOfBirth" class="text-danger"></span>
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Address" class="form-label"></label>
-                            <textarea asp-for="Address" class="form-control" rows="2" placeholder="Adresiniz (opsiyonel)"></textarea>
+                            <label asp-for="Address" class="form-label register-label">
+                                <i class="bi bi-geo-alt me-1"></i>Adres
+                            </label>
+                            <textarea asp-for="Address" class="form-control register-input" rows="2" placeholder="Adresiniz (opsiyonel)"></textarea>
                             <span asp-validation-for="Address" class="text-danger"></span>
                         </div>
 
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg">Üye Ol</button>
+                            <button type="submit" class="btn btn-lg register-button">
+                                <i class="bi bi-person-plus me-2"></i>Üye Ol
+                            </button>
                         </div>
                     </form>
 
-                    <hr class="my-4">
+                    <hr class="my-4 register-divider">
 
                     <div class="text-center">
-                        <p class="mb-0">Zaten hesabınız var mı? <a asp-action="Login" class="text-decoration-none fw-bold">Giriş Yap</a></p>
+                        <p class="mb-0 register-footer-text">
+                            Zaten hesabınız var mı? 
+                            <a asp-action="Login" class="text-decoration-none fw-bold register-link">Giriş Yap</a>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -77,4 +100,126 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+<style>
+    /* Dark Theme Styles for Register Page */
+    body:not(.admin-page) {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+        min-height: 100vh;
+    }
+
+    body:not(.admin-page) .container {
+        background-color: transparent !important;
+    }
+
+    /* Register Card Styles */
+    main.user-authenticated .register-card,
+    body:not(.admin-page) .register-card {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+        border: 1px solid #555555 !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+    }
+
+    main.user-authenticated .register-card-header,
+    body:not(.admin-page) .register-card-header {
+        background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%) !important;
+        color: #ffd700 !important;
+        border-bottom: 2px solid #ffc107 !important;
+    }
+
+    main.user-authenticated .register-card-title,
+    body:not(.admin-page) .register-card-title {
+        color: #ffd700 !important;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    main.user-authenticated .register-card-title i,
+    body:not(.admin-page) .register-card-title i {
+        color: #ffc107 !important;
+    }
+
+    main.user-authenticated .register-card-body,
+    body:not(.admin-page) .register-card-body {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+        color: #e0d4a0 !important;
+    }
+
+    main.user-authenticated .register-label,
+    body:not(.admin-page) .register-label {
+        color: #e0d4a0 !important;
+        font-weight: 600;
+    }
+
+    main.user-authenticated .register-label i,
+    body:not(.admin-page) .register-label i {
+        color: #ffc107 !important;
+    }
+
+    main.user-authenticated .register-input,
+    body:not(.admin-page) .register-input {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+        border: 1px solid #555555 !important;
+        color: #e0d4a0 !important;
+    }
+
+    main.user-authenticated .register-input:focus,
+    body:not(.admin-page) .register-input:focus {
+        background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%) !important;
+        border-color: #ffc107 !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+    }
+
+    main.user-authenticated .register-input::placeholder,
+    body:not(.admin-page) .register-input::placeholder {
+        color: #888888 !important;
+    }
+
+    main.user-authenticated .register-button,
+    body:not(.admin-page) .register-button {
+        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        font-weight: 600;
+        box-shadow: 0 4px 16px rgba(40, 167, 69, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    main.user-authenticated .register-button:hover,
+    body:not(.admin-page) .register-button:hover {
+        background: linear-gradient(135deg, #1e7e34 0%, #155724 100%) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    }
+
+    main.user-authenticated .register-divider,
+    body:not(.admin-page) .register-divider {
+        border-color: #555555 !important;
+    }
+
+    main.user-authenticated .register-footer-text,
+    body:not(.admin-page) .register-footer-text {
+        color: #e0d4a0 !important;
+    }
+
+    main.user-authenticated .register-link,
+    body:not(.admin-page) .register-link {
+        color: #4fc3f7 !important;
+    }
+
+    main.user-authenticated .register-link:hover,
+    body:not(.admin-page) .register-link:hover {
+        color: #81d4fa !important;
+        text-decoration: underline !important;
+    }
+
+    /* Override any white backgrounds on register page */
+    body:not(.admin-page) .card:not(.register-card),
+    body:not(.admin-page) .bg-white,
+    body:not(.admin-page) .bg-light {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+        color: #e0d4a0 !important;
+    }
+</style>
 

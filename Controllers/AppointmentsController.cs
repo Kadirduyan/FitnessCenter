@@ -555,7 +555,7 @@ namespace FitnessCenter.Controllers
                 return Json(new List<object>());
             }
 
-            // Get existing appointments for this date
+            // Get existing appointments for this date (tüm aktif randevular - iptal ve reddedilen hariç)
             var existingAppointments = await _context.Appointments
                 .Where(a => a.TrainerId == trainerId
                     && a.AppointmentDate.Date == date.Date
@@ -564,21 +564,21 @@ namespace FitnessCenter.Controllers
                 .Select(a => a.AppointmentTime)
                 .ToListAsync();
 
-            // Generate time slots
+            // Generate time slots - hem müsait hem de dolu saatleri göster
             var timeSlots = new List<object>();
             var startTime = availability.StartTime;
             var endTime = availability.EndTime;
 
             while (startTime < endTime)
             {
-                if (!existingAppointments.Contains(startTime))
+                var isBooked = existingAppointments.Contains(startTime);
+                timeSlots.Add(new
                 {
-                    timeSlots.Add(new
-                    {
-                        Time = startTime.ToString(@"hh\:mm"),
-                        Value = startTime.ToString(@"hh\:mm")
-                    });
-                }
+                    Time = isBooked ? $"{startTime.ToString(@"hh\:mm")} - DOLU" : startTime.ToString(@"hh\:mm"),
+                    Value = startTime.ToString(@"hh\:mm"),
+                    IsAvailable = !isBooked,
+                    IsBooked = isBooked
+                });
                 startTime = startTime.Add(TimeSpan.FromMinutes(60)); // 1 saatlik aralıklar
             }
 

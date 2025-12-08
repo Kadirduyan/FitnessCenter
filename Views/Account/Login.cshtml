@@ -6,23 +6,23 @@
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card shadow-custom">
-                <div class="card-header bg-primary text-white text-center">
-                    <h4 class="mb-0">
+            <div class="card shadow-custom login-card">
+                <div class="card-header login-card-header text-center">
+                    <h4 class="mb-0 login-card-title">
                         <i class="bi bi-shield-lock me-2"></i>Rol Bazlı Giriş Sistemi
                     </h4>
                 </div>
-                <div class="card-body p-4">
+                <div class="card-body p-4 login-card-body">
 
                     <!-- Rol Seçimi Tab'ları -->
-                    <ul class="nav nav-tabs mb-4" id="loginTabs" role="tablist">
+                    <ul class="nav nav-tabs mb-4 login-tabs" id="loginTabs" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link @(ViewBag.IsAdminLogin == true ? "" : "active")" id="member-tab" data-bs-toggle="tab" data-bs-target="#member-login" type="button" role="tab">
+                            <button class="nav-link login-tab @(ViewBag.IsAdminLogin == true ? "" : "active")" id="member-tab" data-bs-toggle="tab" data-bs-target="#member-login" type="button" role="tab">
                                 <i class="bi bi-person me-2"></i>Üye Girişi
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link @(ViewBag.IsAdminLogin == true ? "active" : "")" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin-login" type="button" role="tab">
+                            <button class="nav-link login-tab @(ViewBag.IsAdminLogin == true ? "active" : "")" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin-login" type="button" role="tab">
                                 <i class="bi bi-shield-check me-2"></i>Admin Girişi
                             </button>
                         </li>
@@ -33,7 +33,7 @@
 
                         <!-- Üye Girişi -->
                         <div class="tab-pane fade @(ViewBag.IsAdminLogin == true ? "" : "show active")" id="member-login" role="tabpanel">
-                            <h5 class="text-center mb-3 text-primary">
+                            <h5 class="text-center mb-3 login-section-title">
                                 <i class="bi bi-person-circle me-2"></i>Üye Girişi
                             </h5>
                             <form asp-action="Login" method="post" id="memberLoginForm">
@@ -41,28 +41,28 @@
                                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                                 <div class="mb-3">
-                                    <label asp-for="Email" class="form-label">
+                                    <label asp-for="Email" class="form-label login-label">
                                         <i class="bi bi-envelope me-1"></i>E-posta
                                     </label>
-                                    <input asp-for="Email" class="form-control" placeholder="E-posta adresinizi giriniz" />
+                                    <input asp-for="Email" class="form-control login-input" placeholder="E-posta adresinizi giriniz" />
                                     <span asp-validation-for="Email" class="text-danger"></span>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label asp-for="Password" class="form-label">
+                                    <label asp-for="Password" class="form-label login-label">
                                         <i class="bi bi-lock me-1"></i>Şifre
                                     </label>
-                                    <input asp-for="Password" class="form-control" placeholder="Şifrenizi giriniz" />
+                                    <input asp-for="Password" class="form-control login-input" placeholder="Şifrenizi giriniz" />
                                     <span asp-validation-for="Password" class="text-danger"></span>
                                 </div>
 
                                 <div class="mb-3 form-check">
-                                    <input asp-for="RememberMe" class="form-check-input" />
-                                    <label asp-for="RememberMe" class="form-check-label">Beni Hatırla</label>
+                                    <input asp-for="RememberMe" class="form-check-input login-checkbox" />
+                                    <label asp-for="RememberMe" class="form-check-label login-checkbox-label">Beni Hatırla</label>
                                 </div>
 
                                 <div class="d-grid">
-                                    <button type="submit" class="btn btn-primary btn-lg">
+                                    <button type="submit" class="btn btn-lg login-button-member">
                                         <i class="bi bi-box-arrow-in-right me-2"></i>Üye Olarak Giriş Yap
                                     </button>
                                 </div>
@@ -71,11 +71,11 @@
 
                         <!-- Admin Girişi -->
                         <div class="tab-pane fade @(ViewBag.IsAdminLogin == true ? "show active" : "")" id="admin-login" role="tabpanel">
-                            <h5 class="text-center mb-3 text-danger">
+                            <h5 class="text-center mb-3 login-section-title-admin">
                                 <i class="bi bi-shield-lock me-2"></i>Admin Girişi
                             </h5>
 
-                            <div class="alert alert-warning mb-3">
+                            <div class="alert login-alert-warning mb-3">
                                 <i class="bi bi-exclamation-triangle me-2"></i>
                                 <strong>Admin Girişi:</strong><br>
                                 Sadece yetkili personel için
@@ -86,28 +86,28 @@
                                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                                 <div class="mb-3">
-                                    <label asp-for="Email" class="form-label">
+                                    <label asp-for="Email" class="form-label login-label">
                                         <i class="bi bi-envelope me-1"></i>Admin E-posta
                                     </label>
-                                    <input asp-for="Email" class="form-control" id="adminEmail" name="Email" placeholder="Admin e-posta adresi" />
+                                    <input asp-for="Email" class="form-control login-input" id="adminEmail" name="Email" placeholder="Admin e-posta adresi" />
                                     <span asp-validation-for="Email" class="text-danger"></span>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label asp-for="Password" class="form-label">
+                                    <label asp-for="Password" class="form-label login-label">
                                         <i class="bi bi-lock me-1"></i>Admin Şifre
                                     </label>
-                                    <input asp-for="Password" class="form-control" id="adminPassword" name="Password" type="password" placeholder="Admin şifresi" />
+                                    <input asp-for="Password" class="form-control login-input" id="adminPassword" name="Password" type="password" placeholder="Admin şifresi" />
                                     <span asp-validation-for="Password" class="text-danger"></span>
                                 </div>
 
                                 <div class="mb-3 form-check">
-                                    <input asp-for="RememberMe" class="form-check-input" name="RememberMe" type="checkbox" />
-                                    <label asp-for="RememberMe" class="form-check-label">Beni Hatırla</label>
+                                    <input asp-for="RememberMe" class="form-check-input login-checkbox" name="RememberMe" type="checkbox" />
+                                    <label asp-for="RememberMe" class="form-check-label login-checkbox-label">Beni Hatırla</label>
                                 </div>
 
                                 <div class="d-grid">
-                                    <button type="submit" class="btn btn-danger btn-lg">
+                                    <button type="submit" class="btn btn-lg login-button-admin">
                                         <i class="bi bi-shield-check me-2"></i>Admin Olarak Giriş Yap
                                     </button>
                                 </div>
@@ -115,15 +115,15 @@
                         </div>
                     </div>
 
-                    <hr class="my-4">
+                    <hr class="my-4 login-divider">
 
                     <div class="text-center">
-                        <p class="mb-2">
+                        <p class="mb-2 login-footer-text">
                             <i class="bi bi-person-plus me-1"></i>
                             Üye hesabınız yok mu?
-                            <a asp-action="Register" class="text-decoration-none fw-bold text-primary">Ücretsiz Kayıt Olun</a>
+                            <a asp-action="Register" class="text-decoration-none fw-bold login-link">Ücretsiz Kayıt Olun</a>
                         </p>
-                        <small class="text-muted">
+                        <small class="login-footer-small">
                             KADIR Fitness ile sağlıklı yaşam yolculuğunuza başlayın!
                         </small>
                     </div>
@@ -172,4 +172,265 @@
         }
     </script>
 }
+
+<style>
+    /* Login Page Background - Dark Theme */
+    body:not(.admin-page) {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+        min-height: 100vh;
+    }
+
+    body:not(.admin-page) .container {
+        background-color: transparent !important;
+    }
+
+    /* Dark Theme Styles for Login Page */
+    main.user-authenticated .login-card,
+    body:not(.admin-page) .login-card {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+        border: 1px solid #555555 !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+    }
+
+    main.user-authenticated .login-card-header,
+    body:not(.admin-page) .login-card-header {
+        background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%) !important;
+        color: #ffd700 !important;
+        border-bottom: 2px solid #ffc107 !important;
+    }
+
+    main.user-authenticated .login-card-title,
+    body:not(.admin-page) .login-card-title {
+        color: #ffd700 !important;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    main.user-authenticated .login-card-title i,
+    body:not(.admin-page) .login-card-title i {
+        color: #ffc107 !important;
+    }
+
+    main.user-authenticated .login-card-body,
+    body:not(.admin-page) .login-card-body {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+        color: #e0d4a0 !important;
+    }
+
+    main.user-authenticated .login-tabs,
+    body:not(.admin-page) .login-tabs {
+        border-bottom: 2px solid #555555 !important;
+    }
+
+    main.user-authenticated .login-tab,
+    body:not(.admin-page) .login-tab {
+        color: #e0d4a0 !important;
+        background: transparent !important;
+        border: none !important;
+        border-bottom: 3px solid transparent !important;
+        transition: all 0.3s ease;
+    }
+
+    main.user-authenticated .login-tab:hover,
+    body:not(.admin-page) .login-tab:hover {
+        color: #ffd700 !important;
+        background: rgba(255, 193, 7, 0.1) !important;
+    }
+
+    main.user-authenticated .login-tab.active,
+    body:not(.admin-page) .login-tab.active {
+        color: #ffd700 !important;
+        background: rgba(255, 193, 7, 0.15) !important;
+        border-bottom-color: #ffc107 !important;
+        font-weight: 600;
+    }
+
+    main.user-authenticated .login-section-title,
+    body:not(.admin-page) .login-section-title {
+        color: #ffd700 !important;
+        font-weight: 600;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+
+    main.user-authenticated .login-section-title i,
+    body:not(.admin-page) .login-section-title i {
+        color: #ffc107 !important;
+    }
+
+    main.user-authenticated .login-section-title-admin,
+    body:not(.admin-page) .login-section-title-admin {
+        color: #ff8787 !important;
+        font-weight: 600;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+
+    main.user-authenticated .login-section-title-admin i,
+    body:not(.admin-page) .login-section-title-admin i {
+        color: #ff6b6b !important;
+    }
+
+    main.user-authenticated .login-label,
+    body:not(.admin-page) .login-label {
+        color: #e0d4a0 !important;
+        font-weight: 600;
+    }
+
+    main.user-authenticated .login-label i,
+    body:not(.admin-page) .login-label i {
+        color: #ffc107 !important;
+    }
+
+    main.user-authenticated .login-input,
+    body:not(.admin-page) .login-input {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+        border: 1px solid #555555 !important;
+        color: #e0d4a0 !important;
+    }
+
+    main.user-authenticated .login-input:focus,
+    body:not(.admin-page) .login-input:focus {
+        background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%) !important;
+        border-color: #ffc107 !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+    }
+
+    main.user-authenticated .login-input::placeholder,
+    body:not(.admin-page) .login-input::placeholder {
+        color: #888888 !important;
+    }
+
+    main.user-authenticated .login-checkbox-label,
+    body:not(.admin-page) .login-checkbox-label {
+        color: #e0d4a0 !important;
+    }
+
+    main.user-authenticated .login-checkbox:checked,
+    body:not(.admin-page) .login-checkbox:checked {
+        background-color: #ffc107 !important;
+        border-color: #ffc107 !important;
+    }
+
+    main.user-authenticated .login-button-member,
+    body:not(.admin-page) .login-button-member {
+        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        font-weight: 600;
+        box-shadow: 0 4px 16px rgba(40, 167, 69, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    main.user-authenticated .login-button-member:hover,
+    body:not(.admin-page) .login-button-member:hover {
+        background: linear-gradient(135deg, #1e7e34 0%, #155724 100%) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    }
+
+    main.user-authenticated .login-button-admin,
+    body:not(.admin-page) .login-button-admin {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        font-weight: 600;
+        box-shadow: 0 4px 16px rgba(220, 53, 69, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    main.user-authenticated .login-button-admin:hover,
+    body:not(.admin-page) .login-button-admin:hover {
+        background: linear-gradient(135deg, #c82333 0%, #bd2130 100%) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+    }
+
+    main.user-authenticated .login-alert-warning,
+    body:not(.admin-page) .login-alert-warning {
+        background: linear-gradient(135deg, #3a2a1a 0%, #2a1f0f 100%) !important;
+        border: 2px solid #ffc107 !important;
+        color: #ffffff !important;
+        box-shadow: 0 2px 8px rgba(255, 193, 7, 0.2);
+    }
+
+    main.user-authenticated .login-alert-warning i,
+    body:not(.admin-page) .login-alert-warning i {
+        color: #ffc107 !important;
+        font-size: 1.2rem;
+    }
+
+    main.user-authenticated .login-alert-warning strong,
+    body:not(.admin-page) .login-alert-warning strong {
+        color: #ffd700 !important;
+        font-weight: 700;
+    }
+
+    main.user-authenticated .login-divider,
+    body:not(.admin-page) .login-divider {
+        border-color: #555555 !important;
+    }
+
+    main.user-authenticated .login-footer-text,
+    body:not(.admin-page) .login-footer-text {
+        color: #e0d4a0 !important;
+    }
+
+    main.user-authenticated .login-link,
+    body:not(.admin-page) .login-link {
+        color: #4fc3f7 !important;
+    }
+
+    main.user-authenticated .login-link:hover,
+    body:not(.admin-page) .login-link:hover {
+        color: #81d4fa !important;
+        text-decoration: underline !important;
+    }
+
+    main.user-authenticated .login-footer-small,
+    body:not(.admin-page) .login-footer-small {
+        color: #888888 !important;
+    }
+
+    /* Override any white backgrounds on login page */
+    body:not(.admin-page) .card:not(.login-card),
+    body:not(.admin-page) .bg-white,
+    body:not(.admin-page) .bg-light {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+        color: #e0d4a0 !important;
+    }
+
+    /* Text colors for better readability */
+    body:not(.admin-page) .text-muted {
+        color: #888888 !important;
+    }
+
+    body:not(.admin-page) .text-primary {
+        color: #ffd700 !important;
+    }
+
+    body:not(.admin-page) .text-danger {
+        color: #ff6b6b !important;
+    }
+
+    /* Better contrast for yellow text */
+    main.user-authenticated .login-tab.active,
+    body:not(.admin-page) .login-tab.active {
+        color: #ffffff !important;
+        background: linear-gradient(135deg, rgba(255, 193, 7, 0.3) 0%, rgba(255, 152, 0, 0.2) 100%) !important;
+        border-bottom-color: #ffc107 !important;
+        font-weight: 600;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    main.user-authenticated .login-tab,
+    body:not(.admin-page) .login-tab {
+        color: #b8a86a !important;
+    }
+
+    main.user-authenticated .login-tab:hover,
+    body:not(.admin-page) .login-tab:hover {
+        color: #ffffff !important;
+        background: rgba(255, 193, 7, 0.15) !important;
+    }
+</style>
 
