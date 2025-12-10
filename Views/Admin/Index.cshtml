@@ -79,6 +79,38 @@
                 </div>
             </div>
 
+            <!-- API Test Section -->
+            <div class="row mb-5">
+                <div class="col-12">
+                    <div class="api-test-card">
+                        <div class="api-test-header">
+                            <div class="api-test-icon">
+                                <i class="bi bi-robot"></i>
+                            </div>
+                            <div class="api-test-title">
+                                <h3>🔧 Gemini API Test</h3>
+                                <p>API bağlantısını test edin ve durumu kontrol edin</p>
+                            </div>
+                        </div>
+                        <div class="api-test-content">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <button id="apiTestBtn" class="btn btn-primary btn-lg w-100">
+                                        <i class="bi bi-play-circle me-2"></i>API Bağlantısını Test Et
+                                    </button>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <button id="apiKeyTestBtn" class="btn btn-info btn-lg w-100">
+                                        <i class="bi bi-key me-2"></i>API Anahtarını Kontrol Et
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="apiTestResult" class="mt-3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Management Modules -->
             <div class="row">
                 <div class="col-12">
@@ -409,6 +441,76 @@
     ::-webkit-scrollbar-thumb:hover {
         background: #555555;
     }
+
+    /* API Test Card Styles */
+    .api-test-card {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%);
+        border: 1px solid #404040;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .api-test-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #404040;
+    }
+
+    .api-test-icon {
+        background: linear-gradient(135deg, #4a4a4a 0%, #333333 100%);
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1.5rem;
+        color: #ffffff;
+        font-size: 1.8rem;
+    }
+
+    .api-test-title h3 {
+        color: #ffffff;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .api-test-title p {
+        color: #b0b0b0;
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    .api-test-content .btn {
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .api-test-content .alert {
+        border: 1px solid #404040;
+        background: #1e1e1e;
+        color: #ffffff;
+    }
+
+    .api-test-content .alert-success {
+        background: #1e3a1e;
+        border-color: #2d5a2d;
+    }
+
+    .api-test-content .alert-danger {
+        background: #3a1e1e;
+        border-color: #5a2d2d;
+    }
+
+    .api-test-content .alert-info {
+        background: #1e2a3a;
+        border-color: #2d3a5a;
+    }
 </style>
 
 <script>
@@ -437,4 +539,102 @@
     // Update time every second
     setInterval(updateTime, 1000);
     updateTime(); // Initial call
+
+    // API Test Functions - Hem jQuery hem vanilla JS desteği
+    function initApiTestButtons() {
+        console.log('API test butonları başlatılıyor...');
+        
+        var apiTestBtn = document.getElementById('apiTestBtn');
+        var apiKeyTestBtn = document.getElementById('apiKeyTestBtn');
+        var apiTestResult = document.getElementById('apiTestResult');
+        
+        console.log('API Test Butonu:', apiTestBtn ? 'Bulundu' : 'Bulunamadı');
+        console.log('API Key Test Butonu:', apiKeyTestBtn ? 'Bulundu' : 'Bulunamadı');
+        console.log('API Test Result:', apiTestResult ? 'Bulundu' : 'Bulunamadı');
+        
+        if (!apiTestResult) {
+            console.error('apiTestResult elementi bulunamadı!');
+            return;
+        }
+        
+        // API Test Butonu - Vanilla JS ile
+        if (apiTestBtn) {
+            apiTestBtn.addEventListener('click', function() {
+                console.log('API Test butonu tıklandı (vanilla JS)');
+                var btn = this;
+                var result = apiTestResult;
+                
+                btn.disabled = true;
+                result.innerHTML = '<div class="alert alert-info">⏳ API test ediliyor...</div>';
+                
+                // Önce GET test
+                fetch('/api/Ai/Test')
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('GET test başarılı:', data);
+                        result.innerHTML = '<div class="alert alert-success">✓ GET çalışıyor! </div>';
+                        
+                        // Sonra POST test
+                        return fetch('/api/Ai/TestPost', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ test: 'data', number: 123 })
+                        });
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('POST test başarılı:', data);
+                        result.innerHTML = '<div class="alert alert-success">✓✓ GET ve POST çalışıyor! API hazır.<br><small>Response: ' + JSON.stringify(data) + '</small></div>';
+                        btn.disabled = false;
+                    })
+                    .catch(error => {
+                        console.error('API test hatası:', error);
+                        result.innerHTML = '<div class="alert alert-danger">✗ Hata: ' + error.message + '</div>';
+                        btn.disabled = false;
+                    });
+            });
+        }
+        
+        // API Key Test Butonu - Vanilla JS ile
+        if (apiKeyTestBtn) {
+            apiKeyTestBtn.addEventListener('click', function() {
+                console.log('API Key Test butonu tıklandı (vanilla JS)');
+                var btn = this;
+                var result = apiTestResult;
+                
+                btn.disabled = true;
+                result.innerHTML = '<div class="alert alert-info">⏳ API anahtarı kontrol ediliyor...</div>';
+                
+                fetch('/api/Ai/TestApiKey')
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('API Key test başarılı:', data);
+                        result.innerHTML = '<div class="alert alert-success">✓ API Anahtarı: ' + (data.apiKeyPreview || 'Bulunamadı') + '<br>Status: ' + (data.status || 'OK') + '</div>';
+                        btn.disabled = false;
+                    })
+                    .catch(error => {
+                        console.error('API Key test hatası:', error);
+                        result.innerHTML = '<div class="alert alert-danger">✗ API anahtarı hatası: ' + error.message + '</div>';
+                        btn.disabled = false;
+                    });
+            });
+        }
+    }
+    
+    // Sayfa yüklendiğinde çalıştır
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initApiTestButtons);
+    } else {
+        initApiTestButtons();
+    }
+    
+    // jQuery de varsa onu da kullan
+    if (typeof jQuery !== 'undefined') {
+        jQuery(document).ready(function($) {
+            console.log('jQuery yüklü, ekstra kontrol yapılıyor...');
+            initApiTestButtons();
+        });
+    }
 </script>

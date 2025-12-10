@@ -11,7 +11,6 @@
         <p class="lead text-muted">
             AI teknolojisi ile kişiselleştirilmiş fitness ve beslenme önerileri alın
         </p>
-
     </div>
 
     <!-- Fotoğraf Analizi Bölümü -->
@@ -28,29 +27,23 @@
                     <div class="row">
                         <div class="col-12 mb-4">
                             <h6 class="text-primary mb-3">
-                                <i class="bi bi-upload me-2"></i>
-                                Fotoğraf Yükle
+                                <i class="bi bi-info-circle me-2"></i>
+                                Fotoğrafınızı yükleyin ve AI destekli analiz alın
                             </h6>
-                            <form id="photoForm" enctype="multipart/form-data">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <input type="file" id="photoInput" class="form-control" accept="image/*" required />
-                                            <small class="text-muted">JPG, PNG veya GIF formatında bir fotoğraf yükleyin</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Analiz Türü</label>
-                                            <select id="analysisType" class="form-select">
-                                                <option value="body_analysis">Vücut Analizi</option>
-                                                <option value="posture_analysis">Duruş Analizi</option>
-                                                <option value="progress_tracking">İlerleme Takibi</option>
-                                            </select>
-                                        </div>
-                                    </div>
+                            <form id="photoForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Analiz Tipi</label>
+                                    <select id="analysisType" class="form-select">
+                                        <option value="body_analysis">Vücut Analizi</option>
+                                        <option value="posture_analysis">Duruş Analizi</option>
+                                        <option value="progress_tracking">İlerleme Takibi</option>
+                                    </select>
                                 </div>
-                                <button type="submit" class="btn btn-success">
+                                <div class="mb-3">
+                                    <label class="form-label">Fotoğraf Seçin</label>
+                                    <input type="file" id="photoInput" class="form-control" accept="image/*" />
+                                </div>
+                                <button type="submit" class="btn btn-primary">
                                     <i class="bi bi-search me-1"></i>Analiz Et
                                 </button>
                             </form>
@@ -74,12 +67,12 @@
                 <div class="card-body">
                     <form id="exerciseForm">
                         <div class="mb-3">
-                            <label class="form-label">Boy (cm)</label>
-                            <input type="number" id="height" class="form-control" placeholder="Örn: 175" />
+                            <label class="form-label">Boy (cm) <span class="text-danger">*</span></label>
+                            <input type="number" id="height" class="form-control" placeholder="Örn: 175" required />
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Kilo (kg)</label>
-                            <input type="number" id="weight" class="form-control" placeholder="Örn: 70" />
+                            <label class="form-label">Kilo (kg) <span class="text-danger">*</span></label>
+                            <input type="number" id="weight" class="form-control" placeholder="Örn: 70" required />
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Vücut Tipi</label>
@@ -132,12 +125,12 @@
                 <div class="card-body">
                     <form id="dietForm">
                         <div class="mb-3">
-                            <label class="form-label">Boy (cm)</label>
-                            <input type="number" id="dietHeight" class="form-control" placeholder="Örn: 175" />
+                            <label class="form-label">Boy (cm) <span class="text-danger">*</span></label>
+                            <input type="number" id="dietHeight" class="form-control" placeholder="Örn: 175" required />
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Kilo (kg)</label>
-                            <input type="number" id="dietWeight" class="form-control" placeholder="Örn: 70" />
+                            <label class="form-label">Kilo (kg) <span class="text-danger">*</span></label>
+                            <input type="number" id="dietWeight" class="form-control" placeholder="Örn: 70" required />
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Hedef</label>
@@ -166,66 +159,401 @@
     </div>
 </div>
 
+<style>
+    /* Egzersiz Önerileri Profesyonel Tasarım */
+    .exercise-recommendation-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        border: 2px solid #28a745;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(40, 167, 69, 0.15);
+        overflow: hidden;
+        margin-top: 1rem;
+    }
+
+    .recommendation-header {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .recommendation-icon {
+        font-size: 2rem;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .recommendation-title {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .recommendation-content {
+        padding: 2rem;
+        color: #1a1a1a;
+        line-height: 2;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    .recommendation-content p {
+        margin-bottom: 1.5rem;
+        text-align: justify;
+        color: #1a1a1a;
+        font-weight: 500;
+    }
+
+    .recommendation-content strong {
+        color: #155724;
+        font-weight: 700;
+        font-size: 1.15em;
+    }
+
+    .recommendation-content ul {
+        margin: 1.5rem 0;
+        padding-left: 2.5rem;
+    }
+
+    .recommendation-content li {
+        margin-bottom: 1rem;
+        list-style-type: disc;
+        color: #1a1a1a;
+        font-weight: 500;
+        line-height: 1.8;
+    }
+
+    .recommendation-content hr {
+        border: none;
+        border-top: 2px solid #e9ecef;
+        margin: 1.5rem 0;
+    }
+
+    .recommendation-footer {
+        background: #f8f9fa;
+        padding: 1rem 2rem;
+        border-top: 1px solid #e9ecef;
+    }
+
+    /* Diyet Planı için aynı stil (mavi tema) */
+    .diet-plan-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        border: 2px solid #17a2b8;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(23, 162, 184, 0.15);
+        overflow: hidden;
+        margin-top: 1rem;
+    }
+
+    .diet-plan-header {
+        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+        color: white;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .diet-plan-icon {
+        font-size: 2rem;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .diet-plan-title {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .diet-plan-content {
+        padding: 2rem;
+        color: #1a1a1a;
+        line-height: 2;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    .diet-plan-content p {
+        margin-bottom: 1.5rem;
+        text-align: justify;
+        color: #1a1a1a;
+        font-weight: 500;
+    }
+
+    .diet-plan-content strong {
+        color: #0c5460;
+        font-weight: 700;
+        font-size: 1.15em;
+    }
+
+    .diet-plan-content ul {
+        margin: 1.5rem 0;
+        padding-left: 2.5rem;
+    }
+
+    .diet-plan-content li {
+        margin-bottom: 1rem;
+        list-style-type: disc;
+        color: #1a1a1a;
+        font-weight: 500;
+        line-height: 1.8;
+    }
+
+    .diet-plan-content hr {
+        border: none;
+        border-top: 2px solid #e9ecef;
+        margin: 1.5rem 0;
+    }
+
+    .diet-plan-footer {
+        background: #f8f9fa;
+        padding: 1rem 2rem;
+        border-top: 1px solid #e9ecef;
+    }
+
+    @@media (max-width: 768px) {
+        .recommendation-content,
+        .diet-plan-content {
+            padding: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .recommendation-title,
+        .diet-plan-title {
+            font-size: 1.2rem;
+        }
+    }
+</style>
+
 @section Scripts {
     <script>
+        // Egzersiz önerilerini formatla
+        function formatExerciseRecommendation(text) {
+            if (!text) return '';
+            
+            var html = text;
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\n/g, '<br>');
+            html = html.replace(/(<br>\s*){2,}/g, '</p><p>');
+            html = html.replace(/^[-*]\s+(.+)$/gm, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>)/g, function(match) {
+                if (!match.includes('<ul>')) {
+                    return '<ul>' + match + '</ul>';
+                }
+                return match;
+            });
+            html = html.replace(/^---.*$/gm, '<hr class="my-3">');
+            html = '<p>' + html + '</p>';
+            html = html.replace(/<p>\s*<\/p>/g, '');
+            html = html.replace(/<p><br><\/p>/g, '');
+            
+            return `
+                <div class="exercise-recommendation-card">
+                    <div class="recommendation-header">
+                        <div class="recommendation-icon">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                        <h5 class="recommendation-title">Egzersiz Önerileri</h5>
+                    </div>
+                    <div class="recommendation-content">
+                        ${html}
+                    </div>
+                    <div class="recommendation-footer">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Bu öneriler AI tarafından oluşturulmuştur. Profesyonel bir antrenör ile görüşmenizi öneririz.
+                        </small>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Diyet planını formatla
+        function formatDietPlan(text) {
+            if (!text) return '';
+            
+            var html = text;
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\n/g, '<br>');
+            html = html.replace(/(<br>\s*){2,}/g, '</p><p>');
+            html = html.replace(/^[-*]\s+(.+)$/gm, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>)/g, function(match) {
+                if (!match.includes('<ul>')) {
+                    return '<ul>' + match + '</ul>';
+                }
+                return match;
+            });
+            html = html.replace(/^---.*$/gm, '<hr class="my-3">');
+            html = '<p>' + html + '</p>';
+            html = html.replace(/<p>\s*<\/p>/g, '');
+            html = html.replace(/<p><br><\/p>/g, '');
+            
+            return `
+                <div class="diet-plan-card">
+                    <div class="diet-plan-header">
+                        <div class="diet-plan-icon">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                        <h5 class="diet-plan-title">Diyet Planı</h5>
+                    </div>
+                    <div class="diet-plan-content">
+                        ${html}
+                    </div>
+                    <div class="diet-plan-footer">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Bu öneriler AI tarafından oluşturulmuştur. Profesyonel bir diyetisyen ile görüşmenizi öneririz.
+                        </small>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Ortak hata yönetimi fonksiyonu
+        function handleError(xhr, defaultMessage) {
+            var error = defaultMessage;
+            console.error('=== HATA DETAYLARI ===');
+            console.error('Status:', xhr.status);
+            console.error('Status Text:', xhr.statusText);
+            console.error('Response Text:', xhr.responseText);
+            console.error('Response JSON:', xhr.responseJSON);
+            console.error('Full XHR:', xhr);
+            
+            try {
+                var responseData = null;
+                
+                // Önce responseJSON'ı kontrol et
+                if (xhr.responseJSON) {
+                    responseData = xhr.responseJSON;
+                    console.log('Using responseJSON');
+                } 
+                // Sonra responseText'i parse et
+                else if (xhr.responseText) {
+                    try {
+                        responseData = JSON.parse(xhr.responseText);
+                        console.log('Parsed responseText to JSON');
+                    } catch (e) {
+                        console.error('JSON parse error:', e);
+                        error = 'Hata mesajı parse edilemedi: ' + xhr.responseText.substring(0, 300);
+                        return '<div class="alert alert-danger"><strong><i class="bi bi-exclamation-triangle me-2"></i>Hata (Status: ' + xhr.status + '):</strong> ' + error + '</div>';
+                    }
+                }
+                
+                if (responseData) {
+                    error = responseData.error || responseData.message || defaultMessage;
+                    
+                    if (responseData.details) {
+                        error += '<br><small class="text-muted">Detay: ' + responseData.details + '</small>';
+                    }
+                    
+                    if (responseData.helpUrl) {
+                        error += '<br><a href="' + responseData.helpUrl + '" target="_blank" class="btn btn-sm btn-outline-primary mt-2">Detaylı Bilgi</a>';
+                    }
+                } else {
+                    error = defaultMessage + ' (Status: ' + (xhr.status || 'N/A') + ')';
+                }
+            } catch (e) {
+                console.error('Error handling error:', e);
+                error = defaultMessage + ' (Hata detayları alınamadı: ' + e.message + ')';
+            }
+            
+            return '<div class="alert alert-danger"><strong><i class="bi bi-exclamation-triangle me-2"></i>Hata:</strong> ' + error + '</div>';
+        }
+
         // Fotoğraf analizi
         $('#photoForm').submit(function(e) {
             e.preventDefault();
 
             var fileInput = $('#photoInput')[0];
             if (!fileInput.files[0]) {
-                $('#photoResult').html('<div class="alert alert-danger">Lütfen bir fotoğraf seçin.</div>');
+                $('#photoResult').html('<div class="alert alert-warning">Lütfen bir fotoğraf seçin.</div>');
                 return;
             }
 
             var formData = new FormData();
             formData.append('photo', fileInput.files[0]);
-            formData.append('analysisType', $('#analysisType').val());
+            formData.append('analysisType', $('#analysisType').val() || 'body_analysis');
 
-            $('#photoResult').html('<div class="alert alert-info">Fotoğraf analiz ediliyor...</div>');
+            $('#photoResult').html('<div class="alert alert-info"><i class="bi bi-hourglass-split me-2"></i>Fotoğraf analiz ediliyor, lütfen bekleyin...</div>');
 
             $.ajax({
-                url: '/Ai/AnalyzePhoto',
+                url: '/api/Ai/AnalyzePhoto',
                 method: 'POST',
                 data: formData,
                 processData: false,
                 contentType: false,
                 success: function(response) {
-                    $('#photoResult').html('<div class="alert alert-success"><h6>Fotoğraf Analizi:</h6><pre style="white-space: pre-wrap;">' + response.analysis + '</pre></div>');
+                    console.log('Photo analysis success:', response);
+                    if (response && response.analysis) {
+                        $('#photoResult').html('<div class="alert alert-success"><h6><i class="bi bi-check-circle me-2"></i>Fotoğraf Analizi:</h6><pre style="white-space: pre-wrap; background: #f8f9fa; padding: 15px; border-radius: 5px;">' + response.analysis + '</pre></div>');
+                    } else {
+                        $('#photoResult').html('<div class="alert alert-warning">Yanıt alındı ancak analiz sonucu bulunamadı. Response: ' + JSON.stringify(response) + '</div>');
+                    }
                 },
                 error: function(xhr) {
-                    var error = xhr.responseJSON?.error || 'Fotoğraf analizi sırasında hata oluştu';
-                    $('#photoResult').html('<div class="alert alert-danger">' + error + '</div>');
+                    console.error('Photo analysis error:', xhr);
+                    $('#photoResult').html(handleError(xhr, 'Fotoğraf analizi sırasında hata oluştu'));
                 }
             });
         });
 
-
         // Egzersiz önerileri
         $('#exerciseForm').submit(function(e) {
             e.preventDefault();
+            
+            var height = parseInt($('#height').val());
+            var weight = parseInt($('#weight').val());
+            
+            if (!height || !weight || height <= 0 || weight <= 0) {
+                $('#exerciseResult').html('<div class="alert alert-warning">Lütfen geçerli boy ve kilo bilgilerini girin.</div>');
+                return;
+            }
+
             var data = {
-                height: parseInt($('#height').val()) || 170,
-                weight: parseInt($('#weight').val()) || 70,
-                bodyType: $('#bodyType').val() || "Mezomorf",
-                goal: $('#goal').val() || "Genel Fitness",
-                fitnessLevel: $('#fitnessLevel').val() || "Orta",
-                age: parseInt($('#age').val()) || 25
+                height: height,
+                weight: weight,
+                bodyType: $('#bodyType').val() || null,
+                goal: $('#goal').val() || null,
+                fitnessLevel: $('#fitnessLevel').val() || null,
+                age: parseInt($('#age').val()) || 0
             };
 
-            $('#exerciseResult').html('<div class="alert alert-info">AI egzersiz planı hazırlıyor...</div>');
+            console.log('Sending exercise request:', data);
+
+            $('#exerciseResult').html('<div class="alert alert-info"><i class="bi bi-hourglass-split me-2"></i>AI egzersiz planı hazırlıyor, lütfen bekleyin...</div>');
 
             $.ajax({
-                url: '/Ai/GetExerciseRecommendation',
+                url: '/api/Ai/GetExerciseRecommendation',
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(data),
                 success: function(response) {
-                    $('#exerciseResult').html('<div class="alert alert-success"><h6>Egzersiz Önerileri:</h6><pre style="white-space: pre-wrap;">' + response.recommendation + '</pre></div>');
+                    console.log('Exercise recommendation success:', response);
+                    if (response && response.recommendation) {
+                        var formattedText = formatExerciseRecommendation(response.recommendation);
+                        $('#exerciseResult').html(formattedText);
+                    } else {
+                        $('#exerciseResult').html('<div class="alert alert-warning">Yanıt alındı ancak öneri bulunamadı. Response: ' + JSON.stringify(response) + '</div>');
+                    }
                 },
                 error: function(xhr) {
-                    var error = xhr.responseJSON?.error || 'Egzersiz önerisi alınırken hata oluştu';
-                    $('#exerciseResult').html('<div class="alert alert-danger">' + error + '</div>');
+                    console.error('Exercise recommendation error:', xhr);
+                    $('#exerciseResult').html(handleError(xhr, 'Egzersiz önerisi alınırken hata oluştu'));
                 }
             });
         });
@@ -233,30 +561,46 @@
         // Diyet planı
         $('#dietForm').submit(function(e) {
             e.preventDefault();
+            
+            var height = parseInt($('#dietHeight').val());
+            var weight = parseInt($('#dietWeight').val());
+            
+            if (!height || !weight || height <= 0 || weight <= 0) {
+                $('#dietResult').html('<div class="alert alert-warning">Lütfen geçerli boy ve kilo bilgilerini girin.</div>');
+                return;
+            }
+
             var data = {
-                height: parseInt($('#dietHeight').val()) || 170,
-                weight: parseInt($('#dietWeight').val()) || 70,
-                goal: $('#dietGoal').val() || "Sağlıklı Beslenme",
-                age: parseInt($('#dietAge').val()) || 25,
-                dietaryRestrictions: $('#dietaryRestrictions').val() || "Yok"
+                height: height,
+                weight: weight,
+                goal: $('#dietGoal').val() || null,
+                age: parseInt($('#dietAge').val()) || 0,
+                dietaryRestrictions: $('#dietaryRestrictions').val() || null
             };
 
-            $('#dietResult').html('<div class="alert alert-info">AI diyet planı hazırlıyor...</div>');
+            console.log('Sending diet request:', data);
+
+            $('#dietResult').html('<div class="alert alert-info"><i class="bi bi-hourglass-split me-2"></i>AI diyet planı hazırlıyor, lütfen bekleyin...</div>');
 
             $.ajax({
-                url: '/Ai/GetDietPlan',
+                url: '/api/Ai/GetDietPlan',
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(data),
                 success: function(response) {
-                    $('#dietResult').html('<div class="alert alert-success"><h6>Diyet Planı:</h6><pre style="white-space: pre-wrap;">' + response.dietPlan + '</pre></div>');
+                    console.log('Diet plan success:', response);
+                    if (response && response.dietPlan) {
+                        var formattedText = formatDietPlan(response.dietPlan);
+                        $('#dietResult').html(formattedText);
+                    } else {
+                        $('#dietResult').html('<div class="alert alert-warning">Yanıt alındı ancak diyet planı bulunamadı. Response: ' + JSON.stringify(response) + '</div>');
+                    }
                 },
                 error: function(xhr) {
-                    var error = xhr.responseJSON?.error || 'Diyet planı alınırken hata oluştu';
-                    $('#dietResult').html('<div class="alert alert-danger">' + error + '</div>');
+                    console.error('Diet plan error:', xhr);
+                    $('#dietResult').html(handleError(xhr, 'Diyet planı alınırken hata oluştu'));
                 }
             });
         });
     </script>
 }
-

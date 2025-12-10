@@ -3,6 +3,8 @@ using System.Text;
 using System.Text.Json;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Caching.Memory;
+using System.Security.Cryptography;
 
 namespace FitnessCenter.Services
 {
@@ -10,10 +12,15 @@ namespace FitnessCenter.Services
     {
         private readonly HttpClient _httpClient;
         private readonly string _apiKey;
+        private readonly IMemoryCache _cache;
+        private static readonly Dictionary<string, DateTime> _requestTimestamps = new();
+        private static readonly object _lockObject = new();
+        private const int MAX_REQUESTS_PER_MINUTE = 5; // Dakikada maksimum istek sayısı (kota hatasını önlemek için azaltıldı)
 
-        public GeminiService(HttpClient httpClient, IConfiguration configuration)
+        public GeminiService(HttpClient httpClient, IConfiguration configuration, IMemoryCache cache)
         {
             _httpClient = httpClient;
+            _cache = cache;
             _apiKey = configuration["Gemini:ApiKey"] ?? throw new ArgumentNullException(nameof(configuration), "Gemini API key not found");
             
             // API anahtarının boş olmadığını kontrol et
@@ -107,52 +114,110 @@ namespace FitnessCenter.Services
             }
         }
 
+        private string GetCacheKey(string prompt)
+        {
+            // Prompt'un hash'ini alarak cache key oluştur
+            using var sha256 = SHA256.Create();
+            var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(prompt));
+            return $"gemini_response_{Convert.ToBase64String(hashBytes)}";
+        }
+
+        private bool CheckRateLimit()
+        {
+            lock (_lockObject)
+            {
+                var now = DateTime.UtcNow;
+                // Son 1 dakikadaki istekleri temizle
+                var keysToRemove = _requestTimestamps
+                    .Where(kvp => (now - kvp.Value).TotalMinutes > 1)
+                    .Select(kvp => kvp.Key)
+                    .ToList();
+                
+                foreach (var key in keysToRemove)
+                {
+                    _requestTimestamps.Remove(key);
+                }
+                
+                // Maksimum istek sayısını kontrol et
+                if (_requestTimestamps.Count >= MAX_REQUESTS_PER_MINUTE)
+                {
+                    return false; // Rate limit aşıldı
+                }
+                
+                // Yeni isteği kaydet
+                _requestTimestamps[Guid.NewGuid().ToString()] = now;
+                return true;
+            }
+        }
+
         public async Task<string> GenerateTextResponse(string prompt)
         {
-            // Önce mevcut modelleri al
-            List<string>? availableModels = null;
-            try
+            // 1. Cache kontrolü - Aynı prompt için cache'den döndür
+            var cacheKey = GetCacheKey(prompt);
+            if (_cache.TryGetValue(cacheKey, out string? cachedResponse) && !string.IsNullOrEmpty(cachedResponse))
             {
-                availableModels = await GetAvailableModelNames();
-            }
-            catch (Exception ex)
-            {
-                // Model listesi alınamazsa logla ve devam et
-                System.Diagnostics.Debug.WriteLine($"Model listesi alınamadı: {ex.Message}");
+                return cachedResponse;
             }
 
-            // Mevcut modellere göre kombinasyonları oluştur
-            var modelConfigs = new List<(string apiVersion, string modelName)>();
-            
-            if (availableModels != null && availableModels.Count > 0)
+            // 2. Rate limiting kontrolü
+            if (!CheckRateLimit())
             {
-                // Mevcut modellere göre kombinasyonlar oluştur - önce v1beta, sonra v1
-                foreach (var model in availableModels)
+                throw new HttpRequestException(
+                    "API istek limiti aşıldı. Lütfen bir dakika bekleyip tekrar deneyin. " +
+                    $"Dakikada maksimum {MAX_REQUESTS_PER_MINUTE} istek yapılabilir.");
+            }
+
+            // 3. Retry mekanizması ile API çağrısı (daha uzun bekleme süreleri)
+            const int maxRetries = 2; // Retry sayısını azalttık
+            const int baseDelayMs = 5000; // 5 saniye (kota hatasını önlemek için artırıldı)
+            
+            for (int attempt = 0; attempt < maxRetries; attempt++)
+            {
+                try
                 {
-                    if (model.Contains("gemini"))
+                    var response = await GenerateTextResponseInternal(prompt);
+                    
+                    // Başarılı yanıtı cache'e kaydet (24 saat süreyle - kota hatasını önlemek için artırıldı)
+                    _cache.Set(cacheKey, response, TimeSpan.FromHours(24));
+                    
+                    return response;
+                }
+                catch (HttpRequestException ex) when (
+                    ex.Message.Contains("Rate Limit") || 
+                    ex.Message.Contains("429") || 
+                    ex.Message.Contains("TooManyRequests") ||
+                    ex.Message.Contains("quota"))
+                {
+                    if (attempt < maxRetries - 1)
                     {
-                        // Önce v1beta dene (genellikle daha yeni modeller için)
-                        modelConfigs.Add(("v1beta", model));
-                        // Sonra v1 dene
-                        modelConfigs.Add(("v1", model));
+                        // Exponential backoff: 2s, 4s, 8s
+                        var delay = baseDelayMs * (int)Math.Pow(2, attempt);
+                        await Task.Delay(delay);
+                        continue; // Tekrar dene
+                    }
+                    else
+                    {
+                        // Son deneme de başarısız oldu
+                        throw new HttpRequestException(
+                            "API kotası aşıldı. Lütfen bir süre bekleyip tekrar deneyin veya Google AI Studio'dan kullanım limitlerinizi kontrol edin. " +
+                            $"Detaylar: {ex.Message}");
                     }
                 }
             }
             
-            // Eğer hiç model bulunamadıysa, en yaygın çalışan kombinasyonları dene
-            if (modelConfigs.Count == 0)
+            throw new InvalidOperationException("Beklenmeyen hata oluştu.");
+        }
+
+        private async Task<string> GenerateTextResponseInternal(string prompt)
+        {
+            // Mevcut modelleri kullan - API anahtarınızla erişilebilir modeller
+            var modelConfigs = new List<(string apiVersion, string modelName)>
             {
-                modelConfigs = new List<(string apiVersion, string modelName)>
-                {
-                    // En yaygın çalışan kombinasyonlar (öncelik sırasına göre)
-                    ("v1beta", "gemini-1.5-flash"),
-                    ("v1beta", "gemini-1.5-pro"),
-                    ("v1", "gemini-1.5-flash"),
-                    ("v1", "gemini-1.5-pro"),
-                    ("v1beta", "gemini-pro"),
-                    ("v1", "gemini-pro")
-                };
-            }
+                ("v1", "gemini-2.5-flash"),      // En yeni ve hızlı model
+                ("v1beta", "gemini-2.5-flash"),  // Alternatif API versiyonu
+                ("v1", "gemini-2.0-flash"),      // Alternatif model
+                ("v1beta", "gemini-2.0-flash")   // Alternatif
+            };
 
             var requestBody = new
             {
@@ -265,14 +330,71 @@ namespace FitnessCenter.Services
 
         public async Task<string> AnalyzeImage(string base64Image, string prompt)
         {
-            // Görüntü analizi için desteklenen modeller
+            // 1. Cache kontrolü - Aynı görüntü ve prompt için cache'den döndür
+            var imageCacheKey = GetCacheKey(prompt + base64Image.Substring(0, Math.Min(100, base64Image.Length)));
+            if (_cache.TryGetValue(imageCacheKey, out string? cachedResponse) && !string.IsNullOrEmpty(cachedResponse))
+            {
+                return cachedResponse;
+            }
+
+            // 2. Rate limiting kontrolü
+            if (!CheckRateLimit())
+            {
+                throw new HttpRequestException(
+                    "API istek limiti aşıldı. Lütfen bir dakika bekleyip tekrar deneyin. " +
+                    $"Dakikada maksimum {MAX_REQUESTS_PER_MINUTE} istek yapılabilir.");
+            }
+
+            // 3. Retry mekanizması ile API çağrısı (daha uzun bekleme süreleri)
+            const int maxRetries = 2; // Retry sayısını azalttık
+            const int baseDelayMs = 5000; // 5 saniye (kota hatasını önlemek için artırıldı)
+            
+            for (int attempt = 0; attempt < maxRetries; attempt++)
+            {
+                try
+                {
+                    var response = await AnalyzeImageInternal(base64Image, prompt);
+                    
+                    // Başarılı yanıtı cache'e kaydet (12 saat süreyle - kota hatasını önlemek için artırıldı)
+                    _cache.Set(imageCacheKey, response, TimeSpan.FromHours(12));
+                    
+                    return response;
+                }
+                catch (HttpRequestException ex) when (
+                    ex.Message.Contains("Rate Limit") || 
+                    ex.Message.Contains("429") || 
+                    ex.Message.Contains("TooManyRequests") ||
+                    ex.Message.Contains("quota"))
+                {
+                    if (attempt < maxRetries - 1)
+                    {
+                        // Exponential backoff: 5s, 10s (daha uzun bekleme)
+                        var delay = baseDelayMs * (int)Math.Pow(2, attempt);
+                        System.Diagnostics.Debug.WriteLine($"Rate limit hatası (image), {delay/1000} saniye bekleniyor...");
+                        await Task.Delay(delay);
+                        continue;
+                    }
+                    else
+                    {
+                        throw new HttpRequestException(
+                            "API kotası aşıldı. Lütfen bir süre bekleyip tekrar deneyin veya Google AI Studio'dan kullanım limitlerinizi kontrol edin. " +
+                            $"Detaylar: {ex.Message}");
+                    }
+                }
+            }
+            
+            throw new InvalidOperationException("Beklenmeyen hata oluştu.");
+        }
+
+        private async Task<string> AnalyzeImageInternal(string base64Image, string prompt)
+        {
+            // Görüntü analizi için mevcut modelleri kullan
             var modelConfigs = new[]
             {
-                ("v1beta", "gemini-1.5-flash"),
-                ("v1beta", "gemini-1.5-pro"),
-                ("v1", "gemini-1.5-flash"),
-                ("v1", "gemini-1.5-pro"),
-                ("v1", "gemini-pro")
+                ("v1", "gemini-2.5-flash"),      // En yeni ve hızlı model
+                ("v1beta", "gemini-2.5-flash"),  // Alternatif API versiyonu
+                ("v1", "gemini-2.0-flash"),      // Alternatif model
+                ("v1beta", "gemini-2.0-flash")   // Alternatif
             };
 
             var requestBody = new

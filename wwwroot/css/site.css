@@ -16,8 +16,8 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: #f8f9fa;
-    color: #212529;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+    color: #e0e0e0;
     overflow-x: hidden;
 }
 
@@ -1149,6 +1149,34 @@ main.user-authenticated .page-item.active .page-link {
     background-color: #e9ecef;
 }
 
+/* All Sections - Dark Theme (for both authenticated and non-authenticated) */
+.section-fitness,
+.section-biohacking,
+.section-classes {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+    color: #e0d4a0;
+}
+
+.section-fitness .section-title-large,
+.section-biohacking .section-title-large,
+.section-classes .section-title-large {
+    color: #ffd700 !important;
+}
+
+.section-fitness .section-description,
+.section-biohacking .section-description,
+.section-classes .section-description {
+    color: #e0d4a0 !important;
+}
+
+.section-biohacking {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+}
+
+.section-classes {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+}
+
 /* User Authenticated Sections - Dark Theme */
 main.user-authenticated .section-fitness,
 main.user-authenticated .section-biohacking,
@@ -1169,27 +1197,24 @@ main.user-authenticated .section-classes .section-description {
     color: #e0d4a0;
 }
 
-.section-biohacking {
-    background-color: #f8f9fa;
-}
-
-.section-classes {
-    background-color: #e9ecef;
-}
-
 .section-title-large {
     font-size: 4rem;
     font-weight: 900;
     letter-spacing: -2px;
     margin-bottom: 30px;
-    color: var(--primary-dark);
+    color: #ffd700 !important;
 }
 
 .section-description {
     font-size: 1.2rem;
     line-height: 1.8;
-    color: #555;
+    color: #e0d4a0 !important;
     margin-bottom: 30px;
+}
+
+/* Section Title Text Center - Dark Theme */
+.section-title {
+    color: #ffd700 !important;
 }
 
 .fitness-image-wrapper,
@@ -1212,35 +1237,37 @@ main.user-authenticated .section-classes .section-description {
     transform: scale(1.05);
 }
 
-/* Class Cards */
+/* Class Cards - Dark Theme */
 .class-card {
-    background: white;
+    background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+    border: 1px solid #555555 !important;
     padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
     height: 100%;
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .class-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    box-shadow: 0 15px 40px rgba(255, 193, 7, 0.2) !important;
+    border-color: #ffc107 !important;
 }
 
 .class-title {
     font-size: 2rem;
     font-weight: 700;
     margin-bottom: 20px;
-    color: var(--primary-dark);
+    color: #ffd700 !important;
 }
 
 .class-description {
     font-size: 1.1rem;
-    color: #666;
+    color: #e0d4a0 !important;
     margin-bottom: 15px;
 }
 
-/* User Authenticated Class Cards - Dark Theme */
+/* User Authenticated Class Cards - Dark Theme (already applied globally above) */
 main.user-authenticated .class-card {
     background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%);
     border: 1px solid #555555;
@@ -1270,10 +1297,33 @@ main.user-authenticated .class-description {
     line-height: 1.8;
 }
 
-/* Membership Section */
+/* Membership Section - Dark Theme */
 .section-membership {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: var(--text-light);
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+    color: #e0d4a0;
+}
+
+.membership-card {
+    background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+    border: 1px solid #555555 !important;
+    padding: 60px;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4) !important;
+    color: #e0d4a0 !important;
+}
+
+.membership-title {
+    font-size: 3rem;
+    font-weight: 900;
+    color: #ffd700 !important;
+}
+
+.membership-features li {
+    color: #e0d4a0 !important;
+}
+
+.membership-features li i {
+    color: #ffc107 !important;
 }
 
 /* User Authenticated Membership Section - Dark Theme */
@@ -1301,20 +1351,6 @@ main.user-authenticated .membership-features li i {
     color: #ffc107;
 }
 
-.membership-card {
-    background: white;
-    padding: 60px;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    color: var(--primary-dark);
-}
-
-.membership-title {
-    font-size: 3rem;
-    font-weight: 900;
-    margin-bottom: 20px;
-}
-
 .membership-badges {
     display: flex;
     gap: 10px;
@@ -1323,11 +1359,27 @@ main.user-authenticated .membership-features li i {
 }
 
 .membership-badges .badge {
-    background-color: var(--accent-yellow);
-    color: var(--primary-dark);
-    padding: 8px 15px;
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%) !important;
+    color: #1a1a1a !important;
+    border: none !important;
     font-weight: 600;
+    padding: 8px 15px;
     border-radius: 20px;
+}
+
+/* Global Badge Dark Theme */
+.badge {
+    font-weight: 500;
+}
+
+.badge.bg-primary,
+.badge.bg-info,
+.badge.bg-success,
+.badge.bg-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%) !important;
+    color: #1a1a1a !important;
+    border: none !important;
+    font-weight: 600;
 }
 
 .membership-price {

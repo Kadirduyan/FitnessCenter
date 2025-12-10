@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace FitnessCenter.Controllers;
 
@@ -30,12 +31,25 @@ public class AiController : Controller
     }
 
     [HttpGet]
+    [Route("/api/Ai/Test")]
     public IActionResult Test()
     {
         return Json(new { status = "API çalışıyor", timestamp = DateTime.Now });
     }
 
+    [HttpPost]
+    [Route("/api/Ai/TestPost")]
+    public IActionResult TestPost([FromBody] object? data)
+    {
+        return Json(new { 
+            status = "POST çalışıyor", 
+            receivedData = data,
+            timestamp = DateTime.Now 
+        });
+    }
+
     [HttpGet]
+    [Route("/api/Ai/TestApiKey")]
     public IActionResult TestApiKey()
     {
         try
@@ -59,6 +73,7 @@ public class AiController : Controller
     }
 
     [HttpGet]
+    [Route("/api/Ai/ListModels")]
     public async Task<IActionResult> ListModels()
     {
         try
@@ -73,6 +88,7 @@ public class AiController : Controller
     }
 
     [HttpGet]
+    [Route("/api/Ai/GetAvailableModels")]
     public async Task<IActionResult> GetAvailableModels()
     {
         try
@@ -87,13 +103,19 @@ public class AiController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> GetExerciseRecommendation([FromBody] ExerciseRecommendationRequest request)
+    [Route("/api/Ai/GetExerciseRecommendation")]
+    public async Task<IActionResult> GetExerciseRecommendation([FromBody] ExerciseRecommendationRequest? request)
     {
         try
         {
             if (request == null)
             {
-                return BadRequest(new { error = "Geçersiz istek verisi." });
+                return BadRequest(new { error = "Geçersiz istek verisi. Request body boş veya geçersiz format." });
+            }
+
+            if (request.Height <= 0 || request.Weight <= 0)
+            {
+                return BadRequest(new { error = "Boy ve kilo değerleri 0'dan büyük olmalıdır." });
             }
 
             var prompt = BuildExercisePrompt(request);
@@ -142,13 +164,19 @@ public class AiController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> GetDietPlan([FromBody] DietPlanRequest request)
+    [Route("/api/Ai/GetDietPlan")]
+    public async Task<IActionResult> GetDietPlan([FromBody] DietPlanRequest? request)
     {
         try
         {
             if (request == null)
             {
-                return BadRequest(new { error = "Geçersiz istek verisi." });
+                return BadRequest(new { error = "Geçersiz istek verisi. Request body boş veya geçersiz format." });
+            }
+
+            if (request.Height <= 0 || request.Weight <= 0)
+            {
+                return BadRequest(new { error = "Boy ve kilo değerleri 0'dan büyük olmalıdır." });
             }
 
             var prompt = BuildDietPrompt(request);
@@ -158,6 +186,17 @@ public class AiController : Controller
         catch (HttpRequestException ex)
         {
             var errorMessage = ex.Message;
+            
+            // Rate Limit hatası
+            if (errorMessage.Contains("Rate Limit") || errorMessage.Contains("429") || errorMessage.Contains("TooManyRequests") || errorMessage.Contains("quota"))
+            {
+                return StatusCode(429, new { 
+                    error = "API kotası aşıldı. Lütfen bir süre bekleyip tekrar deneyin veya Google AI Studio'dan kullanım limitlerinizi kontrol edin.",
+                    details = errorMessage,
+                    helpUrl = "https://ai.dev/usage?tab=rate-limit"
+                });
+            }
+            
             if (errorMessage.Contains("401") || errorMessage.Contains("Unauthorized"))
             {
                 return StatusCode(401, new { 
@@ -185,6 +224,7 @@ public class AiController : Controller
     }
 
     [HttpPost]
+    [Route("/api/Ai/AnalyzePhoto")]
     public async Task<IActionResult> AnalyzePhoto(IFormFile photo, string analysisType = "body_analysis")
     {
         try
@@ -210,7 +250,37 @@ public class AiController : Controller
         }
         catch (HttpRequestException ex)
         {
-            return StatusCode(500, new { error = $"API hatası: {ex.Message}" });
+            var errorMessage = ex.Message;
+            
+            // Rate Limit hatası
+            if (errorMessage.Contains("Rate Limit") || errorMessage.Contains("429") || errorMessage.Contains("TooManyRequests") || errorMessage.Contains("quota"))
+            {
+                return StatusCode(429, new { 
+                    error = "API kotası aşıldı. Lütfen bir süre bekleyip tekrar deneyin veya Google AI Studio'dan kullanım limitlerinizi kontrol edin.",
+                    details = errorMessage,
+                    helpUrl = "https://ai.dev/usage?tab=rate-limit"
+                });
+            }
+            
+            if (errorMessage.Contains("401") || errorMessage.Contains("Unauthorized"))
+            {
+                return StatusCode(401, new { 
+                    error = "API anahtarı geçersiz veya yetkisiz. Lütfen appsettings.json dosyasındaki API anahtarını kontrol edin.",
+                    details = errorMessage
+                });
+            }
+            if (errorMessage.Contains("403") || errorMessage.Contains("Forbidden"))
+            {
+                return StatusCode(403, new { 
+                    error = "API anahtarının bu modellere erişim izni yok. Lütfen Google AI Studio'da API anahtarınızı kontrol edin.",
+                    details = errorMessage
+                });
+            }
+            return StatusCode(500, new { error = $"API hatası: {errorMessage}" });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return StatusCode(500, new { error = ex.Message });
         }
         catch (Exception ex)
         {
@@ -303,19 +373,39 @@ public class AiController : Controller
 
 public class ExerciseRecommendationRequest
 {
+    [JsonPropertyName("height")]
     public int Height { get; set; }
+    
+    [JsonPropertyName("weight")]
     public int Weight { get; set; }
+    
+    [JsonPropertyName("bodyType")]
     public string? BodyType { get; set; }
+    
+    [JsonPropertyName("goal")]
     public string? Goal { get; set; }
+    
+    [JsonPropertyName("fitnessLevel")]
     public string? FitnessLevel { get; set; }
+    
+    [JsonPropertyName("age")]
     public int Age { get; set; }
 }
 
 public class DietPlanRequest
 {
+    [JsonPropertyName("height")]
     public int Height { get; set; }
+    
+    [JsonPropertyName("weight")]
     public int Weight { get; set; }
+    
+    [JsonPropertyName("goal")]
     public string? Goal { get; set; }
+    
+    [JsonPropertyName("age")]
     public int Age { get; set; }
+    
+    [JsonPropertyName("dietaryRestrictions")]
     public string? DietaryRestrictions { get; set; }
 }
