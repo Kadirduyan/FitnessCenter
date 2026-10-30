@@ -9,12 +9,10 @@ namespace FitnessCenter.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
     private readonly ApplicationDbContext _context;
 
-    public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+    public HomeController(ApplicationDbContext context)
     {
-        _logger = logger;
         _context = context;
     }
 
@@ -22,19 +20,16 @@ public class HomeController : Controller
     {
         if (User.IsInRole("Admin"))
         {
-            // Admin kullanıcılarını direkt Admin paneline yönlendir
             return RedirectToAction("Index", "Admin");
         }
-        else
-        {
-            // Normal üye için fitness center verileri
-            var fitnessCenters = await _context.FitnessCenters
-                .Include(fc => fc.Services)
-                .Include(fc => fc.Trainers)
-                .ToListAsync();
 
-            ViewBag.FitnessCenters = fitnessCenters;
-        }
+        // Normal üye için fitness center verileri
+        var fitnessCenters = await _context.FitnessCenters
+            .Include(fc => fc.Services)
+            .Include(fc => fc.Trainers)
+            .ToListAsync();
+
+        ViewBag.FitnessCenters = fitnessCenters;
 
         return View();
     }

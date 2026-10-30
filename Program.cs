@@ -11,7 +11,14 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseSqlServer(connectionString);
+    if (connectionString.Contains("Data Source=", StringComparison.OrdinalIgnoreCase) && !connectionString.Contains("Server=", StringComparison.OrdinalIgnoreCase))
+    {
+        options.UseSqlite(connectionString);
+    }
+    else
+    {
+        options.UseSqlServer(connectionString);
+    }
     // Entity Framework query splitting uyarısını kapat
     options.ConfigureWarnings(warnings => 
         warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.MultipleCollectionIncludeWarning));
@@ -49,12 +56,6 @@ builder.Services.AddControllersWithViews(options =>
     options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
     options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
 });
-builder.Services.AddControllers()
-.AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-    options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
-});
 builder.Services.AddMemoryCache(); // Caching için
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<FitnessCenter.Services.GeminiService>();
@@ -74,8 +75,12 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// HTTPS redirection - sadece HTTPS port varsa kullan
-if (app.Configuration["HTTPS_PORT"] != null || app.Environment.IsDevelopment())
+// HTTPS redirection - sadece HTTPS URL varsa kullan
+var hasHttps = app.Configuration["ASPNETCORE_URLS"]?.Contains("https") == true 
+               || builder.Configuration["HTTPS_PORT"] != null
+               || app.Urls.Any(u => u.StartsWith("https://", StringComparison.OrdinalIgnoreCase));
+               
+if (hasHttps)
 {
     app.UseHttpsRedirection();
 }
@@ -92,6 +97,31 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+// URL'leri konsola yazdır
+Console.WriteLine("\n========================================");
+Console.WriteLine("Uygulama başlatılıyor...");
+Console.WriteLine("URL'ler:");
+var configuredUrls = app.Configuration["ASPNETCORE_URLS"]?.Split(';') ?? Array.Empty<string>();
+if (configuredUrls.Length > 0)
+{
+    foreach (var url in configuredUrls)
+    {
+        Console.WriteLine($"  - {url.Trim()}");
+    }
+}
+else if (app.Urls.Any())
+{
+    foreach (var url in app.Urls)
+    {
+        Console.WriteLine($"  - {url}");
+    }
+}
+else
+{
+    Console.WriteLine("  - http://localhost:5253 (varsayılan)");
+}
+Console.WriteLine("========================================\n");
+
 app.Run();
 
 async Task SeedDataAsync(WebApplication app)
@@ -101,6 +131,7 @@ async Task SeedDataAsync(WebApplication app)
     try
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
+        await context.Database.EnsureCreatedAsync();
         var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
